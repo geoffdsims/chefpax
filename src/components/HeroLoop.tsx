@@ -13,7 +13,7 @@ const panZoom = keyframes`
 `;
 
 // Background layer with animation
-const AnimatedBg = styled("div")(({ theme }) => ({
+const AnimatedBg = styled("div")(() => ({
   position: "absolute",
   inset: 0,
   backgroundImage: "url('/images/austinChefPack.png')",
@@ -42,9 +42,9 @@ export default function HeroLoop() {
       } else {
         alert(data.error || "Unable to start subscription");
       }
-    } catch (error) {
-      alert("Error starting subscription");
-    } finally {
+      } catch {
+        alert("Error starting subscription");
+      } finally {
       setLoading(false);
     }
   }

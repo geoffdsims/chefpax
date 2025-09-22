@@ -68,8 +68,8 @@ export async function POST(req: Request) {
   };
   
   // Include user ID if signed in
-  if (authSession?.user?.id) {
-    metadata.userId = authSession.user.id;
+  if (authSession?.user && (authSession.user as { id?: string }).id) {
+    metadata.userId = (authSession.user as { id: string }).id;
   }
 
   const session = await stripe.checkout.sessions.create({

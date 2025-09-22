@@ -5,10 +5,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import clientPromise from "@/lib/mongoClient";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-08-27.basil" }) : null;
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
+    if (!stripe) {
+      return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
+    }
+    
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
 
@@ -24,12 +28,18 @@ export async function POST(req: Request) {
 
     if (!stripeCustomerId) {
       // Try find by email
-      const list = await stripe.customers.search({ query: `email:"${email}"` }).catch(() => ({ data: [] as any[] }));
-      if (list && (list as any).data && (list as any).data.length) {
-        stripeCustomerId = (list as any).data[0].id;
+      const list = await stripe.customers.search({ query: `email:"${email}"` }).catch(() => ({ data: [] as Stripe.Customer[] }));
+      if (list && list.data && list.data.length) {
+        stripeCustomerId = list.data[0].id;
       } else {
         // create customer
-        const cust = await stripe.customers.create({ email, metadata: { userId: userDoc?._id?.toString?.() } });
+        if (!email) {
+          throw new Error("Email is required to create Stripe customer");
+        }
+        const cust = await stripe.customers.create({ 
+          email, 
+          metadata: { userId: userDoc?._id?.toString?.() || "" } 
+        });
         stripeCustomerId = cust.id;
       }
       // persist on user doc (optional)
@@ -42,8 +52,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ url: portal.url });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("create-portal-session error:", err);
-    return NextResponse.json({ error: err.message || "Server error" }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Server error" }, { status: 500 });
   }
 }

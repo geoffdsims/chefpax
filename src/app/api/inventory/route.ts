@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongo";
 import { getStandardWeeklyProduction, calculateWeeklyInventory } from "@/lib/inventory";
 
+interface OrderItem {
+  productId: string;
+  qty: number;
+}
+
+interface Order {
+  items: OrderItem[];
+}
+
 export async function GET() {
   try {
     // Get current week's production plan
@@ -31,8 +40,8 @@ export async function GET() {
       liveTrayRadish: 0
     };
     
-    orders.forEach(order => {
-      order.items.forEach(item => {
+    orders.forEach((order) => {
+      (order as unknown as Order).items.forEach((item: OrderItem) => {
         switch (item.productId) {
           case 'CHEFPAX_4OZ':
             soldQuantities.chefMix4oz += item.qty;

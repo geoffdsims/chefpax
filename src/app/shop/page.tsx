@@ -32,19 +32,19 @@ export default function Shop() {
   const [cartOpen, setCartOpen] = useState(false);
   const { data: session } = useSession();
 
-  // Fallback products if API fails
-  const fallbackProducts: Product[] = [
-    { _id: "fallback-1", sku: "SUNFLOWER_2OZ", name: "Sunflower Microgreens — 2 oz", priceCents: 500, unit: "clamshell", active: true, sort: 1 },
-    { _id: "fallback-2", sku: "CHEFPAX_4OZ", name: "ChefPax Mix — 4 oz", priceCents: 700, unit: "clamshell", active: true, sort: 2 },
-    { _id: "fallback-3", sku: "RADISH_TRAY", name: "Radish Microgreens — Live Tray", priceCents: 2900, unit: "tray", active: true, sort: 3 },
-    { _id: "fallback-4", sku: "PEA_SHOOTS_TRAY", name: "Pea Shoots — Live Tray", priceCents: 3000, unit: "tray", active: true, sort: 4 },
-    { _id: "fallback-5", sku: "MIXED_SUNFLOWER_TRAY", name: "Mixed Sunflower — Live Tray", priceCents: 3100, unit: "tray", active: true, sort: 5 },
-    { _id: "fallback-6", sku: "RED_AMARANTH_TRAY", name: "Red Amaranth Microgreens — Live Tray", priceCents: 3200, unit: "tray", active: true, sort: 6 },
-  ];
-
-  const products = React.useMemo(() => {
-    return data && Array.isArray(data) ? data : fallbackProducts;
-  }, [data]);
+    const products = React.useMemo(() => {
+      // Fallback products if API fails
+      const fallbackProducts: Product[] = [
+        { _id: "fallback-1", sku: "SUNFLOWER_2OZ", name: "Sunflower Microgreens — 2 oz", priceCents: 500, unit: "clamshell", active: true, sort: 1 },
+        { _id: "fallback-2", sku: "CHEFPAX_4OZ", name: "ChefPax Mix — 4 oz", priceCents: 700, unit: "clamshell", active: true, sort: 2 },
+        { _id: "fallback-3", sku: "RADISH_TRAY", name: "Radish Microgreens — Live Tray", priceCents: 2900, unit: "tray", active: true, sort: 3 },
+        { _id: "fallback-4", sku: "PEA_SHOOTS_TRAY", name: "Pea Shoots — Live Tray", priceCents: 3000, unit: "tray", active: true, sort: 4 },
+        { _id: "fallback-5", sku: "MIXED_SUNFLOWER_TRAY", name: "Mixed Sunflower — Live Tray", priceCents: 3100, unit: "tray", active: true, sort: 5 },
+        { _id: "fallback-6", sku: "RED_AMARANTH_TRAY", name: "Red Amaranth Microgreens — Live Tray", priceCents: 3200, unit: "tray", active: true, sort: 6 },
+      ];
+      
+      return data && Array.isArray(data) ? data : fallbackProducts;
+    }, [data]);
 
   function addToCart(p: Product) {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");

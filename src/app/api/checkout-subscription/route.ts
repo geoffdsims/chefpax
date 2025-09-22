@@ -4,10 +4,14 @@ import Stripe from "stripe";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-08-27.basil" }) : null;
 
 export async function POST(req: Request) {
   try {
+    if (!stripe) {
+      return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
+    }
+    
     const session = await getServerSession(authOptions);
     const body = await req.json().catch(() => ({}));
     const priceId = process.env.STRIPE_SUB_PRICE_ID!;
@@ -15,7 +19,7 @@ export async function POST(req: Request) {
 
     const customerEmail = session?.user?.email ?? body?.email;
     const metadata: Record<string, string> = {};
-    if (session?.user?.id) metadata.userId = session.user.id;
+    if (session?.user && (session.user as { id?: string }).id) metadata.userId = (session.user as { id: string }).id;
 
     const checkout = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -29,8 +33,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ url: checkout.url });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("checkout-subscription error:", err);
-    return NextResponse.json({ error: err.message || "Server error" }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Server error" }, { status: 500 });
   }
 }

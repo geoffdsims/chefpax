@@ -9,7 +9,8 @@ import {
   Divider,
   AppBar,
   Toolbar,
-  IconButton
+  IconButton,
+  Box
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import Link from "next/link";

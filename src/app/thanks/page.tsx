@@ -2,8 +2,9 @@
 import { useSearchParams } from "next/navigation";
 import { Container, Typography, Button, Stack, Box } from "@mui/material";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default function Thanks() {
+function ThanksContent() {
   const params = useSearchParams();
   const d = params.get("d") ? new Date(params.get("d")!) : null;
 
@@ -106,5 +107,13 @@ export default function Thanks() {
         </Stack>
       </Stack>
     </Container>
+  );
+}
+
+export default function Thanks() {
+  return (
+    <Suspense fallback={<Container sx={{ py: 8, textAlign: "center" }}><Typography>Loading...</Typography></Container>}>
+      <ThanksContent />
+    </Suspense>
   );
 }
