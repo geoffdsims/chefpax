@@ -5,21 +5,12 @@ import type { Product } from "@/lib/schema";
 
 export async function GET() {
   try {
-    const db = await getDb();
-    const products = await db.collection<Product>("products")
-      .find({ active: true })
-      .sort({ sort: 1 })
-      .toArray();
-    
-    // If no products in DB, return calculated inventory
-    if (products.length === 0) {
-      return NextResponse.json(getProductsWithInventory());
-    }
-    
-    return NextResponse.json(products);
+    // Always use calculated inventory for Texas cottage exemption compliance
+    // This ensures we only show live trays, no harvested products
+    return NextResponse.json(getProductsWithInventory());
   } catch (error) {
-    // Fallback to calculated inventory if DB fails
-    console.error("Database error, using calculated inventory:", error);
+    // Fallback to calculated inventory if anything fails
+    console.error("Error getting products, using calculated inventory:", error);
     return NextResponse.json(getProductsWithInventory());
   }
 }

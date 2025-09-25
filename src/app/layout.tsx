@@ -6,7 +6,12 @@ import SessionProvider from "@/components/SessionProvider";
 
 export const metadata: Metadata = { 
   title: "ChefPax — Fresh Hydroponic Microgreens", 
-  description: "Preorder by Wednesday, delivered Friday in Austin." 
+  description: "Order anytime, choose your delivery. Fresh microgreens delivered to Austin.",
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

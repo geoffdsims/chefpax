@@ -115,88 +115,124 @@ export function getProductsWithInventory() {
 
   return [
     {
-      sku: "CHEFPAX_4OZ",
-      name: "ChefPax Mix — 4 oz",
-      priceCents: 700,
-      unit: "clamshell" as const,
+      sku: "CHEFPAX_MIX_LIVE_TRAY",
+      name: "ChefPax Mix Live Tray (10×20)",
+      priceCents: 3500,
+      unit: "tray" as const,
       active: true,
       sort: 1,
-      category: "mix" as const,
+      category: "live_tray" as const,
       variety: "mixed" as const,
-      sizeOz: 4,
-      weeklyCapacity: inventory.chefMix4oz,
-      currentWeekAvailable: inventory.chefMix4oz,
-      photoUrl: "/images/microgeens/chefPax_mix.png"
-    },
-    {
-      sku: "SUNFLOWER_2OZ",
-      name: "Sunflower Microgreens — 2 oz",
-      priceCents: 500,
-      unit: "clamshell" as const,
-      active: true,
-      sort: 2,
-      category: "single" as const,
-      variety: "sunflower" as const,
-      sizeOz: 2,
-      weeklyCapacity: inventory.sunflower2oz,
-      currentWeekAvailable: inventory.sunflower2oz,
-      photoUrl: "/images/sunflower.png"
-    },
-    {
-      sku: "PEA_2OZ",
-      name: "Pea Shoots — 2 oz",
-      priceCents: 500,
-      unit: "clamshell" as const,
-      active: true,
-      sort: 3,
-      category: "single" as const,
-      variety: "pea" as const,
-      sizeOz: 2,
-      weeklyCapacity: inventory.pea2oz,
-      currentWeekAvailable: inventory.pea2oz,
-      photoUrl: "/images/pea_shoots.png"
-    },
-    {
-      sku: "RADISH_2OZ",
-      name: "Radish Microgreens — 2 oz",
-      priceCents: 500,
-      unit: "clamshell" as const,
-      active: true,
-      sort: 4,
-      category: "single" as const,
-      variety: "radish" as const,
-      sizeOz: 2,
-      weeklyCapacity: inventory.radish2oz,
-      currentWeekAvailable: inventory.radish2oz,
-      photoUrl: "/images/radish_saxa2.png"
+      sizeOz: 200, // 10x20 tray
+      weeklyCapacity: 2, // 2 mixed trays per week
+      currentWeekAvailable: 2,
+      photoUrl: "/images/microgeens/chefPax_mix.png",
+      description: "Our signature ChefPax mix grown together in one live tray. 6-10 harvests of pea shoots, sunflower, and radish microgreens. Cut fresh as needed for maximum nutrition."
     },
     {
       sku: "PEA_LIVE_TRAY",
       name: "Live Tray — Pea Shoots (10×20)",
-      priceCents: 3000,
+      priceCents: 2500, // Lower price - high yield, easy to grow
       unit: "tray" as const,
       active: true,
-      sort: 5,
+      sort: 2,
       category: "live_tray" as const,
       variety: "pea" as const,
       sizeOz: 200, // 10x20 tray
       weeklyCapacity: inventory.liveTrays.pea,
       currentWeekAvailable: inventory.liveTrays.pea,
-      photoUrl: "/images/pea_shoots.png"
+      photoUrl: "/images/pea_shoots.png",
+      description: "Fresh pea shoots grown hydroponically in live trays. High yield variety - cut fresh as needed for maximum nutrition and longevity."
     },
     {
       sku: "RADISH_LIVE_TRAY",
       name: "Live Tray — Radish (10×20)",
-      priceCents: 3000,
+      priceCents: 2800, // Slightly higher - moderate yield, popular variety
       unit: "tray" as const,
       active: true,
-      sort: 6,
+      sort: 3,
       category: "live_tray" as const,
       variety: "radish" as const,
       sizeOz: 200, // 10x20 tray
       weeklyCapacity: inventory.liveTrays.radish,
       currentWeekAvailable: inventory.liveTrays.radish,
-      photoUrl: "/images/radish_saxa2.png"
+      photoUrl: "/images/radish_saxa2.png",
+      description: "Spicy radish microgreens grown hydroponically in live trays. Cut fresh as needed for maximum nutrition and longevity."
+    },
+    {
+      sku: "SUNFLOWER_LIVE_TRAY",
+      name: "Live Tray — Sunflower (10×20)",
+      priceCents: 3200, // Higher price - moderate yield, premium taste
+      unit: "tray" as const,
+      active: true,
+      sort: 4,
+      category: "live_tray" as const,
+      variety: "sunflower" as const,
+      sizeOz: 200, // 10x20 tray
+      weeklyCapacity: 2, // Add some sunflower live trays
+      currentWeekAvailable: 2,
+      photoUrl: "/images/sunflower.png",
+      description: "Nutty sunflower microgreens grown hydroponically in live trays. Premium variety - cut fresh as needed for maximum nutrition and longevity."
+    },
+    {
+      sku: "AMARANTH_LIVE_TRAY",
+      name: "Live Tray — Amaranth (10×20)",
+      priceCents: 4500, // Premium price - low yield, high seed cost, unique color
+      unit: "tray" as const,
+      active: true,
+      sort: 5,
+      category: "live_tray" as const,
+      variety: "amaranth" as const,
+      sizeOz: 200, // 10x20 tray
+      weeklyCapacity: 1, // Add amaranth live trays
+      currentWeekAvailable: 1,
+      photoUrl: "/images/amaranth_dreads.png",
+      description: "Colorful amaranth microgreens grown hydroponically in live trays. Luxe variety with vibrant color - cut fresh as needed for maximum nutrition and longevity."
+    },
+    {
+      sku: "CHEFPAX_PREMIUM_MIX_LIVE_TRAY",
+      name: "Luxe ChefPax Mix Live Tray (10×20)",
+      priceCents: 5500, // Premium pricing for brand growth
+      unit: "tray" as const,
+      active: true,
+      sort: 6,
+      category: "premium_live_tray" as const,
+      variety: "mixed" as const,
+      sizeOz: 200, // 10x20 tray
+      weeklyCapacity: 1, // Limited premium mixed trays
+      currentWeekAvailable: 1,
+      photoUrl: "/images/microgeens/chefPax_mix.png",
+      description: "Luxe ChefPax mix curated for brand growth. 6-10 harvests of our finest microgreens grown together in live trays. Perfect for Instagram-worthy dishes and culinary excellence."
+    },
+    {
+      sku: "PEA_PREMIUM_LIVE_TRAY",
+      name: "Luxe Live Tray — Pea Shoots (10×20)",
+      priceCents: 4000, // Premium pricing for brand growth
+      unit: "tray" as const,
+      active: true,
+      sort: 7,
+      category: "premium_live_tray" as const,
+      variety: "pea" as const,
+      sizeOz: 200, // 10x20 tray
+      weeklyCapacity: 1, // Limited premium trays
+      currentWeekAvailable: 1,
+      photoUrl: "/images/pea_shoots.png",
+      description: "Luxe pea shoots curated for brand growth. Perfect for elevating your culinary presentation and growing your brand reputation."
+    },
+    {
+      sku: "RADISH_PREMIUM_LIVE_TRAY",
+      name: "Luxe Live Tray — Radish (10×20)",
+      priceCents: 4200, // Premium pricing for brand growth
+      unit: "tray" as const,
+      active: true,
+      sort: 8,
+      category: "premium_live_tray" as const,
+      variety: "radish" as const,
+      sizeOz: 200, // 10x20 tray
+      weeklyCapacity: 1, // Limited premium trays
+      currentWeekAvailable: 1,
+      photoUrl: "/images/radish_saxa2.png",
+      description: "Luxe radish microgreens curated for brand growth. Perfect for elevating your culinary presentation and growing your brand reputation."
     }
   ];
 }

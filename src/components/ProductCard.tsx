@@ -16,33 +16,40 @@ interface Product {
   currentWeekAvailable?: number;
 }
 
+interface AvailabilityStatus {
+  status: "sold_out" | "low_stock" | "in_stock";
+  message: string;
+}
+
 interface ProductCardProps {
   p: Product;
   onAdd: (p: Product) => void;
+  availability?: AvailabilityStatus | null;
 }
 
 // Get the appropriate image for each product
 const getProductImage = (sku: string) => {
   switch (sku) {
-    case 'SUNFLOWER_2OZ':
-      return '/images/sunflower.png';
-    case 'CHEFPAX_4OZ':
+    case 'CHEFPAX_MIX_LIVE_TRAY':
+    case 'CHEFPAX_PREMIUM_MIX_LIVE_TRAY':
       return '/images/microgeens/chefPax_mix.png';
-    case 'PEA_2OZ':
-      return '/images/pea_shoots.png';
-    case 'RADISH_2OZ':
-      return '/images/radish_saxa2.png';
     case 'PEA_LIVE_TRAY':
+    case 'PEA_PREMIUM_LIVE_TRAY':
       return '/images/pea_shoots.png';
     case 'RADISH_LIVE_TRAY':
+    case 'RADISH_PREMIUM_LIVE_TRAY':
       return '/images/radish_saxa2.png';
+    case 'SUNFLOWER_LIVE_TRAY':
+      return '/images/sunflower.png';
+    case 'AMARANTH_LIVE_TRAY':
+      return '/images/amaranth_dreads.png';
     default:
       return '/images/microgeens/chefPax_mix.png';
   }
 };
 
 
-export default function ProductCard({ p, onAdd }: ProductCardProps) {
+export default function ProductCard({ p, onAdd, availability }: ProductCardProps) {
   return (
     <Card 
       sx={{ 
@@ -134,7 +141,7 @@ export default function ProductCard({ p, onAdd }: ProductCardProps) {
               <Typography
                 variant="h6"
                 sx={{
-                  fontFamily: 'Playfair Display, serif',
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                   fontWeight: 600,
                   color: 'primary.main',
                   lineHeight: 1.3,
@@ -156,74 +163,74 @@ export default function ProductCard({ p, onAdd }: ProductCardProps) {
                 sx={{
                   fontSize: '0.8rem',
                   lineHeight: 1.4,
-                  mb: 2
+                  mb: 2,
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
                 }}
               >
-                {p.unit === 'tray' ? 'Live growing tray • 10×20 inches' : 'Fresh clamshell • Ready to enjoy'}
+                {p.unit === 'tray' ? 'Live growing tray • 10×20 inches • Cut as needed' : 'Fresh clamshell • Ready to enjoy'}
               </Typography>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      fontWeight: 700,
+                      color: 'primary.main',
+                      fontSize: '1.3rem'
+                    }}
+                  >
+                    ${(p.priceCents/100).toFixed(2)}
+                  </Typography>
+                </Box>
                 <Typography
-                  variant="h5"
+                  variant="body2"
                   sx={{
-                    fontFamily: 'Playfair Display, serif',
-                    fontWeight: 700,
-                    color: 'primary.main',
-                    fontSize: '1.3rem'
+                    color: 'success.main',
+                    fontWeight: 600,
+                    fontSize: '0.8rem',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                    border: '1px solid rgba(76, 175, 80, 0.3)',
+                    display: 'inline-block',
+                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
                   }}
                 >
-                  ${(p.priceCents/100).toFixed(2)}
+                  ${((p.priceCents * 0.9)/100).toFixed(2)} with subscription
                 </Typography>
+              </Box>
                 
                 {/* Availability indicator */}
-                {p.currentWeekAvailable !== undefined && (
+                {availability && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {p.currentWeekAvailable > 0 ? (
-                      <>
-                        <Box
-                          sx={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            backgroundColor: 'success.main'
-                          }}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: 'success.main',
-                            fontWeight: 600,
-                            fontSize: '0.7rem'
-                          }}
-                        >
-                          {p.currentWeekAvailable} available
-                        </Typography>
-                      </>
-                    ) : (
-                      <>
-                        <Box
-                          sx={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            backgroundColor: 'error.main'
-                          }}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: 'error.main',
-                            fontWeight: 600,
-                            fontSize: '0.7rem'
-                          }}
-                        >
-                          Sold out
-                        </Typography>
-                      </>
-                    )}
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        backgroundColor: 
+                          availability.status === 'sold_out' ? 'error.main' :
+                          availability.status === 'low_stock' ? 'warning.main' : 'success.main'
+                      }}
+                    />
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 
+                          availability.status === 'sold_out' ? 'error.main' :
+                          availability.status === 'low_stock' ? 'warning.main' : 'success.main',
+                        fontWeight: 600,
+                        fontSize: '0.7rem',
+                        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                      }}
+                    >
+                      {availability.message}
+                    </Typography>
                   </Box>
                 )}
-              </Box>
             </CardContent>
 
       <CardActions sx={{ p: 3, pt: 1 }}>
@@ -233,16 +240,16 @@ export default function ProductCard({ p, onAdd }: ProductCardProps) {
           fullWidth
           startIcon={<AddShoppingCart />}
           size="large"
-          disabled={p.currentWeekAvailable !== undefined && p.currentWeekAvailable <= 0}
+          disabled={availability?.status === 'sold_out'}
           sx={{
             py: 2,
             fontSize: '1rem',
             fontWeight: 600,
-            opacity: (p.currentWeekAvailable !== undefined && p.currentWeekAvailable <= 0) ? 0.6 : 1
+            opacity: availability?.status === 'sold_out' ? 0.6 : 1
           }}
         >
-          {p.currentWeekAvailable !== undefined && p.currentWeekAvailable <= 0 
-            ? 'Sold Out This Week' 
+          {availability?.status === 'sold_out' 
+            ? 'Sold Out' 
             : 'Add to Cart'
           }
         </Button>

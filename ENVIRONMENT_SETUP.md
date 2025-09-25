@@ -13,7 +13,7 @@ MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/chefpax?retryWr
 MONGODB_DB="chefpax"
 
 # NextAuth Configuration
-NEXTAUTH_URL="http://localhost:3001"         # change to https://chefpax.com in prod
+NEXTAUTH_URL="http://localhost:3000"         # change to https://chefpax.com in prod
 NEXTAUTH_SECRET="long_random_string"         # generate with: openssl rand -base64 32
 
 # Google OAuth (for user accounts)
@@ -34,7 +34,7 @@ CHEFPAX_CUTOFF_TIME="18:00"
 CHEFPAX_DELIVERY_DOW="5"
 
 # Base URL for development/production
-NEXT_PUBLIC_BASE_URL="http://localhost:3001"
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 ```
 
 ## Setup Steps
@@ -50,7 +50,7 @@ NEXT_PUBLIC_BASE_URL="http://localhost:3001"
 3. Enable Google+ API
 4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
 5. Add authorized redirect URIs:
-   - `http://localhost:3001/api/auth/callback/google` (development)
+   - `http://localhost:3000/api/auth/callback/google` (development)
    - `https://chefpax.com/api/auth/callback/google` (production)
 6. Copy Client ID and Secret to `.env.local`
 
@@ -77,7 +77,7 @@ For immediate testing without full setup:
 # Create minimal .env.local
 echo 'MONGODB_URI=""' >> .env.local
 echo 'NEXTAUTH_SECRET="dev-secret-key"' >> .env.local
-echo 'NEXT_PUBLIC_BASE_URL="http://localhost:3001"' >> .env.local
+echo 'NEXT_PUBLIC_BASE_URL="http://localhost:3000"' >> .env.local
 ```
 
 The app will work with calculated inventory but won't have user accounts or subscriptions.

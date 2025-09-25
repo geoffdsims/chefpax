@@ -31,10 +31,36 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
+    const loadCart = () => {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      }
+    };
+
+    // Load cart on mount
+    loadCart();
+
+    // Listen for storage changes (when cart is updated from other components)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "cart") {
+        loadCart();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Also listen for custom cart update events
+    const handleCartUpdate = () => {
+      loadCart();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
   }, []);
 
   const removeFromCart = (productId: string) => {
@@ -90,8 +116,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
       ) : (
         <>
           <List>
-            {cart.map((item) => (
-              <ListItem key={item.productId} sx={{ px: 0 }}>
+            {cart.map((item, index) => (
+              <ListItem key={`${item.productId}-${index}`} sx={{ px: 0 }}>
                 <ListItemText
                   primary={item.name}
                   secondary={`$${(item.priceCents/100).toFixed(2)} each`}

@@ -10,10 +10,17 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Box
+  Box,
+  Card,
+  CardContent,
+  FormControlLabel,
+  Checkbox,
+  Alert,
+  Chip
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import Link from "next/link";
+import { useSession, signIn } from "next-auth/react";
 
 interface CartItem {
   productId: string;
@@ -23,6 +30,7 @@ interface CartItem {
 }
 
 export default function CartPage() {
+  const { data: session } = useSession();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customer, setCustomer] = useState({
     name: "",
@@ -34,20 +42,71 @@ export default function CartPage() {
     state: "TX",
     zip: ""
   });
+  const [isSubscription, setIsSubscription] = useState(false);
+  const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<string>("");
+  const [deliveryOptions, setDeliveryOptions] = useState<{ date: string; message: string }[]>([]);
 
   useEffect(() => {
-    setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
+    const loadCart = () => {
+      setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
+    };
+
+    // Load cart on mount
+    loadCart();
+
+    // Listen for cart updates
+    const handleCartUpdate = () => {
+      loadCart();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
+    // Load delivery options
+    fetch("/api/delivery-options")
+      .then(res => res.json())
+      .then(data => {
+        setDeliveryOptions(data);
+        if (data.length > 0) {
+          setSelectedDeliveryDate(data[0].date);
+        }
+      })
+      .catch(err => console.error("Failed to load delivery options:", err));
+
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
   }, []);
 
   const subtotal = cart.reduce((a, c) => a + c.priceCents * c.qty, 0);
+  const discount = isSubscription ? subtotal * 0.1 : 0; // 10% discount for subscriptions
   const delivery = 500; // $5.00
-  const total = subtotal + delivery;
+  const total = subtotal - discount + delivery;
+
+  const handleSubscriptionChange = (checked: boolean) => {
+    if (checked && !session) {
+      // If user wants to subscribe but isn't signed in, prompt for authentication
+      signIn();
+      return;
+    }
+    setIsSubscription(checked);
+  };
 
   async function checkout() {
+    // If user selected subscription but isn't signed in, prompt for sign in
+    if (isSubscription && !session) {
+      signIn();
+      return;
+    }
+
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cart, customer })
+      body: JSON.stringify({ 
+        cart, 
+        customer, 
+        deliveryDate: selectedDeliveryDate,
+        isSubscription: isSubscription && !!session // Only pass true if user is signed in
+      })
     });
     const { url, error } = await res.json();
     if (url) {
@@ -92,7 +151,7 @@ export default function CartPage() {
           border: '1px solid rgba(0,0,0,0.05)'
         }}>
           {cart.map((c, i) => (
-            <Stack direction="row" key={i} justifyContent="space-between" mb={2}>
+            <Stack direction="row" key={`${c.productId}-${i}`} justifyContent="space-between" mb={2}>
               <Typography variant="body1" fontWeight={500}>{c.name} × {c.qty}</Typography>
               <Typography variant="body1" fontWeight={600} color="primary.main">
                 ${(c.priceCents * c.qty / 100).toFixed(2)}
@@ -107,6 +166,13 @@ export default function CartPage() {
             <Typography variant="body1">${(subtotal / 100).toFixed(2)}</Typography>
           </Stack>
           
+          {isSubscription && (
+            <Stack direction="row" justifyContent="space-between" mb={1}>
+              <Typography variant="body1" color="success.main">Subscription Discount (10%):</Typography>
+              <Typography variant="body1" color="success.main">-${(discount / 100).toFixed(2)}</Typography>
+            </Stack>
+          )}
+          
           <Stack direction="row" justifyContent="space-between" mb={1}>
             <Typography variant="body1">Delivery:</Typography>
             <Typography variant="body1">${(delivery / 100).toFixed(2)}</Typography>
@@ -120,6 +186,156 @@ export default function CartPage() {
               ${(total / 100).toFixed(2)}
             </Typography>
           </Stack>
+        </Box>
+
+        {/* Delivery Date Selection */}
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontFamily: 'Playfair Display, serif',
+            color: 'primary.main',
+            mb: 3,
+            textAlign: 'center'
+          }}
+        >
+          Delivery Options
+        </Typography>
+        
+        <Box sx={{ 
+          backgroundColor: 'background.paper',
+          borderRadius: 2,
+          p: 4,
+          mb: 4,
+          border: '1px solid rgba(0,0,0,0.05)'
+        }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+            Choose Your Delivery Date
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Select when you'd like your fresh microgreens delivered. Order anytime - no cutoff times!
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+            gap: 2,
+            mb: 3
+          }}>
+            {deliveryOptions.map((option) => (
+              <Card 
+                key={option.date}
+                sx={{ 
+                  cursor: 'pointer',
+                  border: selectedDeliveryDate === option.date ? 2 : 1,
+                  borderColor: selectedDeliveryDate === option.date ? 'primary.main' : 'divider',
+                  opacity: option.available ? 1 : 0.6
+                }}
+                onClick={() => option.available && setSelectedDeliveryDate(option.date)}
+              >
+                <CardContent sx={{ p: 2 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    {new Date(option.date).toLocaleDateString('en-US', { 
+                      weekday: 'short', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {option.deliveryWindow}
+                  </Typography>
+                  <Typography variant="caption" display="block" color="text.secondary">
+                    Order anytime
+                  </Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <Chip 
+                      label={option.available ? "Available" : "Full"} 
+                      color={option.available ? "success" : "error"}
+                      size="small"
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+          
+          {selectedDeliveryDate && (
+            <Alert severity="info">
+              Selected delivery: {new Date(selectedDeliveryDate).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </Alert>
+          )}
+        </Box>
+
+        {/* Subscription Option */}
+        <Box sx={{ 
+          backgroundColor: 'background.paper',
+          borderRadius: 2,
+          p: 4,
+          mb: 4,
+          border: '1px solid rgba(0,0,0,0.05)'
+        }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isSubscription}
+                onChange={(e) => handleSubscriptionChange(e.target.checked)}
+                color="primary"
+                disabled={!session && !isSubscription}
+              />
+            }
+            label={
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Subscribe & Save 10%
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Get this order delivered weekly and save 10% on every delivery. 
+                  You can pause, skip, or cancel anytime.
+                </Typography>
+                {!session && (
+                  <Typography variant="body2" color="primary.main" sx={{ mt: 1, fontWeight: 500 }}>
+                    Sign in required to create subscription
+                  </Typography>
+                )}
+              </Box>
+            }
+          />
+          
+          {isSubscription && session && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              <Typography variant="body2">
+                <strong>Great choice, {session.user?.name || 'there'}!</strong> You'll save ${(discount / 100).toFixed(2)} on this order 
+                and 10% on all future deliveries. Manage your subscription in your account.
+              </Typography>
+            </Alert>
+          )}
+          
+          {!session && (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                <strong>Want to subscribe?</strong> Sign in to create your subscription and save 10% on all orders. 
+                You'll also get access to your order history and subscription management.
+              </Typography>
+              <Button 
+                variant="contained" 
+                onClick={() => signIn()}
+                size="small"
+                sx={{ mr: 2 }}
+              >
+                Sign In
+              </Button>
+              <Button 
+                variant="outlined" 
+                onClick={() => setIsSubscription(false)}
+                size="small"
+              >
+                Continue as Guest
+              </Button>
+            </Alert>
+          )}
         </Box>
 
         <Typography 
@@ -197,7 +413,7 @@ export default function CartPage() {
             variant="contained" 
             size="large" 
             onClick={checkout}
-            disabled={!customer.name || !customer.email || !customer.address1 || !customer.city || !customer.state || !customer.zip}
+            disabled={!customer.name || !customer.email || !customer.address1 || !customer.city || !customer.state || !customer.zip || !selectedDeliveryDate}
             sx={{
               backgroundColor: 'primary.main',
               color: 'white',

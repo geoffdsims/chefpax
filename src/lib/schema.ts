@@ -60,5 +60,82 @@ export type Order = {
   subtotalCents: number;
   totalCents: number;
   userId?: string;            // NextAuth user ID
+  orderType: "one_time" | "subscription"; // New field
+  subscriptionId?: string;    // If part of subscription
+};
+
+export type Subscription = {
+  _id?: string;
+  userId: string;
+  status: "active" | "paused" | "cancelled";
+  frequency: "weekly" | "biweekly" | "monthly";
+  deliveryDay: number;        // 0-6 (Sunday-Saturday)
+  nextDeliveryDate: string;   // ISO date
+  items: OrderItem[];
+  deliveryFeeCents: number;
+  createdAt: string;
+  updatedAt: string;
+  stripeSubscriptionId?: string;
+  autoRenew: boolean;
+};
+
+export type DeliveryOption = {
+  date: string;               // ISO date
+  available: boolean;
+  cutoffTime: string;         // "18:00"
+  deliveryWindow: string;     // "9:00-13:00"
+  capacityUsed: number;       // Percentage of capacity used
+  maxCapacity: number;        // Max orders for this delivery
+  currentOrders: number;      // Current orders placed
+};
+
+export type InventoryForecast = {
+  week: string;               // "2024-W01"
+  deliveryDate: string;       // ISO date
+  available: {
+    [sku: string]: {
+      available: number;
+      reserved: number;
+      total: number;
+    };
+  };
+  production: WeeklyProduction;
+};
+
+export type UserProfile = {
+  _id?: string;
+  userId: string;             // NextAuth user ID
+  email: string;
+  name: string;
+  phone?: string;
+  defaultDeliveryAddress: {
+    address1: string;
+    address2?: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  deliveryPreferences: {
+    preferredDay: number;     // 0-6 (Sunday-Saturday)
+    deliveryWindow: string;   // "9:00-13:00"
+    deliveryInstructions?: string;
+    autoRenew: boolean;
+  };
+  subscriptionDiscount: number; // Percentage discount for subscribers
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AuthProvider = "google" | "apple" | "email";
+
+export type UserSession = {
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    image?: string;
+    provider: AuthProvider;
+  };
+  profile?: UserProfile;
 };
 

@@ -3,7 +3,6 @@
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { keyframes, styled } from "@mui/material/styles";
 import Link from "next/link";
-import { useState } from "react";
 
 // 6s Ken Burns (subtle zoom + drift)
 const panZoom = keyframes`
@@ -30,23 +29,9 @@ const AnimatedBg = styled("div")(() => ({
 }));
 
 export default function HeroLoop() {
-  const [loading, setLoading] = useState(false);
-
-  async function handleSubscribe() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/checkout-subscription", { method: "POST" });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert(data.error || "Unable to start subscription");
-      }
-      } catch {
-        alert("Error starting subscription");
-      } finally {
-      setLoading(false);
-    }
+  function handleSubscribe() {
+    // Redirect to shop page where users can select subscription option
+    window.location.href = "/shop";
   }
 
   return (
@@ -101,28 +86,12 @@ export default function HeroLoop() {
             variant="h6"
             sx={{ opacity: 0.95, textShadow: "0 1px 12px rgba(0,0,0,0.4)" }}
           >
-            Fresh • Hydroponic • Local — Preorder by Wednesday, Delivered Friday
+            Fresh • Hydroponic • Local — Order Anytime, Choose Your Delivery
           </Typography>
 
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mt={1}>
             <Button
-              component={Link}
-              href="/shop"
-              size="large"
-              variant="contained"
-              sx={{
-                px: 4,
-                borderRadius: "999px",
-                backgroundColor: "#1E5631",
-                boxShadow: "0 8px 24px rgba(30,86,49,0.35)",
-                ":hover": { backgroundColor: "#194A2A" },
-              }}
-            >
-              Pre-Order Now
-            </Button>
-            <Button
               onClick={handleSubscribe}
-              disabled={loading}
               size="large"
               variant="contained"
               sx={{
@@ -135,11 +104,26 @@ export default function HeroLoop() {
                 fontWeight: 600,
               }}
             >
-              {loading ? "Loading..." : "Subscribe Weekly"}
+              Subscribe Weekly
             </Button>
             <Button
               component={Link}
-              href="/about"
+              href="/shop"
+              size="large"
+              variant="outlined"
+              sx={{
+                px: 4,
+                borderRadius: "999px",
+                borderColor: "rgba(255,255,255,0.65)",
+                color: "#fff",
+                ":hover": { borderColor: "#fff", backgroundColor: "rgba(255,255,255,0.06)" },
+              }}
+            >
+              View Products
+            </Button>
+            <Button
+              component={Link}
+              href="/how-it-works"
               size="large"
               variant="outlined"
               sx={{
