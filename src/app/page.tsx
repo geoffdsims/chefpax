@@ -351,6 +351,15 @@ function FeatureCard({
   isActive: boolean;
   onHover: (index: number | null) => void;
 }) {
+  const handleCardInteraction = () => {
+    // Toggle the card state on click/tap
+    if (isActive) {
+      onHover(null);
+    } else {
+      onHover(index);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -358,6 +367,7 @@ function FeatureCard({
       transition={{ delay: index * 0.2 }}
       onHoverStart={() => onHover(index)}
       onHoverEnd={() => onHover(null)}
+      onClick={handleCardInteraction}
     >
       <Card
         sx={{
@@ -378,6 +388,24 @@ function FeatureCard({
             ? "0 20px 40px rgba(0, 0, 0, 0.3)"
             : "0 4px 20px rgba(0, 0, 0, 0.1)",
           backdropFilter: "blur(10px)",
+          // Add mobile tap feedback
+          "&:active": {
+            transform: "scale(0.98)",
+          },
+          // Show tap hint on mobile
+          "@media (hover: none)": {
+            "&:before": {
+              content: '"Tap to learn more"',
+              position: "absolute",
+              bottom: "8px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              fontSize: "0.75rem",
+              opacity: 0.7,
+              color: "white",
+              pointerEvents: "none",
+            }
+          }
         }}
       >
         <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
