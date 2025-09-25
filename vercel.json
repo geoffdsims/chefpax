@@ -1,0 +1,26 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "chefpax.shop"
+        }
+      ],
+      "destination": "/shop",
+      "permanent": false
+    },
+    {
+      "source": "/((?!shop|api|_next|favicon.ico).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "chefpax.shop"
+        }
+      ],
+      "destination": "/shop",
+      "permanent": false
+    }
+  ]
+}
