@@ -49,6 +49,39 @@ const AnimatedFeatureBg = styled("div")(() => ({
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
 
+  // Consistent button styling
+  const primaryButtonStyle = {
+    px: 4,
+    py: 2,
+    borderRadius: "999px",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    color: "#2D5016",
+    fontWeight: 600,
+    fontSize: "1.1rem",
+    "&:hover": {
+      backgroundColor: "white",
+      transform: "translateY(-2px)",
+      boxShadow: "0 8px 25px rgba(0, 0, 0, 0.2)",
+    },
+    transition: "all 0.3s ease",
+  };
+
+  const secondaryButtonStyle = {
+    px: 4,
+    py: 2,
+    borderRadius: "999px",
+    borderColor: "rgba(255, 255, 255, 0.8)",
+    color: "white",
+    fontWeight: 600,
+    fontSize: "1.1rem",
+    "&:hover": {
+      borderColor: "white",
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      transform: "translateY(-2px)",
+    },
+    transition: "all 0.3s ease",
+  };
+
   const features = [
     {
       icon: "🌱",
@@ -213,21 +246,7 @@ export default function Home() {
                 href="/shop"
                 size="large"
                 variant="contained"
-                sx={{
-                  px: 4,
-                  py: 2,
-                  borderRadius: "999px",
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  color: "#2D5016",
-                  fontWeight: 600,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "white",
-                    transform: "translateY(-2px)",
-                    boxShadow: "0 8px 25px rgba(0, 0, 0, 0.2)",
-                  },
-                  transition: "all 0.3s ease",
-                }}
+                sx={primaryButtonStyle}
               >
                 View Products
               </Button>
@@ -236,21 +255,7 @@ export default function Home() {
                 href="/how-it-works"
                 size="large"
                 variant="outlined"
-                sx={{
-                  px: 4,
-                  py: 2,
-                  borderRadius: "999px",
-                  borderColor: "rgba(255, 255, 255, 0.8)",
-                  color: "white",
-                  fontWeight: 600,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    transform: "translateY(-2px)",
-                  },
-                  transition: "all 0.3s ease",
-                }}
+                sx={secondaryButtonStyle}
               >
                 How It Works
               </Button>
@@ -314,21 +319,7 @@ export default function Home() {
               href="/shop"
               variant="contained"
               size="large"
-              sx={{
-                px: 6,
-                py: 2,
-                borderRadius: "999px",
-                backgroundColor: "white",
-                color: "#2D5016",
-                fontSize: "1.1rem",
-                fontWeight: 600,
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  transform: "translateY(-2px)",
-                  boxShadow: "0 8px 25px rgba(0, 0, 0, 0.2)",
-                },
-                transition: "all 0.3s ease",
-              }}
+              sx={primaryButtonStyle}
             >
               Start Your Order
             </Button>
@@ -475,21 +466,22 @@ function FeatureCard({
 
                 {/* Shop Now Button */}
                 <Button
+                  component={Link}
+                  href="/shop"
                   variant="contained"
                   size="small"
-                  href="/shop"
                   sx={{
                     px: 3,
                     py: 1,
-                    borderRadius: 4,
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    color: "white",
+                    borderRadius: "999px",
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    color: "#2D5016",
                     fontSize: "0.9rem",
                     fontWeight: 600,
-                    border: "1px solid rgba(255, 255, 255, 0.3)",
                     "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.3)",
-                      boxShadow: "0 4px 15px rgba(255, 255, 255, 0.2)",
+                      backgroundColor: "white",
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
                     },
                     transition: "all 0.3s ease",
                   }}
