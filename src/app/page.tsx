@@ -192,7 +192,7 @@ export default function Home() {
             >
               <AnimatedFeatureBg
                 style={{
-                  backgroundImage: "url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')",
+                  backgroundImage: "url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')",
                 }}
               />
             </motion.div>
@@ -202,21 +202,13 @@ export default function Home() {
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2 }}>
           <Box sx={{ textAlign: "center", mb: 4 }}>
             {/* Logo and Header */}
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 3 }}>
-              <Image
-                src="/logo.png"
-                alt="ChefPax Logo"
-                width={80}
-                height={80}
-                style={{ marginRight: "16px" }}
-              />
+            <Box sx={{ textAlign: "center", mb: 3 }}>
               <Typography
                 variant="h3"
                 sx={{
                   fontSize: { xs: "2rem", md: "2.5rem" },
                   fontWeight: 600,
                   fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  margin: 0,
                 }}
               >
                 Why Choose ChefPax?
