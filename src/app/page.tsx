@@ -49,35 +49,19 @@ const AnimatedFeatureBg = styled("div")(() => ({
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
 
-  // Consistent button styling
-  const primaryButtonStyle = {
-    px: 4,
-    py: 2,
-    borderRadius: "999px",
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    color: "#2D5016",
-    fontWeight: 600,
-    fontSize: "1.1rem",
-    "&:hover": {
-      backgroundColor: "white",
-      transform: "translateY(-2px)",
-      boxShadow: "0 8px 25px rgba(0, 0, 0, 0.2)",
-    },
-    transition: "all 0.3s ease",
-  };
-
-  const secondaryButtonStyle = {
-    px: 4,
-    py: 2,
-    borderRadius: "999px",
-    borderColor: "rgba(255, 255, 255, 0.8)",
+  // Consistent button styling - matching original Shop Now button
+  const shopNowButtonStyle = {
+    px: 3,
+    py: 1,
+    borderRadius: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     color: "white",
+    fontSize: "0.9rem",
     fontWeight: 600,
-    fontSize: "1.1rem",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
     "&:hover": {
-      borderColor: "white",
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      transform: "translateY(-2px)",
+      backgroundColor: "rgba(255, 255, 255, 0.3)",
+      boxShadow: "0 4px 15px rgba(255, 255, 255, 0.2)",
     },
     transition: "all 0.3s ease",
   };
@@ -246,7 +230,7 @@ export default function Home() {
                 href="/shop"
                 size="large"
                 variant="contained"
-                sx={primaryButtonStyle}
+                sx={shopNowButtonStyle}
               >
                 View Products
               </Button>
@@ -254,8 +238,8 @@ export default function Home() {
                 component={Link}
                 href="/how-it-works"
                 size="large"
-                variant="outlined"
-                sx={secondaryButtonStyle}
+                variant="contained"
+                sx={shopNowButtonStyle}
               >
                 How It Works
               </Button>
@@ -319,7 +303,7 @@ export default function Home() {
               href="/shop"
               variant="contained"
               size="large"
-              sx={primaryButtonStyle}
+              sx={shopNowButtonStyle}
             >
               Start Your Order
             </Button>
@@ -470,21 +454,7 @@ function FeatureCard({
                   href="/shop"
                   variant="contained"
                   size="small"
-                  sx={{
-                    px: 3,
-                    py: 1,
-                    borderRadius: "999px",
-                    backgroundColor: "rgba(255, 255, 255, 0.9)",
-                    color: "#2D5016",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                    "&:hover": {
-                      backgroundColor: "white",
-                      transform: "translateY(-2px)",
-                      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-                    },
-                    transition: "all 0.3s ease",
-                  }}
+                  sx={shopNowButtonStyle}
                 >
                   Shop Now
                 </Button>
