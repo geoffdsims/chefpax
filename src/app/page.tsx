@@ -192,7 +192,7 @@ export default function Home() {
             >
               <AnimatedFeatureBg
                 style={{
-                  backgroundImage: "url('https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')",
+                  backgroundImage: "url('https://images.unsplash.com/photo-1559181567-c3190ca9959b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')",
                 }}
               />
             </motion.div>
