@@ -203,27 +203,13 @@ export default function Home() {
           <Box sx={{ textAlign: "center", mb: 4 }}>
             {/* Logo and Header */}
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 3 }}>
-              <Box
-                sx={{
-                  width: 80,
-                  height: 80,
-                  marginRight: 2,
-                  position: "relative",
-                  "& img": {
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain",
-                    filter: "brightness(0) invert(1)",
-                  }
-                }}
-              >
-                <Image
-                  src="/images/chefPax_logo.png"
-                  alt="ChefPax Logo"
-                  width={80}
-                  height={80}
-                />
-              </Box>
+              <Image
+                src="/images/chefPax_logo.png"
+                alt="ChefPax Logo"
+                width={80}
+                height={80}
+                style={{ marginRight: "16px" }}
+              />
               <Typography
                 variant="h3"
                 sx={{
