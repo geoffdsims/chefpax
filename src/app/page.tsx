@@ -46,25 +46,25 @@ const AnimatedFeatureBg = styled("div")(() => ({
   },
 }));
 
+// Consistent button styling - matching original Shop Now button
+const shopNowButtonStyle = {
+  px: 3,
+  py: 1,
+  borderRadius: 4,
+  backgroundColor: "rgba(255, 255, 255, 0.2)",
+  color: "white",
+  fontSize: "0.9rem",
+  fontWeight: 600,
+  border: "1px solid rgba(255, 255, 255, 0.3)",
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    boxShadow: "0 4px 15px rgba(255, 255, 255, 0.2)",
+  },
+  transition: "all 0.3s ease",
+};
+
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
-
-  // Consistent button styling - matching original Shop Now button
-  const shopNowButtonStyle = {
-    px: 3,
-    py: 1,
-    borderRadius: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    color: "white",
-    fontSize: "0.9rem",
-    fontWeight: 600,
-    border: "1px solid rgba(255, 255, 255, 0.3)",
-    "&:hover": {
-      backgroundColor: "rgba(255, 255, 255, 0.3)",
-      boxShadow: "0 4px 15px rgba(255, 255, 255, 0.2)",
-    },
-    transition: "all 0.3s ease",
-  };
 
   const features = [
     {
