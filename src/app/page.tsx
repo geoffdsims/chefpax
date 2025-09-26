@@ -340,8 +340,8 @@ function FeatureCard({
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.2 }}
-      onHoverStart={() => onHover(index)}
-      onHoverEnd={() => onHover(null)}
+      onMouseEnter={() => onHover(index)}
+      onMouseLeave={() => onHover(null)}
       onClick={handleCardInteraction}
     >
       <Card
@@ -369,7 +369,8 @@ function FeatureCard({
           },
           // Show tap hint on mobile
           "@media (hover: none)": {
-            "&:before": {
+            position: "relative",
+            "&::before": {
               content: '"Tap to learn more"',
               position: "absolute",
               bottom: "8px",
