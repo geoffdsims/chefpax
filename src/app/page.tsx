@@ -100,7 +100,11 @@ export default function Home() {
       <Box
         sx={{
           position: "relative",
-          py: 8,
+          py: { xs: 4, md: 6 },
+          minHeight: { xs: "auto", md: "100vh" },
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
           background: activeFeature === 0
             ? "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)" // Hydroponic - Green
             : activeFeature === 1
@@ -196,19 +200,28 @@ export default function Home() {
         </Box>
 
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2 }}>
-          <Box sx={{ textAlign: "center", mb: 6 }}>
-            
-            <Typography
-              variant="h3"
-              sx={{
-                fontSize: { xs: "2rem", md: "2.5rem" },
-                fontWeight: 600,
-                mb: 3,
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              }}
-            >
-              Why Choose ChefPax?
-            </Typography>
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            {/* Logo and Header */}
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 3 }}>
+              <Image
+                src="/images/chefPax_logo.png"
+                alt="ChefPax Logo"
+                width={80}
+                height={80}
+                style={{ marginRight: "16px" }}
+              />
+              <Typography
+                variant="h3"
+                sx={{
+                  fontSize: { xs: "2rem", md: "2.5rem" },
+                  fontWeight: 600,
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  margin: 0,
+                }}
+              >
+                Why Choose ChefPax?
+              </Typography>
+            </Box>
             <Typography
               variant="h6"
               sx={{
@@ -216,7 +229,7 @@ export default function Home() {
                 maxWidth: "600px",
                 mx: "auto",
                 lineHeight: 1.6,
-                mb: 4,
+                mb: 3,
                 fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
               }}
             >
@@ -270,7 +283,7 @@ export default function Home() {
       {/* CTA Section */}
       <Box
         sx={{
-          py: 8,
+          py: { xs: 4, md: 6 },
           background: "linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)",
           color: "white",
         }}
