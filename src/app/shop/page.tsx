@@ -165,115 +165,226 @@ export default function Shop() {
 
   return (
     <>
-      <AppBar position="static" elevation={0}>
-        <Toolbar sx={{ minHeight: '80px' }}>
-          <Typography 
-            variant="h6" 
-            component={Link} 
-            href="/" 
-            sx={{ 
-              flexGrow: 1, 
-              fontWeight: 600,
-              textDecoration: 'none',
-              color: 'inherit',
-              fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              '&:hover': {
-                color: 'primary.main'
-              }
-            }}
-          >
-            ChefPax
-          </Typography>
-          
-          {/* Navigation buttons */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 2 }}>
-            <Button 
+      {/* Modern Header */}
+      <Box
+        sx={{
+          background: "linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)",
+          color: "white",
+          py: 2,
+          position: "sticky",
+          top: 0,
+          zIndex: 1000,
+          backdropFilter: "blur(10px)",
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Typography 
+              variant="h5" 
               component={Link} 
-              href="/shop" 
-              variant="text" 
-              size="small"
+              href="/" 
               sx={{ 
+                fontWeight: 600,
+                textDecoration: 'none',
+                color: 'white',
                 fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontWeight: 600
+                '&:hover': {
+                  opacity: 0.8
+                }
               }}
             >
-              Shop Now
-            </Button>
-            <Button 
-              onClick={() => setSelectedTab(1)}
-              variant="text" 
-              size="small"
-              sx={{ 
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontWeight: 600
-              }}
-            >
-              Subscriptions
-            </Button>
-          </Box>
-          
-          {/* Auth buttons */}
-          {session ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Button component={Link} href="/account" variant="text" size="small">
-                Account
+              ChefPax
+            </Typography>
+            
+            {/* Navigation buttons */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Button 
+                component={Link} 
+                href="/shop" 
+                variant="contained"
+                size="small"
+                sx={{ 
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontWeight: 600,
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  }
+                }}
+              >
+                Shop Now
               </Button>
-              <Button onClick={() => signOut()} variant="text" size="small">
-                Sign Out
+              <Button 
+                onClick={() => setSelectedTab(1)}
+                variant="outlined"
+                size="small"
+                sx={{ 
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontWeight: 600,
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                  color: "white",
+                  "&:hover": {
+                    borderColor: "white",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  }
+                }}
+              >
+                Subscriptions
+              </Button>
+              
+              {/* Auth buttons */}
+              {session ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Button component={Link} href="/account" variant="text" size="small" sx={{ color: "white" }}>
+                    Account
+                  </Button>
+                  <Button onClick={() => signOut()} variant="text" size="small" sx={{ color: "white" }}>
+                    Sign Out
+                  </Button>
+                </Box>
+              ) : (
+                <Button onClick={() => signIn()} variant="text" size="small" sx={{ color: "white" }}>
+                  Sign In
+                </Button>
+              )}
+              
+              <IconButton onClick={() => setCartOpen(true)} sx={{ color: 'white' }}>
+                <ShoppingCart />
+              </IconButton>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Hero Section */}
+      <Box
+        sx={{
+          background: "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)",
+          color: "white",
+          py: { xs: 6, md: 8 },
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <Typography 
+              variant="h3" 
+              sx={{ 
+                fontSize: { xs: "2rem", md: "2.5rem" },
+                fontWeight: 600, 
+                mb: 2,
+                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+              }}
+            >
+              Live Microgreen Trays
+            </Typography>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                opacity: 0.9,
+                maxWidth: "600px",
+                mx: "auto",
+                mb: 4,
+                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+              }}
+            >
+              Elevate your culinary brand with fresh, live microgreen trays delivered to your kitchen
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
+
+      <Container sx={{ py: 6 }}>
+        {/* Tabs Section */}
+        <Box sx={{ mb: 6 }}>
+          
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+            <Box
+              sx={{
+                backgroundColor: "rgba(0, 0, 0, 0.05)",
+                borderRadius: "999px",
+                p: 0.5,
+                display: "flex",
+                gap: 0.5,
+              }}
+            >
+              <Button
+                onClick={() => setSelectedTab(0)}
+                variant={selectedTab === 0 ? "contained" : "text"}
+                sx={{
+                  borderRadius: "999px",
+                  px: 4,
+                  py: 1.5,
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontWeight: 600,
+                  ...(selectedTab === 0 && {
+                    backgroundColor: "#4CAF50",
+                    color: "white",
+                    boxShadow: "0 2px 8px rgba(76, 175, 80, 0.3)",
+                  }),
+                  ...(selectedTab !== 0 && {
+                    color: "#666",
+                    "&:hover": {
+                      backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    }
+                  })
+                }}
+              >
+                <CalendarToday sx={{ mr: 1 }} />
+                Shop Now
+              </Button>
+              <Button
+                onClick={() => setSelectedTab(1)}
+                variant={selectedTab === 1 ? "contained" : "text"}
+                sx={{
+                  borderRadius: "999px",
+                  px: 4,
+                  py: 1.5,
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontWeight: 600,
+                  ...(selectedTab === 1 && {
+                    backgroundColor: "#4CAF50",
+                    color: "white",
+                    boxShadow: "0 2px 8px rgba(76, 175, 80, 0.3)",
+                  }),
+                  ...(selectedTab !== 1 && {
+                    color: "#666",
+                    "&:hover": {
+                      backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    }
+                  })
+                }}
+              >
+                <Repeat sx={{ mr: 1 }} />
+                Subscriptions
               </Button>
             </Box>
-          ) : (
-            <Button onClick={() => signIn()} variant="text" size="small">
-              Sign In
-            </Button>
-          )}
-          
-          <IconButton onClick={() => setCartOpen(true)} sx={{ color: 'text.primary' }}>
-            <ShoppingCart />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
-      <Container sx={{ py: 8 }}>
-        {/* Header with tabs */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" gutterBottom sx={{ 
-            fontWeight: 600, 
-            textAlign: 'center',
-            fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-          }}>
-            Live Microgreen Trays - Elevate Your Brand
-          </Typography>
-          
-          <Tabs 
-            value={selectedTab} 
-            onChange={(_, newValue) => setSelectedTab(newValue)}
-            centered
-            sx={{ mb: 4 }}
-          >
-            <Tab 
-              icon={<CalendarToday />} 
-              label="Shop Now" 
-              iconPosition="start"
-            />
-            <Tab 
-              icon={<Repeat />} 
-              label="Subscriptions" 
-              iconPosition="start"
-            />
-          </Tabs>
+          </Box>
         </Box>
 
         {/* Delivery Info Banner */}
         {selectedTab === 0 && (
-          <Alert severity="info" sx={{ mb: 4 }}>
-            <Typography variant="body2" sx={{
-              fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+          <Box
+            sx={{
+              background: "linear-gradient(135deg, #E8F5E8 0%, #F1F8E9 100%)",
+              borderRadius: 3,
+              p: 3,
+              mb: 4,
+              border: "1px solid rgba(76, 175, 80, 0.2)",
+            }}
+          >
+            <Typography variant="body1" sx={{
+              fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              color: "#2E7D32",
+              fontWeight: 500,
+              textAlign: "center",
             }}>
               <strong>Elevate your culinary brand!</strong> Order anytime and choose your preferred delivery date. 
               Live microgreen trays delivered to help you create Instagram-worthy dishes and grow your reputation.
             </Typography>
-          </Alert>
+          </Box>
         )}
 
         {/* Products Grid */}
