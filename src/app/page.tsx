@@ -208,23 +208,20 @@ export default function Home() {
                   width: 80,
                   height: 80,
                   marginRight: 2,
-                  borderRadius: 2,
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  backdropFilter: "blur(10px)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  position: "relative",
+                  "& img": {
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    filter: "brightness(0) invert(1)",
+                  }
                 }}
               >
                 <Image
                   src="/images/chefPax_logo.png"
                   alt="ChefPax Logo"
-                  width={60}
-                  height={60}
-                  style={{ 
-                    filter: "brightness(0) invert(1)",
-                  }}
+                  width={80}
+                  height={80}
                 />
               </Box>
               <Typography
