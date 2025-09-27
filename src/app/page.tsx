@@ -406,15 +406,27 @@ function FeatureCard({
                 height: "80px",
               }}
             >
-              <Image
-                src={feature.icon}
-                alt={feature.title}
-                width={60}
-                height={60}
-                style={{
-                  objectFit: "contain"
-                }}
-              />
+              {feature.icon.endsWith('.svg') ? (
+                <img
+                  src={feature.icon}
+                  alt={feature.title}
+                  width={60}
+                  height={60}
+                  style={{
+                    objectFit: "contain"
+                  }}
+                />
+              ) : (
+                <Image
+                  src={feature.icon}
+                  alt={feature.title}
+                  width={60}
+                  height={60}
+                  style={{
+                    objectFit: "contain"
+                  }}
+                />
+              )}
             </Box>
           </motion.div>
 
