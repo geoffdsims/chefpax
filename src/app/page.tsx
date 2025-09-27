@@ -76,7 +76,7 @@ export default function Home() {
       backgroundImage: "url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
     },
     {
-      icon: "/images/austinChefPack.png",
+      icon: "/chefpax-delivery.svg",
       title: "Flexible Delivery",
       description: "Order anytime and choose your preferred delivery day. Live trays delivered when it's convenient for you.",
       detail: "Skip the grocery store lines. We bring live microgreen trays directly to your door on your schedule.",
@@ -84,7 +84,7 @@ export default function Home() {
       backgroundImage: "url('https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
     },
     {
-      icon: "/images/sunflower.png",
+      icon: "/chefpax-grow-brand.svg",
       title: "Grow Your Brand",
       description: "Premium live trays that elevate your culinary brand. From home chefs to professional kitchens, we help you stand out.",
       detail: "Our luxe microgreen offerings help restaurants and home cooks create Instagram-worthy dishes that grow their brand and reputation.",
