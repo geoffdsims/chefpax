@@ -406,27 +406,20 @@ function FeatureCard({
                 height: "80px",
               }}
             >
-              {feature.icon.endsWith('.svg') ? (
-                <img
-                  src={feature.icon}
-                  alt={feature.title}
-                  width={60}
-                  height={60}
-                  style={{
-                    objectFit: "contain"
-                  }}
-                />
-              ) : (
-                <Image
-                  src={feature.icon}
-                  alt={feature.title}
-                  width={60}
-                  height={60}
-                  style={{
-                    objectFit: "contain"
-                  }}
-                />
-              )}
+              <img
+                src={feature.icon}
+                alt={feature.title}
+                width={60}
+                height={60}
+                style={{
+                  objectFit: "contain",
+                  border: "1px solid red" // Debug border to see if image loads
+                }}
+                onError={(e) => {
+                  console.error('Failed to load image:', feature.icon);
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             </Box>
           </motion.div>
 
