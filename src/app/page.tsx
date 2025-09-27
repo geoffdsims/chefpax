@@ -412,12 +412,7 @@ function FeatureCard({
                 width={60}
                 height={60}
                 style={{
-                  objectFit: "contain",
-                  border: "1px solid red" // Debug border to see if image loads
-                }}
-                onError={(e) => {
-                  console.error('Failed to load image:', feature.icon);
-                  e.currentTarget.style.display = 'none';
+                  objectFit: "contain"
                 }}
               />
             </Box>
