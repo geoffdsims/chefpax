@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <!-- chef hat -->
+  <path d="M7 10.5V9.2a3.8 3.8 0 0 1 10 0v1.3" />
+  <rect x="7" y="10.5" width="10" height="2.3" rx="1" />
+  <path d="M8 12.8V15c0 .6.4 1 1 1h6c.6 0 1-.4 1-1v-2.2" />
+  <!-- growth arrow -->
+  <path d="M4 16.5l3.5-3.5 2.5 2.5 5-5 2.5 2.5" />
+  <path d="M17.5 8.5h3v3" />
+</svg>

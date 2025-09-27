@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <!-- truck body -->
+  <rect x="3" y="9" width="9" height="7" rx="1.5" />
+  <!-- cab -->
+  <path d="M12 10h3.8a2 2 0 0 1 1.7.9l2 3.1a2 2 0 0 1 .3 1v1h-4" />
+  <!-- bed line -->
+  <path d="M3 16h12" />
+  <!-- wheels -->
+  <circle cx="7.5" cy="18" r="1.8" />
+  <circle cx="16.5" cy="18" r="1.8" />
+  <!-- motion accent -->
+  <path d="M2.5 12h2.5" />
+  <path d="M2 14.5h3" />
+</svg>
