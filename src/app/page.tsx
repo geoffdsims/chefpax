@@ -68,7 +68,7 @@ export default function Home() {
 
   const features = [
     {
-      icon: "🌱",
+      icon: "/images/microgeens/chefPax_mix.png",
       title: "Live Growing Trays",
       description: "Fresh microgreens delivered as live growing trays. Cut as needed for maximum nutrition and longevity.",
       detail: "Our hydroponic systems grow microgreens to peak stage, then deliver them live so you can harvest 6-10 times per tray.",
@@ -76,7 +76,7 @@ export default function Home() {
       backgroundImage: "url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
     },
     {
-      icon: "🚚",
+      icon: "/images/austinChefPack.png",
       title: "Flexible Delivery",
       description: "Order anytime and choose your preferred delivery day. Live trays delivered when it's convenient for you.",
       detail: "Skip the grocery store lines. We bring live microgreen trays directly to your door on your schedule.",
@@ -84,7 +84,7 @@ export default function Home() {
       backgroundImage: "url('https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
     },
     {
-      icon: "👨‍🍳",
+      icon: "/images/sunflower.png",
       title: "Grow Your Brand",
       description: "Premium live trays that elevate your culinary brand. From home chefs to professional kitchens, we help you stand out.",
       detail: "Our luxe microgreen offerings help restaurants and home cooks create Instagram-worthy dishes that grow their brand and reputation.",
@@ -399,14 +399,23 @@ function FeatureCard({
           >
             <Box
               sx={{
-                color: "white",
                 mb: 2,
                 display: "flex",
                 justifyContent: "center",
-                fontSize: "3rem",
+                alignItems: "center",
+                height: "80px",
               }}
             >
-              {feature.icon}
+              <Image
+                src={feature.icon}
+                alt={feature.title}
+                width={60}
+                height={60}
+                style={{
+                  filter: "brightness(0) invert(1)",
+                  objectFit: "contain"
+                }}
+              />
             </Box>
           </motion.div>
 
