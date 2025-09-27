@@ -412,7 +412,6 @@ function FeatureCard({
                 width={60}
                 height={60}
                 style={{
-                  filter: "brightness(0) invert(1)",
                   objectFit: "contain"
                 }}
               />
