@@ -68,7 +68,7 @@ export default function Home() {
 
   const features = [
     {
-      icon: "/images/microgeens/chefPax_mix.png",
+      icon: "/chefpax-live-tray.svg",
       title: "Live Growing Trays",
       description: "Fresh microgreens delivered as live growing trays. Cut as needed for maximum nutrition and longevity.",
       detail: "Our hydroponic systems grow microgreens to peak stage, then deliver them live so you can harvest 6-10 times per tray.",
