@@ -9,9 +9,11 @@ import { authOptions } from "@/lib/authOptions";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { cart, customer } = body as {
+  const { cart, customer, marketingOptIn = false, createAccount = false } = body as {
     cart: { productId: string; qty: number }[];
-    customer: { name: string; email: string; phone?: string; address1: string; address2?: string; city: string; state: string; zip: string };
+    customer: { name: string; email: string; phone?: string; address1: string; address2?: string; city: string; state: string; zip: string; deliveryInstructions?: string };
+    marketingOptIn?: boolean;
+    createAccount?: boolean;
   };
 
   if (!cart?.length) return NextResponse.json({ error: "Empty cart" }, { status: 400 });
@@ -64,6 +66,9 @@ export async function POST(req: Request) {
     zip: customer.zip,
     name: customer.name,
     phone: customer.phone ?? "",
+    deliveryInstructions: customer.deliveryInstructions ?? "",
+    marketingOptIn: marketingOptIn.toString(),
+    createAccount: createAccount.toString(),
     cart: JSON.stringify(cart),
   };
   
@@ -80,6 +85,34 @@ export async function POST(req: Request) {
     customer_email: customer.email,
     metadata,
   });
+
+  // Create guest order record for tracking (if not authenticated)
+  if (!authSession?.user) {
+    try {
+      const totalAmount = line_items.reduce((sum, item) => {
+        return sum + (item.quantity * (item.price_data?.unit_amount || 0));
+      }, 0);
+
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/guest-orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: customer.email,
+          stripeSessionId: session.id,
+          orderData: {
+            customer,
+            cart,
+            totalAmount,
+            deliveryDate: deliveryDate.toISOString(),
+          },
+          marketingOptIn,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to create guest order record:", error);
+      // Don't fail checkout if guest tracking fails
+    }
+  }
 
   return NextResponse.json({ url: session.url });
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getDb } from "@/lib/mongo";
+import { calculateOrderTimeline } from "@/lib/orderLifecycle";
 import type { Order } from "@/lib/schema";
 
 export async function POST(req: Request) {
@@ -39,6 +40,9 @@ export async function POST(req: Request) {
     const subtotalCents = items.reduce((a: number, it: { priceCents: number; qty: number }) => a + it.priceCents * it.qty, 0);
     const totalCents = subtotalCents + deliveryFeeCents;
 
+    const orderDate = new Date();
+    const deliveryDate = new Date(meta.deliveryDate);
+    
     const order: Order & { userId?: string } = {
       status: "paid",
       customerName: meta.name,
@@ -57,11 +61,62 @@ export async function POST(req: Request) {
       subtotalCents,
       totalCents,
       userId: meta.userId, // Include user ID if present
+      orderType: "one_time", // Default for now
+      // Initialize order lifecycle
+      lifecycle: calculateOrderTimeline(orderDate, deliveryDate),
+      deliveryInstructions: meta.deliveryInstructions,
+      trackingNumber: `CP${Date.now().toString().slice(-8)}`, // Generate tracking number
     };
 
     const db = await getDb();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.collection("orders").insertOne(order as any);
+
+    // Post-purchase processing
+    try {
+      // Award loyalty points if user is authenticated
+      if (meta.userId) {
+        const pointsPerDollar = parseInt(process.env.LOYALTY_POINTS_PER_DOLLAR || "1");
+        const pointsToAward = Math.round((totalCents / 100) * pointsPerDollar);
+        
+        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/loyalty`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: meta.userId,
+            points: pointsToAward,
+            source: "purchase",
+            description: `Points earned from order ${s.id}`,
+            orderId: s.id,
+          }),
+        });
+      }
+
+      // Add to email marketing if opted in
+      if (meta.marketingOptIn === "true") {
+        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/marketing/subscribe`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: order.email,
+            firstName: order.customerName.split(" ")[0],
+            lastName: order.customerName.split(" ").slice(1).join(" "),
+            tags: ["customer", "first-order"],
+            source: "checkout",
+            subscriptionTier: meta.userId ? "basic" : undefined,
+          }),
+        });
+      }
+
+      // Link guest order if it exists
+      if (!meta.userId && meta.createAccount === "true") {
+        // This will be handled when user creates account
+        // Guest order is already tracked and ready for linking
+      }
+    } catch (error) {
+      console.error("Post-purchase processing error:", error);
+      // Don't fail the webhook if post-processing fails
+    }
   }
 
   return NextResponse.json({ received: true });

@@ -42,7 +42,7 @@ export type OrderItem = {
 
 export type Order = {
   _id?: string;
-  status: "paid" | "delivered" | "refunded";
+  status: "paid" | "processing" | "growing" | "ready" | "out_for_delivery" | "delivered" | "refunded";
   customerName: string;
   email: string;
   phone?: string;
@@ -60,8 +60,48 @@ export type Order = {
   subtotalCents: number;
   totalCents: number;
   userId?: string;            // NextAuth user ID
-  orderType: "one_time" | "subscription"; // New field
+  orderType: "one_time" | "subscription";
   subscriptionId?: string;    // If part of subscription
+  // Enhanced tracking fields
+  lifecycle: OrderLifecycle;
+  trackingNumber?: string;    // For delivery tracking
+  estimatedDeliveryTime?: string; // "10:30 AM - 12:30 PM"
+  deliveryInstructions?: string;
+  specialNotes?: string;
+};
+
+// Detailed order lifecycle tracking
+export type OrderLifecycle = {
+  stages: OrderStage[];
+  currentStage: string;
+  startDate: string;          // When order processing began
+  estimatedCompletion: string; // When order will be delivered
+  lastUpdated: string;
+};
+
+export type OrderStage = {
+  id: string;
+  name: string;
+  description: string;
+  status: "pending" | "active" | "completed";
+  startDate?: string;
+  endDate?: string;
+  estimatedDuration: number;  // in hours
+  icon: string;              // Icon for UI
+  color: string;             // Color theme
+  details?: string;          // Additional details
+};
+
+// Microgreen-specific growth stages
+export type MicrogreenStage = {
+  productId: string;
+  productName: string;
+  currentStage: "seeded" | "sprouting" | "growing" | "ready" | "harvested" | "delivered";
+  stageProgress: number;     // 0-100%
+  daysFromSeeding: number;
+  expectedHarvestDate: string;
+  growthNotes?: string;
+  photos?: string[];         // Progress photos
 };
 
 export type Subscription = {
@@ -137,5 +177,74 @@ export type UserSession = {
     provider: AuthProvider;
   };
   profile?: UserProfile;
+};
+
+// Guest Order Tracking
+export type GuestOrder = {
+  _id?: string;
+  email: string;
+  stripeSessionId: string;
+  orderData: {
+    customer: CustomerData;
+    cart: any[];
+    totalAmount: number;
+    deliveryDate: string;
+  };
+  createdAt: string;
+  linkedToAccount?: string; // When user creates account
+  marketingOptIn: boolean;
+};
+
+// Enhanced Customer Data
+export type CustomerData = {
+  email: string;
+  name: string;
+  phone?: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  zip: string;
+  deliveryInstructions?: string;
+  preferredDeliveryDay?: string;
+  marketingOptIn: boolean;
+  source: "guest" | "google" | "apple" | "email";
+  firstOrderDate?: string;
+  totalOrders?: number;
+};
+
+// Subscription Tiers
+export type SubscriptionTier = {
+  name: "basic" | "premium" | "pro";
+  discount: number;
+  freeDelivery: boolean;
+  prioritySupport: boolean;
+  exclusiveProducts: string[];
+  loyaltyMultiplier: number;
+};
+
+// Loyalty Program
+export type LoyaltyTransaction = {
+  _id?: string;
+  userId: string;
+  type: "earn" | "redeem";
+  points: number;
+  source: "purchase" | "subscription" | "referral" | "bonus" | "redemption";
+  orderId?: string;
+  description: string;
+  createdAt: string;
+};
+
+// Email Marketing
+export type EmailListMember = {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  tags: string[];
+  source: string;
+  subscriptionTier?: string;
+  loyaltyPoints?: number;
+  lastOrderDate?: string;
+  createdAt: string;
 };
 

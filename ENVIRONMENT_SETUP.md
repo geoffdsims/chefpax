@@ -35,6 +35,24 @@ CHEFPAX_DELIVERY_DOW="5"
 
 # Base URL for development/production
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+
+# Email Marketing Configuration
+MAILCHIMP_API_KEY="your_mailchimp_api_key"
+MAILCHIMP_LIST_ID="your_mailchimp_list_id"
+MAILCHIMP_SERVER_PREFIX="us1"  # e.g., us1, us2, etc.
+SENDGRID_API_KEY="your_sendgrid_api_key"
+SENDGRID_FROM_EMAIL="hello@chefpax.com"
+
+# Loyalty Program Configuration
+LOYALTY_POINTS_PER_DOLLAR="1"
+LOYALTY_POINTS_PER_SUBSCRIPTION="50"
+LOYALTY_REDEMPTION_THRESHOLD="100"
+LOYALTY_BONUS_MULTIPLIER_SUBSCRIPTION="1.5"
+
+# Subscription Tiers
+SUBSCRIPTION_BASIC_DISCOUNT="10"
+SUBSCRIPTION_PREMIUM_DISCOUNT="15"
+SUBSCRIPTION_PRO_DISCOUNT="20"
 ```
 
 ## Setup Steps
