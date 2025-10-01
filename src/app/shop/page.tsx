@@ -333,7 +333,6 @@ export default function Shop() {
         sx={{
           background: "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)",
           color: "white",
-          py: { xs: 6, md: 8 },
           position: "relative",
           overflow: "hidden",
         }}
