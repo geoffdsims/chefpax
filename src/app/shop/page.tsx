@@ -103,6 +103,7 @@ export default function Shop() {
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [accountTab, setAccountTab] = useState(0);
   const [rotatingTextIndex, setRotatingTextIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const { data: session } = useSession();
 
   // Rotating text sentences
@@ -111,10 +112,14 @@ export default function Shop() {
     "Order anytime! Choose your delivery date. Create Instagram-worthy dishes with live microgreen trays."
   ];
 
-  // Rotate text every 4 seconds
+  // Rotate text every 4 seconds with smooth transition
   useEffect(() => {
     const interval = setInterval(() => {
-      setRotatingTextIndex((prevIndex) => (prevIndex + 1) % rotatingTexts.length);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setRotatingTextIndex((prevIndex) => (prevIndex + 1) % rotatingTexts.length);
+        setIsTransitioning(false);
+      }, 250); // Half of transition duration
     }, 4000);
 
     return () => clearInterval(interval);
@@ -258,17 +263,6 @@ export default function Shop() {
             {/* Navigation buttons */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               
-              {/* Shop Now Button */}
-              <Button
-                variant="text"
-                size="small"
-                startIcon={<ShoppingCart />}
-                onClick={() => setSelectedTab(0)}
-                sx={{ color: "white" }}
-              >
-                Shop Now
-              </Button>
-
               {/* Subscriptions Button */}
               <Button
                 variant="text"
@@ -411,6 +405,7 @@ export default function Shop() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                opacity: isTransitioning ? 0 : 1,
                 transition: "opacity 0.5s ease-in-out",
               }}
             >
