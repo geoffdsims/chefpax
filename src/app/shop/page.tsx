@@ -22,9 +22,24 @@ import {
   Select,
   MenuItem,
   Alert,
-  Divider
+  Divider,
+  Menu,
+  ListItemIcon,
+  ListItemText
 } from "@mui/material";
-import { ShoppingCart, CalendarToday, Repeat, TrendingUp } from "@mui/icons-material";
+import { 
+  ShoppingCart, 
+  CalendarToday, 
+  Repeat, 
+  TrendingUp,
+  AccountCircle,
+  Person,
+  Settings,
+  History,
+  Loyalty,
+  Notifications,
+  ExitToApp
+} from "@mui/icons-material";
 import { useSession, signIn, signOut } from "next-auth/react";
 import ProductCard from "@/components/ProductCard";
 import CartDrawer from "@/components/CartDrawer";
@@ -76,7 +91,16 @@ export default function Shop() {
   const [cartOpen, setCartOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [inventoryForecast, setInventoryForecast] = useState<InventoryForecast | null>(null);
+  const [accountMenuAnchor, setAccountMenuAnchor] = useState<null | HTMLElement>(null);
   const { data: session } = useSession();
+
+  const handleAccountMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAccountMenuAnchor(event.currentTarget);
+  };
+
+  const handleAccountMenuClose = () => {
+    setAccountMenuAnchor(null);
+  };
 
     const products = React.useMemo(() => {
       // Fallback products if API fails - Live trays only for Texas cottage exemption compliance
@@ -202,12 +226,74 @@ export default function Shop() {
               {/* Auth buttons */}
               {session ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Button component={Link} href="/account" variant="text" size="small" sx={{ color: "white" }}>
+                  <Button 
+                    onClick={handleAccountMenuOpen}
+                    variant="text" 
+                    size="small" 
+                    startIcon={<AccountCircle />}
+                    sx={{ color: "white" }}
+                  >
                     Account
                   </Button>
-                  <Button onClick={() => signOut()} variant="text" size="small" sx={{ color: "white" }}>
-                    Sign Out
-                  </Button>
+                  <Menu
+                    anchorEl={accountMenuAnchor}
+                    open={Boolean(accountMenuAnchor)}
+                    onClose={handleAccountMenuClose}
+                    PaperProps={{
+                      sx: {
+                        mt: 1.5,
+                        minWidth: 200,
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                        borderRadius: 2,
+                      }
+                    }}
+                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  >
+                    <MenuItem component={Link} href="/account" onClick={handleAccountMenuClose}>
+                      <ListItemIcon>
+                        <Person fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Profile</ListItemText>
+                    </MenuItem>
+                    <MenuItem component={Link} href="/orders" onClick={handleAccountMenuClose}>
+                      <ListItemIcon>
+                        <History fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Order History</ListItemText>
+                    </MenuItem>
+                    <MenuItem component={Link} href="/subscriptions" onClick={handleAccountMenuClose}>
+                      <ListItemIcon>
+                        <Repeat fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Subscriptions</ListItemText>
+                    </MenuItem>
+                    <MenuItem component={Link} href="/loyalty" onClick={handleAccountMenuClose}>
+                      <ListItemIcon>
+                        <Loyalty fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Loyalty Points</ListItemText>
+                    </MenuItem>
+                    <MenuItem component={Link} href="/notifications" onClick={handleAccountMenuClose}>
+                      <ListItemIcon>
+                        <Notifications fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Notifications</ListItemText>
+                    </MenuItem>
+                    <MenuItem component={Link} href="/settings" onClick={handleAccountMenuClose}>
+                      <ListItemIcon>
+                        <Settings fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Settings</ListItemText>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={() => { signOut(); handleAccountMenuClose(); }}>
+                      <ListItemIcon>
+                        <ExitToApp fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Sign Out</ListItemText>
+                    </MenuItem>
+                  </Menu>
                 </Box>
               ) : (
                 <Button onClick={() => signIn()} variant="text" size="small" sx={{ color: "white" }}>
