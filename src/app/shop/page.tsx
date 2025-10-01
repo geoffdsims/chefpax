@@ -369,27 +369,14 @@ export default function Shop() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Box
+            <Card
+              elevation={1}
               sx={{
-                background: "linear-gradient(135deg, rgba(45, 80, 22, 0.02) 0%, rgba(76, 175, 80, 0.02) 100%)",
-                borderRadius: 3,
-                p: 4,
-                mb: 4,
-                border: "1px solid rgba(45, 80, 22, 0.1)",
                 textAlign: "center",
-                position: "relative",
-                overflow: "hidden",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "2px",
-                  background: "linear-gradient(90deg, #2D5016 0%, #4CAF50 50%, #2D5016 100%)",
-                }
+                mb: 4,
               }}
             >
+              <CardContent sx={{ p: 4 }}>
               <div>
                 <Typography 
                   variant="h3" 
@@ -425,7 +412,8 @@ export default function Shop() {
                   {rotatingTexts[rotatingTextIndex]}
                 </Typography>
               </div>
-            </Box>
+              </CardContent>
+            </Card>
           </motion.div>
         )}
 
@@ -465,26 +453,19 @@ export default function Shop() {
 
         {/* Subscription Tab Content */}
         {selectedTab === 1 && (
-          <div>
-            <Box
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card
+              elevation={1}
               sx={{
-                background: "linear-gradient(135deg, rgba(45, 80, 22, 0.02) 0%, rgba(76, 175, 80, 0.02) 100%)",
-                borderRadius: 4,
-                p: 5,
-                border: "1px solid rgba(45, 80, 22, 0.1)",
-                position: "relative",
-                overflow: "hidden",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "2px",
-                  background: "linear-gradient(90deg, #2D5016 0%, #4CAF50 50%, #2D5016 100%)",
-                }
+                textAlign: "center",
+                mb: 4,
               }}
             >
+              <CardContent sx={{ p: 4 }}>
               <div>
                 <Typography 
                   variant="h4" 
@@ -583,8 +564,9 @@ export default function Shop() {
                   Continue as Guest (One-Time Orders)
                 </Button>
               </Box>
-            </Box>
-          </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         )}
 
 
