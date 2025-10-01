@@ -242,6 +242,40 @@ export default function Shop() {
             {/* Navigation buttons */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               
+              {/* Shop Now Button */}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => setSelectedTab(0)}
+                sx={{
+                  color: 'white',
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  '&:hover': {
+                    borderColor: 'white',
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                  },
+                }}
+              >
+                Shop Now
+              </Button>
+
+              {/* Subscriptions Button */}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => setSelectedTab(1)}
+                sx={{
+                  color: 'white',
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  '&:hover': {
+                    borderColor: 'white',
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                  },
+                }}
+              >
+                Subscriptions
+              </Button>
+              
               {/* Auth buttons */}
               {session ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
