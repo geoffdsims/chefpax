@@ -12,6 +12,11 @@ export type Product = {
   sizeOz?: number;              // 2, 4, or 10x20 for trays
   weeklyCapacity?: number;      // Max units available per week
   currentWeekAvailable?: number; // Available this week (calculated)
+  // Subscription settings
+  subscriptionEnabled: boolean; // Whether this product can be subscribed to
+  subscriptionPriceCents?: number; // Special subscription price (if different from regular price)
+  stripeSubscriptionPriceId?: string; // Stripe Price ID for subscriptions
+  subscriptionDiscount?: number; // Percentage discount for subscriptions (10 = 10% off)
 };
 
 export type WeeklyProduction = {
