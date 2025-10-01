@@ -196,8 +196,45 @@ export default function Shop() {
               ChefPax
             </Typography>
             
-            {/* Auth buttons */}
-            {session ? (
+            {/* Navigation buttons */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Button 
+                component={Link} 
+                href="/shop" 
+                variant="contained"
+                size="small"
+                sx={{ 
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontWeight: 600,
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  }
+                }}
+              >
+                Shop Now
+              </Button>
+              <Button 
+                onClick={() => setSelectedTab(1)}
+                variant="outlined"
+                size="small"
+                sx={{ 
+                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontWeight: 600,
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                  color: "white",
+                  "&:hover": {
+                    borderColor: "white",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  }
+                }}
+              >
+                Subscriptions
+              </Button>
+              
+              {/* Auth buttons */}
+              {session ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Button component={Link} href="/account" variant="text" size="small" sx={{ color: "white" }}>
                     Account
@@ -225,13 +262,13 @@ export default function Shop() {
         sx={{
           background: "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)",
           color: "white",
-          py: { xs: 3, md: 4 },
+          py: { xs: 6, md: 8 },
           position: "relative",
           overflow: "hidden",
         }}
       >
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: 2 }}>
+          <Box sx={{ textAlign: "center", mb: 4 }}>
             <Typography 
               variant="h3" 
               sx={{ 
@@ -259,11 +296,11 @@ export default function Shop() {
         </Container>
       </Box>
 
-      <Container sx={{ py: 3 }}>
+      <Container sx={{ py: 6 }}>
         {/* Tabs Section */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 6 }}>
           
-          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
             <Box
               sx={{
                 backgroundColor: "rgba(0, 0, 0, 0.05)",
