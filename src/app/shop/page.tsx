@@ -772,23 +772,13 @@ export default function Shop() {
                   <Box>
                     {/* Active Subscriptions */}
                     <Box sx={{ mb: 3 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                          Active Subscriptions
-                        </Typography>
-                        <Badge badgeContent={0} color="primary">
-                          <Repeat />
-                        </Badge>
-                      </Box>
-                      
                       <Box sx={{ 
-                        py: 3,
+                        py: 2,
                         backgroundColor: '#f8f9fa',
                         borderRadius: 2,
                         border: '1px solid #e9ecef',
                         textAlign: 'center'
                       }}>
-                        <Repeat sx={{ fontSize: 32, color: '#ccc', mb: 1 }} />
                         <Typography variant="body2" color="text.secondary">
                           No active subscriptions
                         </Typography>
