@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import { 
@@ -102,7 +102,23 @@ export default function Shop() {
   const [accountMenuAnchor, setAccountMenuAnchor] = useState<null | HTMLElement>(null);
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [accountTab, setAccountTab] = useState(0);
+  const [rotatingTextIndex, setRotatingTextIndex] = useState(0);
   const { data: session } = useSession();
+
+  // Rotating text sentences
+  const rotatingTexts = [
+    "Fresh microgreen trays delivered to elevate your culinary brand",
+    "Order anytime! Choose your delivery date. Create Instagram-worthy dishes with live microgreen trays."
+  ];
+
+  // Rotate text every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRotatingTextIndex((prevIndex) => (prevIndex + 1) % rotatingTexts.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [rotatingTexts.length]);
 
   const handleAccountMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAccountMenuAnchor(event.currentTarget);
@@ -391,17 +407,14 @@ export default function Shop() {
                 fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                 color: "#2E7D32",
                 fontWeight: 400,
-                mb: 2,
+                minHeight: "72px", // Reserve space to prevent layout shift
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "opacity 0.5s ease-in-out",
               }}
             >
-              Fresh microgreen trays delivered to elevate your culinary brand
-            </Typography>
-            <Typography variant="body1" sx={{
-              fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              color: "#2E7D32",
-              fontWeight: 500,
-            }}>
-              <strong>Order anytime!</strong> Choose your delivery date. Create Instagram-worthy dishes with live microgreen trays.
+              {rotatingTexts[rotatingTextIndex]}
             </Typography>
           </Box>
         )}
