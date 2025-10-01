@@ -244,36 +244,22 @@ export default function Shop() {
               
               {/* Shop Now Button */}
               <Button
-                variant="outlined"
+                variant="text"
                 size="small"
                 startIcon={<ShoppingCart />}
                 onClick={() => setSelectedTab(0)}
-                sx={{
-                  color: 'white',
-                  borderColor: 'rgba(255,255,255,0.3)',
-                  '&:hover': {
-                    borderColor: 'white',
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                  },
-                }}
+                sx={{ color: "white" }}
               >
                 Shop Now
               </Button>
 
               {/* Subscriptions Button */}
               <Button
-                variant="outlined"
+                variant="text"
                 size="small"
                 startIcon={<Repeat />}
                 onClick={() => setSelectedTab(1)}
-                sx={{
-                  color: 'white',
-                  borderColor: 'rgba(255,255,255,0.3)',
-                  '&:hover': {
-                    borderColor: 'white',
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                  },
-                }}
+                sx={{ color: "white" }}
               >
                 Subscriptions
               </Button>
@@ -285,7 +271,16 @@ export default function Shop() {
                     onClick={handleAccountMenuOpen}
                     variant="text" 
                     size="small" 
-                    startIcon={<AccountCircle />}
+                    startIcon={
+                      session?.user?.image ? (
+                        <Avatar 
+                          src={session.user.image} 
+                          sx={{ width: 20, height: 20 }}
+                        />
+                      ) : (
+                        <AccountCircle />
+                      )
+                    }
                     sx={{ color: "white" }}
                   >
                     Account
@@ -592,13 +587,16 @@ export default function Shop() {
           borderRadius: '12px 12px 0 0'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ 
-              bgcolor: 'rgba(255,255,255,0.2)', 
-              color: 'white',
-              width: 48,
-              height: 48
-            }}>
-              <Person />
+            <Avatar 
+              src={session?.user?.image}
+              sx={{ 
+                bgcolor: 'rgba(255,255,255,0.2)', 
+                color: 'white',
+                width: 48,
+                height: 48
+              }}
+            >
+              {!session?.user?.image && <Person />}
             </Avatar>
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -654,8 +652,11 @@ export default function Shop() {
                   Profile Information
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                  <Avatar sx={{ width: 64, height: 64, bgcolor: '#4CAF50' }}>
-                    <Person fontSize="large" />
+                  <Avatar 
+                    src={session?.user?.image}
+                    sx={{ width: 64, height: 64, bgcolor: '#4CAF50' }}
+                  >
+                    {!session?.user?.image && <Person fontSize="large" />}
                   </Avatar>
                   <Box>
                     <Typography variant="h6">{session?.user?.name}</Typography>
