@@ -198,40 +198,6 @@ export default function Shop() {
             
             {/* Navigation buttons */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Button 
-                component={Link} 
-                href="/shop" 
-                variant="contained"
-                size="small"
-                sx={{ 
-                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontWeight: 600,
-                  backgroundColor: "rgba(255, 255, 255, 0.2)",
-                  color: "white",
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.3)",
-                  }
-                }}
-              >
-                Shop Now
-              </Button>
-              <Button 
-                onClick={() => setSelectedTab(1)}
-                variant="outlined"
-                size="small"
-                sx={{ 
-                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontWeight: 600,
-                  borderColor: "rgba(255, 255, 255, 0.5)",
-                  color: "white",
-                  "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  }
-                }}
-              >
-                Subscriptions
-              </Button>
               
               {/* Auth buttons */}
               {session ? (
@@ -296,11 +262,11 @@ export default function Shop() {
         </Container>
       </Box>
 
-      <Container sx={{ py: 6 }}>
+      <Container sx={{ py: 3 }}>
         {/* Tabs Section */}
-        <Box sx={{ mb: 6 }}>
+        <Box sx={{ mb: 3 }}>
           
-          <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
             <Box
               sx={{
                 backgroundColor: "rgba(0, 0, 0, 0.05)",
