@@ -772,48 +772,121 @@ export default function Shop() {
                   Subscriptions
                 </Typography>
                 
-                <Box sx={{ 
-                  textAlign: 'center', 
-                  py: 4,
-                  backgroundColor: '#fafafa',
-                  borderRadius: 2,
-                  border: '2px dashed #e0e0e0'
-                }}>
-                  <Repeat sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No active subscriptions
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Subscribe to save 10% on all orders and get regular deliveries.
-                  </Typography>
-                  
-                  {/* Subscription Benefits */}
-                  <Box sx={{ mb: 3, textAlign: 'left', maxWidth: 300, mx: 'auto' }}>
-                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, textAlign: 'center' }}>
-                      Subscription Benefits:
-                    </Typography>
-                    <Typography component="div" variant="body2" color="text.secondary">
-                      • 10% discount on all orders<br/>
-                      • Automatic delivery scheduling<br/>
-                      • Pause, resume, or cancel anytime<br/>
-                      • Priority customer support
-                    </Typography>
+                {session ? (
+                  // Subscription Management Interface
+                  <Box>
+                    {/* Active Subscriptions List */}
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
+                        Active Subscriptions
+                      </Typography>
+                      <Box sx={{ 
+                        py: 3,
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: 2,
+                        border: '1px solid #e9ecef',
+                        textAlign: 'center'
+                      }}>
+                        <Repeat sx={{ fontSize: 32, color: '#ccc', mb: 1 }} />
+                        <Typography variant="body2" color="text.secondary">
+                          No active subscriptions
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Subscription Plans */}
+                    <Box>
+                      <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
+                        Available Plans
+                      </Typography>
+                      <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' } }}>
+                        {/* Basic Plan */}
+                        <Box sx={{ 
+                          p: 2, 
+                          border: '1px solid #e0e0e0', 
+                          borderRadius: 2,
+                          backgroundColor: '#fafafa'
+                        }}>
+                          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                            Basic Plan
+                          </Typography>
+                          <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
+                            10% Off
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Weekly deliveries with 10% discount on all orders
+                          </Typography>
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            onClick={() => { setSelectedTab(1); handleAccountModalClose(); }}
+                            fullWidth
+                          >
+                            Subscribe
+                          </Button>
+                        </Box>
+
+                        {/* Premium Plan */}
+                        <Box sx={{ 
+                          p: 2, 
+                          border: '2px solid #4CAF50', 
+                          borderRadius: 2,
+                          backgroundColor: '#f1f8e9'
+                        }}>
+                          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                            Premium Plan
+                          </Typography>
+                          <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
+                            15% Off
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Twice weekly deliveries with priority support
+                          </Typography>
+                          <Button 
+                            variant="contained" 
+                            size="small" 
+                            onClick={() => { setSelectedTab(1); handleAccountModalClose(); }}
+                            sx={{
+                              background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
+                              '&:hover': {
+                                background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
+                              },
+                            }}
+                            fullWidth
+                          >
+                            Subscribe
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    {/* Benefits Summary */}
+                    <Box sx={{ mt: 3, p: 2, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                        Subscription Benefits:
+                      </Typography>
+                      <Typography component="div" variant="body2" color="text.secondary">
+                        • Automatic delivery scheduling • Pause/resume anytime • Priority customer support
+                      </Typography>
+                    </Box>
                   </Box>
-                  
-                  {session ? (
-                    <Button 
-                      variant="contained" 
-                      onClick={() => window.location.href = '/account'}
-                      sx={{
-                        background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
-                        '&:hover': {
-                          background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
-                        },
-                      }}
-                    >
-                      Manage Subscriptions
-                    </Button>
-                  ) : (
+                ) : (
+                  // Not signed in - show benefits and sign in prompt
+                  <Box sx={{ 
+                    textAlign: 'center', 
+                    py: 4,
+                    backgroundColor: '#fafafa',
+                    borderRadius: 2,
+                    border: '2px dashed #e0e0e0'
+                  }}>
+                    <Repeat sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                      Sign in to manage subscriptions
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                      Access your subscription dashboard and manage your deliveries.
+                    </Typography>
+                    
                     <Button 
                       variant="contained" 
                       onClick={() => { setSelectedTab(1); handleAccountModalClose(); }}
@@ -826,8 +899,8 @@ export default function Shop() {
                     >
                       View Subscription Plans
                     </Button>
-                  )}
-                </Box>
+                  </Box>
+                )}
               </Box>
             )}
 
