@@ -359,62 +359,47 @@ export default function Shop() {
         </Container>
       </Box>
 
-      {/* Hero Section */}
-      <Box
-        sx={{
-          background: "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)",
-          color: "white",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: 4 }}>
+
+      <Container sx={{ py: 3 }}>
+
+        {/* Main Banner */}
+        {selectedTab === 0 && (
+          <Box
+            sx={{
+              background: "linear-gradient(135deg, #E8F5E8 0%, #F1F8E9 100%)",
+              borderRadius: 3,
+              p: 4,
+              mb: 4,
+              border: "1px solid rgba(76, 175, 80, 0.2)",
+              textAlign: "center",
+            }}
+          >
             <Typography 
-              variant="h3" 
-              sx={{ 
-                fontSize: { xs: "2rem", md: "2.5rem" },
-                fontWeight: 600, 
+              variant="h4" 
+              sx={{
+                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                color: "#2E7D32",
+                fontWeight: 600,
                 mb: 2,
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
               }}
             >
               Live Microgreen Trays
             </Typography>
             <Typography 
               variant="h6" 
-              sx={{ 
-                opacity: 0.9,
-                maxWidth: "600px",
-                mx: "auto",
+              sx={{
+                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                color: "#2E7D32",
+                fontWeight: 400,
                 mb: 2,
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
               }}
             >
               Fresh microgreen trays delivered to elevate your culinary brand
             </Typography>
-          </Box>
-        </Container>
-      </Box>
-
-      <Container sx={{ py: 3 }}>
-
-        {/* Delivery Info Banner */}
-        {selectedTab === 0 && (
-          <Box
-            sx={{
-              background: "linear-gradient(135deg, #E8F5E8 0%, #F1F8E9 100%)",
-              borderRadius: 3,
-              p: 3,
-              mb: 4,
-              border: "1px solid rgba(76, 175, 80, 0.2)",
-            }}
-          >
             <Typography variant="body1" sx={{
               fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
               color: "#2E7D32",
               fontWeight: 500,
-              textAlign: "center",
             }}>
               <strong>Order anytime!</strong> Choose your delivery date. Create Instagram-worthy dishes with live microgreen trays.
             </Typography>
