@@ -614,7 +614,6 @@ export default function Shop() {
                   Continue as Guest (One-Time Orders)
                 </Button>
               </Box>
-              </Box>
             </Box>
           </motion.div>
         )}
@@ -702,7 +701,7 @@ export default function Shop() {
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar 
-              src={session?.user?.image}
+              src={session?.user?.image || undefined}
               sx={{ 
                 bgcolor: 'rgba(255,255,255,0.2)', 
                 color: 'white',
@@ -767,7 +766,7 @@ export default function Shop() {
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                   <Avatar 
-                    src={session?.user?.image}
+                    src={session?.user?.image || undefined}
                     sx={{ width: 64, height: 64, bgcolor: '#4CAF50' }}
                   >
                     {!session?.user?.image && <Person fontSize="large" />}
