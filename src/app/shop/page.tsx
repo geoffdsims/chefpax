@@ -264,17 +264,6 @@ export default function Shop() {
             {/* Navigation buttons */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               
-              {/* Subscriptions Button */}
-              <Button
-                variant="text"
-                size="small"
-                startIcon={<Repeat />}
-                onClick={() => setSelectedTab(1)}
-                sx={{ color: "white" }}
-              >
-                Subscriptions
-              </Button>
-              
               {/* Auth buttons */}
               {session ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
