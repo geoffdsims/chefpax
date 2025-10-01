@@ -25,7 +25,17 @@ import {
   Divider,
   Menu,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tabs,
+  Tab,
+  Avatar,
+  List,
+  ListItem,
+  Badge
 } from "@mui/material";
 import { 
   ShoppingCart, 
@@ -92,6 +102,8 @@ export default function Shop() {
   const [selectedTab, setSelectedTab] = useState(0);
   const [inventoryForecast, setInventoryForecast] = useState<InventoryForecast | null>(null);
   const [accountMenuAnchor, setAccountMenuAnchor] = useState<null | HTMLElement>(null);
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
+  const [accountTab, setAccountTab] = useState(0);
   const { data: session } = useSession();
 
   const handleAccountMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -100,6 +112,15 @@ export default function Shop() {
 
   const handleAccountMenuClose = () => {
     setAccountMenuAnchor(null);
+  };
+
+  const handleAccountModalOpen = () => {
+    setAccountModalOpen(true);
+    setAccountMenuAnchor(null);
+  };
+
+  const handleAccountModalClose = () => {
+    setAccountModalOpen(false);
   };
 
     const products = React.useMemo(() => {
@@ -250,37 +271,37 @@ export default function Shop() {
                     transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                   >
-                    <MenuItem component={Link} href="/account" onClick={handleAccountMenuClose}>
+                    <MenuItem onClick={() => { setAccountTab(0); handleAccountModalOpen(); }}>
                       <ListItemIcon>
                         <Person fontSize="small" />
                       </ListItemIcon>
                       <ListItemText>Profile</ListItemText>
                     </MenuItem>
-                    <MenuItem component={Link} href="/orders" onClick={handleAccountMenuClose}>
+                    <MenuItem onClick={() => { setAccountTab(1); handleAccountModalOpen(); }}>
                       <ListItemIcon>
                         <History fontSize="small" />
                       </ListItemIcon>
                       <ListItemText>Order History</ListItemText>
                     </MenuItem>
-                    <MenuItem component={Link} href="/subscriptions" onClick={handleAccountMenuClose}>
+                    <MenuItem onClick={() => { setAccountTab(2); handleAccountModalOpen(); }}>
                       <ListItemIcon>
                         <Repeat fontSize="small" />
                       </ListItemIcon>
                       <ListItemText>Subscriptions</ListItemText>
                     </MenuItem>
-                    <MenuItem component={Link} href="/loyalty" onClick={handleAccountMenuClose}>
+                    <MenuItem onClick={() => { setAccountTab(3); handleAccountModalOpen(); }}>
                       <ListItemIcon>
                         <Loyalty fontSize="small" />
                       </ListItemIcon>
                       <ListItemText>Loyalty Points</ListItemText>
                     </MenuItem>
-                    <MenuItem component={Link} href="/notifications" onClick={handleAccountMenuClose}>
+                    <MenuItem onClick={() => { setAccountTab(4); handleAccountModalOpen(); }}>
                       <ListItemIcon>
                         <Notifications fontSize="small" />
                       </ListItemIcon>
                       <ListItemText>Notifications</ListItemText>
                     </MenuItem>
-                    <MenuItem component={Link} href="/settings" onClick={handleAccountMenuClose}>
+                    <MenuItem onClick={() => { setAccountTab(5); handleAccountModalOpen(); }}>
                       <ListItemIcon>
                         <Settings fontSize="small" />
                       </ListItemIcon>
@@ -579,6 +600,243 @@ export default function Shop() {
       </Container>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+
+      {/* Account Modal */}
+      <Dialog 
+        open={accountModalOpen} 
+        onClose={handleAccountModalClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+            minHeight: '60vh'
+          }
+        }}
+        TransitionProps={{
+          timeout: { enter: 300, exit: 200 }
+        }}
+      >
+        <DialogTitle sx={{ 
+          pb: 1,
+          borderBottom: '1px solid #f0f0f0',
+          background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
+          color: 'white',
+          borderRadius: '12px 12px 0 0'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              bgcolor: 'rgba(255,255,255,0.2)', 
+              color: 'white',
+              width: 48,
+              height: 48
+            }}>
+              <Person />
+            </Avatar>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Your Account
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                Signed in as {session?.user?.email}
+              </Typography>
+            </Box>
+          </Box>
+        </DialogTitle>
+
+        <DialogContent sx={{ p: 0 }}>
+          <Tabs 
+            value={accountTab} 
+            onChange={(_, newValue) => setAccountTab(newValue)}
+            variant="fullWidth"
+            sx={{
+              borderBottom: '1px solid #f0f0f0',
+              '& .MuiTab-root': {
+                textTransform: 'none',
+                fontWeight: 500,
+                minHeight: 48
+              }
+            }}
+          >
+            <Tab 
+              icon={<Person />} 
+              label="Profile" 
+              iconPosition="start"
+            />
+            <Tab 
+              icon={<History />} 
+              label="Orders" 
+              iconPosition="start"
+            />
+            <Tab 
+              icon={<Repeat />} 
+              label="Subscriptions" 
+              iconPosition="start"
+            />
+            <Tab 
+              icon={<Loyalty />} 
+              label="Loyalty" 
+              iconPosition="start"
+            />
+          </Tabs>
+
+          <Box sx={{ p: 3, minHeight: 400 }}>
+            {accountTab === 0 && (
+              <Box>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                  Profile Information
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                  <Avatar sx={{ width: 64, height: 64, bgcolor: '#4CAF50' }}>
+                    <Person fontSize="large" />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6">{session?.user?.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {session?.user?.email}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Typography variant="body2" color="text.secondary">
+                  Manage your personal information, delivery preferences, and account settings.
+                </Typography>
+              </Box>
+            )}
+
+            {accountTab === 1 && (
+              <Box>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                  Order History
+                </Typography>
+                <Box sx={{ 
+                  textAlign: 'center', 
+                  py: 6,
+                  backgroundColor: '#fafafa',
+                  borderRadius: 2,
+                  border: '2px dashed #e0e0e0'
+                }}>
+                  <History sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No orders yet
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Your order history will appear here once you place your first order.
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    onClick={() => { setSelectedTab(0); handleAccountModalClose(); }}
+                    sx={{
+                      background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
+                      },
+                    }}
+                  >
+                    Start Shopping
+                  </Button>
+                </Box>
+              </Box>
+            )}
+
+            {accountTab === 2 && (
+              <Box>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                  Subscriptions
+                </Typography>
+                <Box sx={{ 
+                  textAlign: 'center', 
+                  py: 6,
+                  backgroundColor: '#fafafa',
+                  borderRadius: 2,
+                  border: '2px dashed #e0e0e0'
+                }}>
+                  <Repeat sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No active subscriptions
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Subscribe to save 10% on all orders and get regular deliveries.
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    onClick={() => { setSelectedTab(1); handleAccountModalClose(); }}
+                    sx={{
+                      background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
+                      },
+                    }}
+                  >
+                    View Subscriptions
+                  </Button>
+                </Box>
+              </Box>
+            )}
+
+            {accountTab === 3 && (
+              <Box>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                  Loyalty Points
+                </Typography>
+                <Box sx={{ 
+                  textAlign: 'center', 
+                  py: 6,
+                  backgroundColor: '#fafafa',
+                  borderRadius: 2,
+                  border: '2px dashed #e0e0e0'
+                }}>
+                  <Loyalty sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    0 Loyalty Points
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Earn points with every purchase and redeem them for discounts.
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    onClick={() => { setSelectedTab(0); handleAccountModalClose(); }}
+                    sx={{
+                      background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
+                      },
+                    }}
+                  >
+                    Start Earning Points
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+
+        <DialogActions sx={{ 
+          p: 2, 
+          borderTop: '1px solid #f0f0f0',
+          background: '#fafafa',
+          borderRadius: '0 0 12px 12px'
+        }}>
+          <Button onClick={handleAccountModalClose}>
+            Close
+          </Button>
+          <Button 
+            variant="contained"
+            onClick={() => { 
+              signOut(); 
+              handleAccountModalClose(); 
+            }}
+            sx={{
+              background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
+              },
+            }}
+          >
+            Sign Out
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
