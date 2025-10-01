@@ -30,8 +30,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Tabs,
-  Tab,
   Avatar,
   List,
   ListItem,
@@ -131,9 +129,9 @@ export default function Shop() {
         { _id: "fallback-3", sku: "RADISH_LIVE_TRAY", name: "Live Tray — Radish (10×20)", priceCents: 3000, unit: "tray", active: true, sort: 3, category: "live_tray", variety: "radish", sizeOz: 200 },
         { _id: "fallback-4", sku: "SUNFLOWER_LIVE_TRAY", name: "Live Tray — Sunflower (10×20)", priceCents: 3000, unit: "tray", active: true, sort: 4, category: "live_tray", variety: "sunflower", sizeOz: 200 },
         { _id: "fallback-5", sku: "AMARANTH_LIVE_TRAY", name: "Live Tray — Amaranth (10×20)", priceCents: 3000, unit: "tray", active: true, sort: 5, category: "live_tray", variety: "amaranth", sizeOz: 200 },
-        { _id: "fallback-6", sku: "CHEFPAX_PREMIUM_MIX_LIVE_TRAY", name: "Premium ChefPax Mix Live Tray (10×20)", priceCents: 5000, unit: "tray", active: true, sort: 6, category: "premium_live_tray", variety: "mixed", sizeOz: 200 },
-        { _id: "fallback-7", sku: "PEA_PREMIUM_LIVE_TRAY", name: "Premium Live Tray — Pea Shoots (10×20)", priceCents: 4500, unit: "tray", active: true, sort: 7, category: "premium_live_tray", variety: "pea", sizeOz: 200 },
-        { _id: "fallback-8", sku: "RADISH_PREMIUM_LIVE_TRAY", name: "Premium Live Tray — Radish (10×20)", priceCents: 4500, unit: "tray", active: true, sort: 8, category: "premium_live_tray", variety: "radish", sizeOz: 200 },
+        { _id: "fallback-6", sku: "CHEFPAX_PREMIUM_MIX_LIVE_TRAY", name: "Premium ChefPax Mix Live Tray (10×20)", priceCents: 5000, unit: "tray", active: true, sort: 6, category: "live_tray", variety: "mixed", sizeOz: 200 },
+        { _id: "fallback-7", sku: "PEA_PREMIUM_LIVE_TRAY", name: "Premium Live Tray — Pea Shoots (10×20)", priceCents: 4500, unit: "tray", active: true, sort: 7, category: "live_tray", variety: "pea", sizeOz: 200 },
+        { _id: "fallback-8", sku: "RADISH_PREMIUM_LIVE_TRAY", name: "Premium Live Tray — Radish (10×20)", priceCents: 4500, unit: "tray", active: true, sort: 8, category: "live_tray", variety: "radish", sizeOz: 200 },
       ];
       
       return data && Array.isArray(data) ? data : fallbackProducts;
