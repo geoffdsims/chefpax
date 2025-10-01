@@ -26,6 +26,14 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the application.
 
+### 🚀 Quick Access URLs
+
+- **Main site:** `http://localhost:3000`
+- **How it works:** `http://localhost:3000/how-it-works`
+- **Shop page:** `http://localhost:3000/shop`
+- **Test features:** `http://localhost:3000/test-features`
+- **Admin panel:** `http://localhost:3000/admin/subscription-settings`
+
 ### Test Features Page
 
 For testing new features and components:
