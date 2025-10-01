@@ -8,9 +8,9 @@ export const metadata: Metadata = {
   title: "ChefPax — Fresh Hydroponic Microgreens", 
   description: "Order anytime, choose your delivery. Fresh microgreens delivered to Austin.",
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
   }
 };
 
