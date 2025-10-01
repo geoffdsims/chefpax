@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
   Container, 
   Box, 
@@ -364,11 +364,7 @@ export default function Shop() {
 
         {/* Main Banner */}
         {selectedTab === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <div>
             <Box
               sx={{
                 background: "linear-gradient(135deg, rgba(45, 80, 22, 0.05) 0%, rgba(76, 175, 80, 0.05) 100%)",
@@ -390,11 +386,7 @@ export default function Shop() {
                 }
               }}
             >
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
+              <div>
                 <Typography 
                   variant="h3" 
                   sx={{
@@ -407,13 +399,9 @@ export default function Shop() {
                 >
                   Live Microgreen Trays
                 </Typography>
-              </motion.div>
+              </div>
               
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
+              <div>
                 <Typography 
                   variant="h5" 
                   sx={{
@@ -432,18 +420,14 @@ export default function Shop() {
                 >
                   {rotatingTexts[rotatingTextIndex]}
                 </Typography>
-              </motion.div>
+              </div>
             </Box>
-          </motion.div>
+          </div>
         )}
 
         {/* Products Grid */}
         {selectedTab === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
+          <div>
             <Box sx={{
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
@@ -453,31 +437,18 @@ export default function Shop() {
               {products?.map((p: Product, index: number) => {
                 const availability = getAvailabilityStatus(p);
                 return (
-                  <motion.div
-                    key={`${p.sku}-${p._id || index}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.5, 
-                      delay: index * 0.1,
-                      ease: "easeOut"
-                    }}
-                  >
+                  <div key={`${p.sku}-${p._id || index}`}>
                     <ProductCard p={p} onAdd={addToCart} availability={availability} />
-                  </motion.div>
+                  </div>
                 );
               })}
             </Box>
-          </motion.div>
+          </div>
         )}
 
         {/* Subscription Tab Content */}
         {selectedTab === 1 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <div>
             <Box
               sx={{
                 background: "linear-gradient(135deg, rgba(45, 80, 22, 0.02) 0%, rgba(76, 175, 80, 0.02) 100%)",
@@ -497,11 +468,7 @@ export default function Shop() {
                 }
               }}
             >
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
+              <div>
                 <Typography 
                   variant="h4" 
                   gutterBottom 
@@ -514,13 +481,9 @@ export default function Shop() {
                 >
                   Weekly Subscription Plans
                 </Typography>
-              </motion.div>
+              </div>
               
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
+              <div>
                 <Typography 
                   variant="h6" 
                   color="#2E7D32" 
@@ -535,7 +498,7 @@ export default function Shop() {
                   Get live microgreen trays delivered weekly with our subscription service. 
                   Save 10% on all orders and never run out of your favorites.
                 </Typography>
-              </motion.div>
+              </div>
               
               <Box sx={{ mt: 3 }}>
                 <Typography variant="subtitle1" gutterBottom sx={{
@@ -604,16 +567,12 @@ export default function Shop() {
                 </Button>
               </Box>
             </Box>
-          </motion.div>
+          </div>
         )}
 
 
         {/* Delivery Information */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
+        <div>
           <Box sx={{ 
             background: "linear-gradient(135deg, rgba(45, 80, 22, 0.02) 0%, rgba(76, 175, 80, 0.02) 100%)",
             borderRadius: 4,
@@ -651,7 +610,7 @@ export default function Shop() {
               • Live trays provide 6-10 harvests each • Cut fresh as needed
             </Typography>
           </Box>
-        </motion.div>
+        </div>
 
         <Snackbar 
           open={!!notice} 
