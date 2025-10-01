@@ -771,33 +771,111 @@ export default function Shop() {
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                   Subscriptions
                 </Typography>
-                <Box sx={{ 
-                  textAlign: 'center', 
-                  py: 6,
-                  backgroundColor: '#fafafa',
-                  borderRadius: 2,
-                  border: '2px dashed #e0e0e0'
-                }}>
-                  <Repeat sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No active subscriptions
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Subscribe to save 10% on all orders and get regular deliveries.
-                  </Typography>
-                  <Button 
-                    variant="contained" 
-                    onClick={() => { setSelectedTab(1); handleAccountModalClose(); }}
-                    sx={{
-                      background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
-                      },
-                    }}
-                  >
-                    View Subscriptions
-                  </Button>
-                </Box>
+                
+                <Card
+                  elevation={1}
+                  sx={{
+                    textAlign: "center",
+                    mb: 3,
+                  }}
+                >
+                  <CardContent sx={{ p: 3 }}>
+                    <Typography 
+                      variant="h5" 
+                      gutterBottom 
+                      sx={{
+                        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                        color: "#2D5016",
+                        fontWeight: 600,
+                        mb: 2,
+                      }}
+                    >
+                      Weekly Subscription Plans
+                    </Typography>
+                    
+                    <Typography 
+                      variant="body1" 
+                      color="#2E7D32" 
+                      paragraph 
+                      sx={{
+                        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                        fontWeight: 400,
+                        mb: 3,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      Get live microgreen trays delivered weekly with our subscription service. 
+                      Save 10% on all orders and never run out of your favorites.
+                    </Typography>
+                    
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="subtitle1" gutterBottom sx={{
+                        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                      }}>
+                        Subscription Benefits:
+                      </Typography>
+                      <Box component="ul" sx={{ pl: 2, mb: 3, textAlign: 'left' }}>
+                        <Typography component="li" variant="body2" color="text.secondary" sx={{
+                          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                        }}>
+                          10% discount on all orders
+                        </Typography>
+                        <Typography component="li" variant="body2" color="text.secondary" sx={{
+                          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                        }}>
+                          Automatic delivery scheduling
+                        </Typography>
+                        <Typography component="li" variant="body2" color="text.secondary" sx={{
+                          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                        }}>
+                          Pause, resume, or cancel anytime
+                        </Typography>
+                        <Typography component="li" variant="body2" color="text.secondary" sx={{
+                          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                        }}>
+                          Priority customer support
+                        </Typography>
+                      </Box>
+                      
+                      {session ? (
+                        <Box>
+                          <Alert severity="success" sx={{ mb: 3 }}>
+                            <Typography sx={{
+                              fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                            }}>
+                              Welcome back, {session.user?.name}! Your subscription management panel is ready.
+                            </Typography>
+                          </Alert>
+                          
+                          <Button 
+                            variant="contained" 
+                            onClick={() => window.location.href = '/account'}
+                            sx={{ mt: 2 }}
+                          >
+                            Manage Subscriptions
+                          </Button>
+                        </Box>
+                      ) : (
+                        <Alert severity="info" sx={{ mb: 3 }}>
+                          <Typography sx={{
+                            fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                          }}>
+                            Sign in to create and manage your subscriptions. You can also continue as a guest for one-time orders.
+                          </Typography>
+                        </Alert>
+                      )}
+                      
+                      <Button 
+                        variant="outlined" 
+                        onClick={() => { setSelectedTab(1); handleAccountModalClose(); }}
+                        fullWidth
+                        sx={{ mt: 2 }}
+                      >
+                        Continue as Guest (One-Time Orders)
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
               </Box>
             )}
 
