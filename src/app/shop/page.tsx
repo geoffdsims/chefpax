@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Container, 
   Box, 
@@ -374,80 +375,178 @@ export default function Shop() {
 
         {/* Main Banner */}
         {selectedTab === 0 && (
-          <Box
-            sx={{
-              background: "linear-gradient(135deg, #E8F5E8 0%, #F1F8E9 100%)",
-              borderRadius: 3,
-              p: 4,
-              mb: 4,
-              border: "1px solid rgba(76, 175, 80, 0.2)",
-              textAlign: "center",
-            }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <Typography 
-              variant="h4" 
+            <Box
               sx={{
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                color: "#2E7D32",
-                fontWeight: 600,
-                mb: 2,
+                background: "linear-gradient(135deg, rgba(45, 80, 22, 0.05) 0%, rgba(76, 175, 80, 0.05) 100%)",
+                borderRadius: 4,
+                p: 5,
+                mb: 5,
+                border: "1px solid rgba(45, 80, 22, 0.1)",
+                textAlign: "center",
+                position: "relative",
+                overflow: "hidden",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "2px",
+                  background: "linear-gradient(90deg, #2D5016 0%, #4CAF50 50%, #2D5016 100%)",
+                }
               }}
             >
-              Live Microgreen Trays
-            </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                color: "#2E7D32",
-                fontWeight: 400,
-                minHeight: "72px", // Reserve space to prevent layout shift
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                opacity: isTransitioning ? 0 : 1,
-                transition: "opacity 0.5s ease-in-out",
-              }}
-            >
-              {rotatingTexts[rotatingTextIndex]}
-            </Typography>
-          </Box>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <Typography 
+                  variant="h3" 
+                  sx={{
+                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    color: "#2D5016",
+                    fontWeight: 700,
+                    mb: 3,
+                    fontSize: { xs: "2rem", md: "2.5rem" },
+                  }}
+                >
+                  Live Microgreen Trays
+                </Typography>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <Typography 
+                  variant="h5" 
+                  sx={{
+                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    color: "#2E7D32",
+                    fontWeight: 400,
+                    minHeight: "80px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    opacity: isTransitioning ? 0 : 1,
+                    transition: "opacity 0.5s ease-in-out",
+                    fontSize: { xs: "1.1rem", md: "1.3rem" },
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {rotatingTexts[rotatingTextIndex]}
+                </Typography>
+              </motion.div>
+            </Box>
+          </motion.div>
         )}
 
         {/* Products Grid */}
         {selectedTab === 0 && (
-          <Box sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
-            gap: 4,
-            mb: 8
-          }}>
-            {products?.map((p: Product, index: number) => {
-              const availability = getAvailabilityStatus(p);
-              return (
-                <Box key={`${p.sku}-${p._id || index}`}>
-                  <ProductCard p={p} onAdd={addToCart} availability={availability} />
-                </Box>
-              );
-            })}
-          </Box>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Box sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
+              gap: 4,
+              mb: 8
+            }}>
+              {products?.map((p: Product, index: number) => {
+                const availability = getAvailabilityStatus(p);
+                return (
+                  <motion.div
+                    key={`${p.sku}-${p._id || index}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: index * 0.1,
+                      ease: "easeOut"
+                    }}
+                  >
+                    <ProductCard p={p} onAdd={addToCart} availability={availability} />
+                  </motion.div>
+                );
+              })}
+            </Box>
+          </motion.div>
         )}
 
         {/* Subscription Tab Content */}
         {selectedTab === 1 && (
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-              }}>
-                Weekly Subscription Plans
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph sx={{
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-              }}>
-                Get live microgreen trays delivered weekly with our subscription service. 
-                Save 10% on all orders and never run out of your favorites.
-              </Typography>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Box
+              sx={{
+                background: "linear-gradient(135deg, rgba(45, 80, 22, 0.02) 0%, rgba(76, 175, 80, 0.02) 100%)",
+                borderRadius: 4,
+                p: 5,
+                border: "1px solid rgba(45, 80, 22, 0.1)",
+                position: "relative",
+                overflow: "hidden",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "2px",
+                  background: "linear-gradient(90deg, #2D5016 0%, #4CAF50 50%, #2D5016 100%)",
+                }
+              }}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <Typography 
+                  variant="h4" 
+                  gutterBottom 
+                  sx={{
+                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    color: "#2D5016",
+                    fontWeight: 700,
+                    mb: 2,
+                  }}
+                >
+                  Weekly Subscription Plans
+                </Typography>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <Typography 
+                  variant="h6" 
+                  color="#2E7D32" 
+                  paragraph 
+                  sx={{
+                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    fontWeight: 400,
+                    mb: 4,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Get live microgreen trays delivered weekly with our subscription service. 
+                  Save 10% on all orders and never run out of your favorites.
+                </Typography>
+              </motion.div>
               
               <Box sx={{ mt: 3 }}>
                 <Typography variant="subtitle1" gutterBottom sx={{
@@ -515,34 +614,56 @@ export default function Shop() {
                   Continue as Guest (One-Time Orders)
                 </Button>
               </Box>
-            </CardContent>
-          </Card>
+              </Box>
+            </Box>
+          </motion.div>
         )}
 
 
         {/* Delivery Information */}
-        <Box sx={{ 
-          backgroundColor: '#FAFAFA',
-          borderRadius: 2,
-          p: 4,
-          border: '1px solid #E0E0E0',
-          mt: 4
-        }}>
-          <Typography variant="h6" gutterBottom sx={{ 
-            fontWeight: 600,
-            fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <Box sx={{ 
+            background: "linear-gradient(135deg, rgba(45, 80, 22, 0.02) 0%, rgba(76, 175, 80, 0.02) 100%)",
+            borderRadius: 4,
+            p: 4,
+            border: "1px solid rgba(45, 80, 22, 0.1)",
+            mt: 4,
+            position: "relative",
+            overflow: "hidden",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "2px",
+              background: "linear-gradient(90deg, #2D5016 0%, #4CAF50 50%, #2D5016 100%)",
+            }
           }}>
-            Flexible Delivery Options
-          </Typography>
-          <Typography variant="body1" color="text.secondary" paragraph sx={{
-            fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-          }}>
-            • Order anytime and schedule your preferred delivery date<br/>
-            • Multiple delivery windows available each week<br/>
-            • Austin area delivery • $5 delivery fee<br/>
-            • Live trays provide 6-10 harvests each • Cut fresh as needed
-          </Typography>
-        </Box>
+            <Typography variant="h5" gutterBottom sx={{ 
+              fontWeight: 700,
+              color: "#2D5016",
+              fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              mb: 3,
+            }}>
+              Flexible Delivery Options
+            </Typography>
+            <Typography variant="h6" color="#2E7D32" paragraph sx={{
+              fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontWeight: 400,
+              lineHeight: 1.8,
+            }}>
+              • Order anytime and schedule your preferred delivery date<br/>
+              • Multiple delivery windows available each week<br/>
+              • Austin area delivery • $5 delivery fee<br/>
+              • Live trays provide 6-10 harvests each • Cut fresh as needed
+            </Typography>
+          </Box>
+        </motion.div>
 
         <Snackbar 
           open={!!notice} 
