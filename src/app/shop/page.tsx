@@ -246,6 +246,7 @@ export default function Shop() {
               <Button
                 variant="outlined"
                 size="small"
+                startIcon={<ShoppingCart />}
                 onClick={() => setSelectedTab(0)}
                 sx={{
                   color: 'white',
@@ -263,6 +264,7 @@ export default function Shop() {
               <Button
                 variant="outlined"
                 size="small"
+                startIcon={<Repeat />}
                 onClick={() => setSelectedTab(1)}
                 sx={{
                   color: 'white',
@@ -401,72 +403,6 @@ export default function Shop() {
       </Box>
 
       <Container sx={{ py: 3 }}>
-        {/* Tabs Section */}
-        <Box sx={{ mb: 3 }}>
-          
-          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-            <Box
-              sx={{
-                backgroundColor: "rgba(0, 0, 0, 0.05)",
-                borderRadius: "999px",
-                p: 0.5,
-                display: "flex",
-                gap: 0.5,
-              }}
-            >
-              <Button
-                onClick={() => setSelectedTab(0)}
-                variant={selectedTab === 0 ? "contained" : "text"}
-                sx={{
-                  borderRadius: "999px",
-                  px: 4,
-                  py: 1.5,
-                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontWeight: 600,
-                  ...(selectedTab === 0 && {
-                    backgroundColor: "#4CAF50",
-                    color: "white",
-                    boxShadow: "0 2px 8px rgba(76, 175, 80, 0.3)",
-                  }),
-                  ...(selectedTab !== 0 && {
-                    color: "#666",
-                    "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    }
-                  })
-                }}
-              >
-                <CalendarToday sx={{ mr: 1 }} />
-                Shop Now
-              </Button>
-              <Button
-                onClick={() => setSelectedTab(1)}
-                variant={selectedTab === 1 ? "contained" : "text"}
-                sx={{
-                  borderRadius: "999px",
-                  px: 4,
-                  py: 1.5,
-                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontWeight: 600,
-                  ...(selectedTab === 1 && {
-                    backgroundColor: "#4CAF50",
-                    color: "white",
-                    boxShadow: "0 2px 8px rgba(76, 175, 80, 0.3)",
-                  }),
-                  ...(selectedTab !== 1 && {
-                    color: "#666",
-                    "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    }
-                  })
-                }}
-              >
-                <Repeat sx={{ mr: 1 }} />
-                Subscriptions
-              </Button>
-            </Box>
-          </Box>
-        </Box>
 
         {/* Delivery Info Banner */}
         {selectedTab === 0 && (
