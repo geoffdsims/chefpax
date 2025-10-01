@@ -768,10 +768,6 @@ export default function Shop() {
 
             {accountTab === 2 && (
               <Box>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                  Subscriptions
-                </Typography>
-                
                 {session ? (
                   <Box>
                     {/* Active Subscriptions */}
