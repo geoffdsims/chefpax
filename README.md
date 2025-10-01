@@ -1,8 +1,20 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ChefPax - Fresh Hydroponic Microgreens
 
-## Getting Started
+ChefPax is a Next.js e-commerce platform for fresh hydroponic microgreens delivered to Austin. Features include product catalog, subscription management, order tracking, and customer accounts.
 
-First, run the development server:
+## 🌱 Features
+
+- **Product Catalog** - Browse live microgreen trays and clamshells
+- **Subscription Management** - Weekly recurring deliveries with discounts
+- **Order Tracking** - Calendar-based order lifecycle tracking
+- **Customer Accounts** - User authentication with Google OAuth
+- **Admin Dashboard** - Manage products and subscription settings
+- **Stripe Integration** - Secure payments and subscription billing
+- **Delivery Scheduling** - Flexible delivery date selection
+
+## 🚀 Quick Start
+
+### Development Server
 
 ```bash
 npm run dev
@@ -10,27 +22,155 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Test Features Page
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+For testing new features and components:
 
-## Learn More
+```bash
+# Navigate to test features page
+http://localhost:3000/test-features
+```
 
-To learn more about Next.js, take a look at the following resources:
+This page includes:
+- Welcome Back Dashboard
+- Order Tracking Calendar
+- Enhanced Checkout Flow
+- Account Creation Components
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🔧 Admin Interface
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Subscription Settings Management
 
-## Deploy on Vercel
+Access the admin interface to manage subscription settings:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# Admin subscription settings page
+http://localhost:3000/admin/subscription-settings
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Features:**
+- Enable/disable subscriptions per product
+- Set custom subscription pricing
+- Configure Stripe Price IDs
+- Apply discount percentages
+- Bulk update multiple products
+
+**How to Use:**
+1. Navigate to the admin page
+2. Toggle subscriptions on/off for products
+3. Set pricing (custom price or discount %)
+4. Add Stripe Price IDs for proper billing
+5. Changes save automatically
+
+### Stripe Setup Guide
+
+**Option A: Simple Discount**
+- Keep using `STRIPE_SUB_PRICE_ID` environment variable
+- Set discount percentage in admin interface
+- Stripe handles billing, UI applies discount
+
+**Option B: Per-Product Pricing (Recommended)**
+1. Create Stripe Products for each microgreen variety
+2. Create Recurring Prices (weekly/monthly) for each product
+3. Copy Price IDs from Stripe Dashboard
+4. Paste Price IDs in admin interface
+5. Each product gets its own subscription pricing
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── admin/
+│   │   └── subscription-settings/    # Admin interface
+│   ├── api/                          # API routes
+│   ├── cart/                         # Shopping cart
+│   ├── shop/                         # Product catalog
+│   └── test-features/                # Test components
+├── components/
+│   ├── CartDrawer.tsx
+│   ├── ProductCard.tsx
+│   ├── SubscriptionManager.tsx
+│   └── SubscriptionSettingsManager.tsx
+└── lib/
+    ├── schema.ts                     # TypeScript types
+    ├── stripe.ts                     # Stripe configuration
+    └── mongo.ts                      # Database connection
+```
+
+## 🔑 Environment Setup
+
+See [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) for detailed configuration instructions.
+
+Required environment variables:
+- `MONGODB_URI` - Database connection
+- `STRIPE_SECRET_KEY` - Stripe API key
+- `STRIPE_SUB_PRICE_ID` - Global subscription price
+- `NEXTAUTH_SECRET` - Authentication secret
+- `GOOGLE_CLIENT_ID` - OAuth credentials
+
+## 🛠️ API Endpoints
+
+### Subscription Management
+- `GET /api/admin/subscription-settings` - Fetch all products with settings
+- `PUT /api/admin/subscription-settings` - Update single product settings
+- `POST /api/admin/subscription-settings` - Bulk update products
+
+### Customer Features
+- `GET /api/welcome-back` - Personalized dashboard data
+- `GET /api/orders/tracking` - Order tracking information
+- `POST /api/subscriptions` - Create/update subscriptions
+
+## 🎯 Subscription Flow
+
+1. **Product Configuration** - Admin enables subscriptions and sets pricing
+2. **Customer Selection** - Customer chooses products with subscription options
+3. **Stripe Checkout** - Secure payment processing for subscriptions
+4. **Order Management** - Automatic delivery scheduling and tracking
+5. **Customer Portal** - Self-service subscription management
+
+## 📱 Mobile Responsive
+
+The application is fully responsive with:
+- Touch-friendly product cards
+- Mobile-optimized checkout flow
+- Responsive admin interface
+- Adaptive delivery scheduling
+
+## 🚀 Deployment
+
+Deploy on Vercel with automatic deployments from the main branch:
+
+```bash
+# Deploy to production
+vercel --prod
+```
+
+The application supports:
+- Domain-based routing (`chefpax.com` → homepage, `chefpax.shop` → shop)
+- Server-side rendering with client-side hydration
+- API routes for backend functionality
+- Static asset optimization
+
+## 📚 Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Stripe Documentation](https://stripe.com/docs)
+- [Material-UI Components](https://mui.com/)
+- [NextAuth.js](https://next-auth.js.org/)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test using the test-features page
+5. Submit a pull request
+
+## 📄 License
+
+This project is proprietary to ChefPax.
