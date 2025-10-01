@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { 
   Container, 
   Box, 
@@ -363,25 +364,28 @@ export default function Shop() {
 
         {/* Main Banner */}
         {selectedTab === 0 && (
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             <Box
               sx={{
-                background: "linear-gradient(135deg, #E8F5E8 0%, #F1F8E9 100%)",
-                borderRadius: 4,
-                p: 5,
-                mb: 5,
-                border: "2px solid #4CAF50",
+                background: "linear-gradient(135deg, rgba(45, 80, 22, 0.02) 0%, rgba(76, 175, 80, 0.02) 100%)",
+                borderRadius: 3,
+                p: 4,
+                mb: 4,
+                border: "1px solid rgba(45, 80, 22, 0.1)",
                 textAlign: "center",
                 position: "relative",
                 overflow: "hidden",
-                boxShadow: "0 8px 32px rgba(76, 175, 80, 0.2)",
                 "&::before": {
                   content: '""',
                   position: "absolute",
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: "4px",
+                  height: "2px",
                   background: "linear-gradient(90deg, #2D5016 0%, #4CAF50 50%, #2D5016 100%)",
                 }
               }}
@@ -392,10 +396,9 @@ export default function Shop() {
                   sx={{
                     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     color: "#2D5016",
-                    fontWeight: 700,
-                    mb: 3,
+                    fontWeight: 600,
+                    mb: 2,
                     fontSize: { xs: "2rem", md: "2.5rem" },
-                    textShadow: "0 2px 4px rgba(45, 80, 22, 0.1)",
                   }}
                 >
                   Live Microgreen Trays
@@ -404,35 +407,35 @@ export default function Shop() {
               
               <div>
                 <Typography 
-                  variant="h5" 
+                  variant="h6" 
                   sx={{
                     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     color: "#2E7D32",
-                    fontWeight: 500,
-                    minHeight: "80px",
+                    fontWeight: 400,
+                    minHeight: "72px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     opacity: isTransitioning ? 0 : 1,
                     transition: "opacity 0.5s ease-in-out",
-                    fontSize: { xs: "1.2rem", md: "1.4rem" },
+                    fontSize: { xs: "1.1rem", md: "1.3rem" },
                     lineHeight: 1.4,
-                    padding: "16px",
-                    backgroundColor: "rgba(255, 255, 255, 0.7)",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(76, 175, 80, 0.3)",
                   }}
                 >
                   {rotatingTexts[rotatingTextIndex]}
                 </Typography>
               </div>
             </Box>
-          </div>
+          </motion.div>
         )}
 
         {/* Products Grid */}
         {selectedTab === 0 && (
-          <div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
             <Box sx={{
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
@@ -442,13 +445,22 @@ export default function Shop() {
               {products?.map((p: Product, index: number) => {
                 const availability = getAvailabilityStatus(p);
                 return (
-                  <div key={`${p.sku}-${p._id || index}`}>
+                  <motion.div 
+                    key={`${p.sku}-${p._id || index}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: index * 0.1,
+                      ease: "easeOut"
+                    }}
+                  >
                     <ProductCard p={p} onAdd={addToCart} availability={availability} />
-                  </div>
+                  </motion.div>
                 );
               })}
             </Box>
-          </div>
+          </motion.div>
         )}
 
         {/* Subscription Tab Content */}
