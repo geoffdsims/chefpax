@@ -392,11 +392,11 @@ export default function Shop() {
                 opacity: 0.9,
                 maxWidth: "600px",
                 mx: "auto",
-                mb: 4,
+                mb: 2,
                 fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
               }}
             >
-              Elevate your culinary brand with fresh, live microgreen trays delivered to your kitchen
+              Fresh microgreen trays delivered to elevate your culinary brand
             </Typography>
           </Box>
         </Container>
@@ -421,8 +421,7 @@ export default function Shop() {
               fontWeight: 500,
               textAlign: "center",
             }}>
-              <strong>Elevate your culinary brand!</strong> Order anytime and choose your preferred delivery date. 
-              Live microgreen trays delivered to help you create Instagram-worthy dishes and grow your reputation.
+              <strong>Order anytime!</strong> Choose your delivery date. Create Instagram-worthy dishes with live microgreen trays.
             </Typography>
           </Box>
         )}
