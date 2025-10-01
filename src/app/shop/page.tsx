@@ -773,13 +773,18 @@ export default function Shop() {
                 </Typography>
                 
                 {session ? (
-                  // Subscription Management Interface
                   <Box>
-                    {/* Active Subscriptions List */}
+                    {/* Active Subscriptions */}
                     <Box sx={{ mb: 3 }}>
-                      <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
-                        Active Subscriptions
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                          Active Subscriptions
+                        </Typography>
+                        <Badge badgeContent={0} color="primary">
+                          <Repeat />
+                        </Badge>
+                      </Box>
+                      
                       <Box sx={{ 
                         py: 3,
                         backgroundColor: '#f8f9fa',
@@ -791,87 +796,45 @@ export default function Shop() {
                         <Typography variant="body2" color="text.secondary">
                           No active subscriptions
                         </Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                          Subscribe to products to see them here
+                        </Typography>
                       </Box>
                     </Box>
 
-                    {/* Subscription Plans */}
-                    <Box>
-                      <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
-                        Available Plans
+                    {/* Subscription Info */}
+                    <Box sx={{ 
+                      p: 3,
+                      backgroundColor: '#f1f8e9',
+                      borderRadius: 2,
+                      border: '1px solid #4CAF50'
+                    }}>
+                      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: '#2D5016' }}>
+                        Weekly Subscription Plans
                       </Typography>
-                      <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' } }}>
-                        {/* Basic Plan */}
-                        <Box sx={{ 
-                          p: 2, 
-                          border: '1px solid #e0e0e0', 
-                          borderRadius: 2,
-                          backgroundColor: '#fafafa'
-                        }}>
-                          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                            Basic Plan
-                          </Typography>
-                          <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
-                            10% Off
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                            Weekly deliveries with 10% discount on all orders
-                          </Typography>
-                          <Button 
-                            variant="outlined" 
-                            size="small" 
-                            onClick={() => { setSelectedTab(1); handleAccountModalClose(); }}
-                            fullWidth
-                          >
-                            Subscribe
-                          </Button>
-                        </Box>
-
-                        {/* Premium Plan */}
-                        <Box sx={{ 
-                          p: 2, 
-                          border: '2px solid #4CAF50', 
-                          borderRadius: 2,
-                          backgroundColor: '#f1f8e9'
-                        }}>
-                          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                            Premium Plan
-                          </Typography>
-                          <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
-                            15% Off
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                            Twice weekly deliveries with priority support
-                          </Typography>
-                          <Button 
-                            variant="contained" 
-                            size="small" 
-                            onClick={() => { setSelectedTab(1); handleAccountModalClose(); }}
-                            sx={{
-                              background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
-                              '&:hover': {
-                                background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
-                              },
-                            }}
-                            fullWidth
-                          >
-                            Subscribe
-                          </Button>
-                        </Box>
-                      </Box>
-                    </Box>
-
-                    {/* Benefits Summary */}
-                    <Box sx={{ mt: 3, p: 2, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+                      <Typography variant="body2" color="#2E7D32" sx={{ mb: 2 }}>
+                        Get live microgreen trays delivered weekly with our subscription service. 
+                        Save 10% on all orders and never run out of your favorites.
+                      </Typography>
+                      
                       <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
                         Subscription Benefits:
                       </Typography>
                       <Typography component="div" variant="body2" color="text.secondary">
-                        • Automatic delivery scheduling • Pause/resume anytime • Priority customer support
+                        • 10% discount on all orders<br/>
+                        • Automatic delivery scheduling<br/>
+                        • Pause, resume, or cancel anytime<br/>
+                        • Priority customer support
                       </Typography>
+                      
+                      <Alert severity="success" sx={{ mt: 2 }}>
+                        <Typography sx={{ fontSize: '0.875rem' }}>
+                          Welcome back, {session.user?.name}! Your subscription management panel is ready.
+                        </Typography>
+                      </Alert>
                     </Box>
                   </Box>
                 ) : (
-                  // Not signed in - show benefits and sign in prompt
                   <Box sx={{ 
                     textAlign: 'center', 
                     py: 4,
