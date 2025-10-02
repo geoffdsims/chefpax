@@ -460,29 +460,10 @@ export default function Shop() {
           >
             <Card
               elevation={1}
+              className="shimmer-container"
               sx={{
                 textAlign: "center",
                 mb: 4,
-                position: "relative",
-                borderRadius: 2,
-                overflow: "hidden",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  inset: "-2px",
-                  background: "conic-gradient(from 0deg, transparent 0%, #ff69b4 20%, #8a2be2 40%, #ff69b4 60%, transparent 100%)",
-                  animation: "rotateShimmer 3s linear infinite",
-                  zIndex: -1,
-                  borderRadius: "inherit",
-                },
-                "@keyframes rotateShimmer": {
-                  from: {
-                    transform: "rotate(0deg)",
-                  },
-                  to: {
-                    transform: "rotate(360deg)",
-                  },
-                },
               }}
             >
               <CardContent sx={{ p: 4 }}>
