@@ -50,7 +50,9 @@ const getProductImage = (sku: string) => {
 
 
 export default function ProductCard({ p, onAdd, availability }: ProductCardProps) {
-  return (
+  const isPremium = p.sku.includes('PREMIUM');
+  
+  const cardContent = (
     <Card 
       sx={{ 
         height: "100%", 
@@ -258,4 +260,19 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
       </CardActions>
     </Card>
   );
+
+  // Return wrapped in premium border for premium items
+  if (isPremium) {
+    return (
+      <div className="premium-border-wrapper">
+        <div className="premium-border-shine"></div>
+        <div className="premium-border-main">
+          {cardContent}
+        </div>
+      </div>
+    );
+  }
+
+  // Return regular card for non-premium items
+  return cardContent;
 }
