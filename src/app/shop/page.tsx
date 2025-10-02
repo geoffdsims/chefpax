@@ -106,11 +106,18 @@ export default function Shop() {
   const [rotatingTextIndex, setRotatingTextIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const { data: session } = useSession();
 
   // Set mounted state to prevent hydration issues
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  // Load cart count from localStorage
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartCount(cart.length);
   }, []);
 
   // Rotating text sentences
@@ -201,6 +208,7 @@ export default function Shop() {
     }
     
     localStorage.setItem("cart", JSON.stringify(cart));
+    setCartCount(cart.length);
     
     // Dispatch custom event to notify other components
     window.dispatchEvent(new CustomEvent("cartUpdated"));
@@ -357,8 +365,35 @@ export default function Shop() {
                 </Button>
               )}
               
-              <IconButton onClick={() => setCartOpen(true)} sx={{ color: 'white' }}>
-                <ShoppingCart />
+              <IconButton 
+                onClick={() => setCartOpen(true)} 
+                sx={{ 
+                  color: 'white',
+                  position: 'relative',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    transform: 'scale(1.05)',
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                }}
+              >
+                <Badge 
+                  badgeContent={cartCount} 
+                  color="error"
+                  sx={{
+                    '& .MuiBadge-badge': {
+                      backgroundColor: '#ff4444',
+                      color: 'white',
+                      fontWeight: 600,
+                      fontSize: '0.75rem',
+                      minWidth: '20px',
+                      height: '20px',
+                      border: '2px solid white',
+                    }
+                  }}
+                >
+                  <ShoppingCart sx={{ fontSize: '1.5rem' }} />
+                </Badge>
               </IconButton>
             </Box>
           </Box>
