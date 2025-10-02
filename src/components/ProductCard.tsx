@@ -99,6 +99,7 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
         {/* Premium badge - only show on premium items */}
         {p.sku.includes('PREMIUM') && (
           <Box
+            className="premium-badge-shimmer"
             sx={{
               position: 'absolute',
               top: 16,
