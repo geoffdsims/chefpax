@@ -100,29 +100,27 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
 
         {/* Premium badge - only show on premium items */}
         {p.sku.includes('PREMIUM') && (
-          <Box className="premium-border-wrapper" sx={{ position: 'absolute', top: 16, right: 16 }}>
-            <div className="premium-border-shine"></div>
-            <div className="premium-border-main">
-              <Box
-                sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: 2,
-                  px: 2,
-                  py: 1,
-                  border: '1px solid rgba(212, 175, 55, 0.2)'
-                }}
-              >
-                <Typography variant="caption" sx={{ 
-                  fontWeight: 600,
-                  color: 'secondary.main',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Premium
-                </Typography>
-              </Box>
-            </div>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: 2,
+              px: 2,
+              py: 1,
+              border: '1px solid rgba(212, 175, 55, 0.2)'
+            }}
+          >
+            <Typography variant="caption" sx={{ 
+              fontWeight: 600,
+              color: 'secondary.main',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              Premium
+            </Typography>
           </Box>
         )}
       </Box>
