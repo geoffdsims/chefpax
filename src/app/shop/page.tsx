@@ -114,10 +114,23 @@ export default function Shop() {
     setIsMounted(true);
   }, []);
 
-  // Load cart count from localStorage
+  // Load cart count from localStorage and listen for cart updates
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCartCount(cart.length);
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCartCount(cart.length);
+    };
+
+    // Initial load
+    updateCartCount();
+
+    // Listen for cart updates from CartDrawer
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+    };
   }, []);
 
   // Rotating text sentences

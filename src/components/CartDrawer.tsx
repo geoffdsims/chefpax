@@ -67,6 +67,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     const updatedCart = cart.filter(item => item.productId !== productId);
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
+    window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
 
   const updateQuantity = (productId: string, newQty: number) => {
@@ -79,6 +80,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     );
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
+    window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
 
   const subtotal = cart.reduce((sum, item) => sum + (item.priceCents * item.qty), 0);
