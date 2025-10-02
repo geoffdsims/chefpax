@@ -20,15 +20,33 @@ export async function POST(req: Request) {
     if (!cart?.length) return NextResponse.json({ error: "Empty cart" }, { status: 400 });
     if (!customer?.email || !customer?.name) return NextResponse.json({ error: "Missing customer information" }, { status: 400 });
 
+    console.log("Checkout request - Cart:", JSON.stringify(cart, null, 2));
+    console.log("Checkout request - Customer:", JSON.stringify(customer, null, 2));
+
   const db = await getDb();
   const ids = cart.map(c => c.productId);
+  console.log("Looking for product IDs:", ids);
   const products = await db.collection("products").find({ 
     _id: { $in: ids.map(id => new ObjectId(id)) } 
   }).toArray() as unknown as Product[];
 
+  console.log("Found products:", products.map(p => ({ id: p._id?.toString(), name: p.name })));
+
+  // Validate that all products were found
+  if (products.length !== ids.length) {
+    const foundIds = products.map(p => p._id?.toString());
+    const missingIds = ids.filter(id => !foundIds.includes(id));
+    console.error("Missing products:", missingIds);
+    return NextResponse.json({ error: `Products not found: ${missingIds.join(", ")}` }, { status: 400 });
+  }
+
   // map line items
   const line_items = cart.map(c => {
-    const p = products.find(x => x._id?.toString() === c.productId)!;
+    const p = products.find(x => x._id?.toString() === c.productId);
+    if (!p) {
+      console.error("Product not found for ID:", c.productId);
+      throw new Error(`Product not found: ${c.productId}`);
+    }
     return {
       quantity: c.qty,
       price_data: {
