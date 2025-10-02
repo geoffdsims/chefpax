@@ -118,7 +118,9 @@ export default function Shop() {
   useEffect(() => {
     const updateCartCount = () => {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      setCartCount(cart.length);
+      // Calculate total quantity of all items, not just unique items
+      const totalQuantity = cart.reduce((sum: number, item: any) => sum + (item.qty || 1), 0);
+      setCartCount(totalQuantity);
     };
 
     // Initial load
@@ -221,7 +223,9 @@ export default function Shop() {
     }
     
     localStorage.setItem("cart", JSON.stringify(cart));
-    setCartCount(cart.length);
+    // Calculate total quantity of all items, not just unique items
+    const totalQuantity = cart.reduce((sum: number, item: any) => sum + (item.qty || 1), 0);
+    setCartCount(totalQuantity);
     
     // Dispatch custom event to notify other components
     window.dispatchEvent(new CustomEvent("cartUpdated"));
