@@ -330,13 +330,13 @@ export default function Shop() {
                       </ListItemIcon>
                       <ListItemText>Loyalty Points</ListItemText>
                     </MenuItem>
-                    <MenuItem onClick={() => { setAccountTab(4); handleAccountModalOpen(); }}>
+                    <MenuItem onClick={() => { setAccountTab(0); handleAccountModalOpen(); }}>
                       <ListItemIcon>
                         <Notifications fontSize="small" />
                       </ListItemIcon>
                       <ListItemText>Notifications</ListItemText>
                     </MenuItem>
-                    <MenuItem onClick={() => { setAccountTab(5); handleAccountModalOpen(); }}>
+                    <MenuItem onClick={() => { setAccountTab(0); handleAccountModalOpen(); }}>
                       <ListItemIcon>
                         <Settings fontSize="small" />
                       </ListItemIcon>
