@@ -8,15 +8,17 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { cart, customer, marketingOptIn = false, createAccount = false } = body as {
-    cart: { productId: string; qty: number }[];
-    customer: { name: string; email: string; phone?: string; address1: string; address2?: string; city: string; state: string; zip: string; deliveryInstructions?: string };
-    marketingOptIn?: boolean;
-    createAccount?: boolean;
-  };
+  try {
+    const body = await req.json();
+    const { cart, customer, marketingOptIn = false, createAccount = false } = body as {
+      cart: { productId: string; qty: number }[];
+      customer: { name: string; email: string; phone?: string; address1: string; address2?: string; city: string; state: string; zip: string; deliveryInstructions?: string };
+      marketingOptIn?: boolean;
+      createAccount?: boolean;
+    };
 
-  if (!cart?.length) return NextResponse.json({ error: "Empty cart" }, { status: 400 });
+    if (!cart?.length) return NextResponse.json({ error: "Empty cart" }, { status: 400 });
+    if (!customer?.email || !customer?.name) return NextResponse.json({ error: "Missing customer information" }, { status: 400 });
 
   const db = await getDb();
   const ids = cart.map(c => c.productId);
@@ -114,5 +116,9 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: session.url });
+  } catch (error) {
+    console.error("Checkout API error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

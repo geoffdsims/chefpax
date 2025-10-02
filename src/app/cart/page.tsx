@@ -108,7 +108,33 @@ export default function CartPage() {
         isSubscription: isSubscription && !!session // Only pass true if user is signed in
       })
     });
-    const { url, error } = await res.json();
+
+    // Check if response is ok
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Checkout API error:", res.status, errorText);
+      alert(`Checkout failed: ${res.status} ${errorText}`);
+      return;
+    }
+
+    // Check if response has content
+    const responseText = await res.text();
+    if (!responseText) {
+      console.error("Empty response from checkout API");
+      alert("Checkout failed: Empty response from server");
+      return;
+    }
+
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("Failed to parse JSON response:", responseText);
+      alert("Checkout failed: Invalid response from server");
+      return;
+    }
+
+    const { url, error } = responseData;
     if (url) {
       window.location.href = url;
     } else {
