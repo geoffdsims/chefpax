@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardActions, Typography, Button, Box } from "@mui/material";
 import { AddShoppingCart } from "@mui/icons-material";
 
@@ -50,7 +51,12 @@ const getProductImage = (sku: string) => {
 
 
 export default function ProductCard({ p, onAdd, availability }: ProductCardProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const isPremium = p.sku.includes('PREMIUM');
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   const cardContent = (
     <Card 
@@ -261,8 +267,8 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
     </Card>
   );
 
-  // Return wrapped in premium border for premium items
-  if (isPremium) {
+  // Return wrapped in premium border for premium items (only after mount)
+  if (isPremium && isMounted) {
     return (
       <div className="premium-border-wrapper">
         <div className="premium-border-shine"></div>
@@ -273,6 +279,6 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
     );
   }
 
-  // Return regular card for non-premium items
+  // Return regular card for non-premium items or before mount
   return cardContent;
 }
