@@ -105,7 +105,13 @@ export default function Shop() {
   const [accountTab, setAccountTab] = useState(0);
   const [rotatingTextIndex, setRotatingTextIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { data: session } = useSession();
+
+  // Set mounted state to prevent hydration issues
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Rotating text sentences
   const rotatingTexts = [
@@ -460,7 +466,7 @@ export default function Shop() {
           >
             <Card
               elevation={1}
-              className="shimmer-container"
+              className={isMounted ? "shimmer-container" : ""}
               sx={{
                 textAlign: "center",
                 mb: 4,
