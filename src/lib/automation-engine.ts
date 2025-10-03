@@ -4,6 +4,7 @@
  */
 
 import { getDb } from "./mongo";
+import { addProductionTask, addDeliveryJob, addAutomationJob } from "./job-queue";
 import type { 
   ProductionTask, 
   DeliveryJob, 
@@ -65,7 +66,14 @@ export class AutomationEngine {
     }
 
     // Insert tasks
-    await db.collection<ProductionTask>("productionTasks").insertMany(tasks);
+    const result = await db.collection<ProductionTask>("productionTasks").insertMany(tasks);
+    
+    // Add tasks to job queue
+    for (let i = 0; i < tasks.length; i++) {
+      tasks[i]._id = result.insertedIds[i].toString();
+      await addProductionTask(tasks[i]);
+    }
+    
     return tasks;
   }
 
@@ -120,12 +128,15 @@ export class AutomationEngine {
     );
 
     // Create delivery job
-    await this.createDeliveryJob(
+    const deliveryJob = await this.createDeliveryJob(
       `sub-${subscriptionId}`,
       subscription.address,
       nextDeliveryDate,
       "LOCAL_COURIER"
     );
+    
+    // Add delivery job to queue
+    await addDeliveryJob(deliveryJob);
 
     // Schedule next cycle
     await this.scheduleNextSubscriptionCycle(subscriptionId);
@@ -171,11 +182,9 @@ export class AutomationEngine {
     );
 
     // Schedule automation job for next cycle
-    await this.scheduleAutomationJob({
+    await addAutomationJob({
       type: "subscription_cycle",
-      payload: { subscriptionId },
-      scheduledFor: nextCycleDate.toISOString(),
-      maxAttempts: 3
+      payload: { subscriptionId }
     });
   }
 
@@ -206,6 +215,9 @@ export class AutomationEngine {
 
     // Schedule delivery automation
     await this.scheduleDeliveryAutomation(deliveryJob._id, deliveryDate);
+    
+    // Add delivery job to queue
+    await addDeliveryJob(deliveryJob);
 
     return deliveryJob;
   }
@@ -219,28 +231,24 @@ export class AutomationEngine {
     pickupDate.setDate(pickupDate.getDate() - 1);
     pickupDate.setHours(14, 0, 0, 0); // 2 PM pickup
 
-    await this.scheduleAutomationJob({
-      type: "delivery",
+    await addAutomationJob({
+      type: "subscription_cycle", // Will be handled by delivery worker
       payload: { 
         deliveryJobId,
         action: "request_courier"
-      },
-      scheduledFor: pickupDate.toISOString(),
-      maxAttempts: 3
+      }
     });
 
     // Schedule delivery notifications
     const notificationDate = new Date(deliveryDate);
     notificationDate.setHours(8, 0, 0, 0); // 8 AM notification
 
-    await this.scheduleAutomationJob({
-      type: "notification",
+    await addAutomationJob({
+      type: "subscription_cycle", // Will be handled by notification worker
       payload: {
         deliveryJobId,
         action: "delivery_out_for_delivery"
-      },
-      scheduledFor: notificationDate.toISOString(),
-      maxAttempts: 2
+      }
     });
   }
 

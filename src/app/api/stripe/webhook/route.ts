@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getDb } from "@/lib/mongo";
+import { automationEngine } from "@/lib/automation-engine";
 import { calculateOrderTimeline } from "@/lib/orderLifecycle";
 import type { Order } from "@/lib/schema";
 
@@ -70,7 +71,44 @@ export async function POST(req: Request) {
 
     const db = await getDb();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await db.collection("orders").insertOne(order as any);
+    const orderResult = await db.collection("orders").insertOne(order as any);
+    const orderId = orderResult.insertedId.toString();
+
+    // 🚀 AUTOMATION: Create production tasks for each product
+    try {
+      for (const item of items) {
+        await automationEngine.createProductionTasksFromOrder(
+          orderId,
+          item.productId,
+          item.qty,
+          deliveryDate.toISOString()
+        );
+      }
+      console.log(`✅ Created production tasks for order ${orderId}`);
+    } catch (error) {
+      console.error("❌ Failed to create production tasks:", error);
+    }
+
+    // 🚀 AUTOMATION: Create delivery job
+    try {
+      await automationEngine.createDeliveryJob(
+        orderId,
+        {
+          name: meta.name,
+          line1: meta.address1,
+          line2: meta.address2,
+          city: meta.city,
+          state: meta.state,
+          zip: meta.zip,
+          phone: meta.phone
+        },
+        deliveryDate.toISOString(),
+        "LOCAL_COURIER"
+      );
+      console.log(`✅ Created delivery job for order ${orderId}`);
+    } catch (error) {
+      console.error("❌ Failed to create delivery job:", error);
+    }
 
     // Post-purchase processing
     try {

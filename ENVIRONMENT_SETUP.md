@@ -53,6 +53,10 @@ LOYALTY_BONUS_MULTIPLIER_SUBSCRIPTION="1.5"
 SUBSCRIPTION_BASIC_DISCOUNT="10"
 SUBSCRIPTION_PREMIUM_DISCOUNT="15"
 SUBSCRIPTION_PRO_DISCOUNT="20"
+
+# Redis Configuration (for job queues)
+REDIS_URL="redis://localhost:6379"
+# For production: REDIS_URL="redis://your-redis-host:6379"
 ```
 
 ## Setup Steps
