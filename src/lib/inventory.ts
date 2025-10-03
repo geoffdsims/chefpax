@@ -115,6 +115,7 @@ export function getProductsWithInventory() {
 
   return [
     {
+      _id: "chefpax-mix-live-tray",
       sku: "CHEFPAX_MIX_LIVE_TRAY",
       name: "ChefPax Mix Live Tray (10×20)",
       priceCents: 3500,
@@ -130,6 +131,7 @@ export function getProductsWithInventory() {
       description: "Our signature ChefPax mix grown together in one live tray. 6-10 harvests of pea shoots, sunflower, and radish microgreens. Cut fresh as needed for maximum nutrition."
     },
     {
+      _id: "pea-live-tray",
       sku: "PEA_LIVE_TRAY",
       name: "Live Tray — Pea Shoots (10×20)",
       priceCents: 2500, // Lower price - high yield, easy to grow
@@ -145,6 +147,7 @@ export function getProductsWithInventory() {
       description: "Fresh pea shoots grown hydroponically in live trays. High yield variety - cut fresh as needed for maximum nutrition and longevity."
     },
     {
+      _id: "radish-live-tray",
       sku: "RADISH_LIVE_TRAY",
       name: "Live Tray — Radish (10×20)",
       priceCents: 2800, // Slightly higher - moderate yield, popular variety
@@ -160,6 +163,7 @@ export function getProductsWithInventory() {
       description: "Spicy radish microgreens grown hydroponically in live trays. Cut fresh as needed for maximum nutrition and longevity."
     },
     {
+      _id: "sunflower-live-tray",
       sku: "SUNFLOWER_LIVE_TRAY",
       name: "Live Tray — Sunflower (10×20)",
       priceCents: 3200, // Higher price - moderate yield, premium taste
@@ -175,6 +179,7 @@ export function getProductsWithInventory() {
       description: "Nutty sunflower microgreens grown hydroponically in live trays. Premium variety - cut fresh as needed for maximum nutrition and longevity."
     },
     {
+      _id: "amaranth-live-tray",
       sku: "AMARANTH_LIVE_TRAY",
       name: "Live Tray — Amaranth (10×20)",
       priceCents: 4500, // Premium price - low yield, high seed cost, unique color
@@ -190,6 +195,7 @@ export function getProductsWithInventory() {
       description: "Colorful amaranth microgreens grown hydroponically in live trays. Luxe variety with vibrant color - cut fresh as needed for maximum nutrition and longevity."
     },
     {
+      _id: "chefpax-premium-mix-live-tray",
       sku: "CHEFPAX_PREMIUM_MIX_LIVE_TRAY",
       name: "Luxe ChefPax Mix Live Tray (10×20)",
       priceCents: 5500, // Premium pricing for brand growth
@@ -205,6 +211,7 @@ export function getProductsWithInventory() {
       description: "Luxe ChefPax mix curated for brand growth. 6-10 harvests of our finest microgreens grown together in live trays. Perfect for Instagram-worthy dishes and culinary excellence."
     },
     {
+      _id: "pea-premium-live-tray",
       sku: "PEA_PREMIUM_LIVE_TRAY",
       name: "Luxe Live Tray — Pea Shoots (10×20)",
       priceCents: 4000, // Premium pricing for brand growth
@@ -220,6 +227,7 @@ export function getProductsWithInventory() {
       description: "Luxe pea shoots curated for brand growth. Perfect for elevating your culinary presentation and growing your brand reputation."
     },
     {
+      _id: "radish-premium-live-tray",
       sku: "RADISH_PREMIUM_LIVE_TRAY",
       name: "Luxe Live Tray — Radish (10×20)",
       priceCents: 4200, // Premium pricing for brand growth
