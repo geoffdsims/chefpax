@@ -128,7 +128,22 @@ export function getProductsWithInventory() {
       weeklyCapacity: 2, // 2 mixed trays per week
       currentWeekAvailable: 2,
       photoUrl: "/images/microgeens/chefPax_mix.png",
-      description: "Our signature ChefPax mix grown together in one live tray. 6-10 harvests of pea shoots, sunflower, and radish microgreens. Cut fresh as needed for maximum nutrition."
+      description: "Our signature ChefPax mix grown together in one live tray. 6-10 harvests of pea shoots, sunflower, and radish microgreens. Cut fresh as needed for maximum nutrition.",
+      
+      // Automation fields
+      leadTimeDays: 14,
+      isSubscriptionEligible: true,
+      stages: [
+        { type: "SEED", offsetDays: 0, notes: "Plant seeds in tray" },
+        { type: "GERMINATE", offsetDays: 0, durationDays: 2, notes: "Keep in dark, moist conditions" },
+        { type: "LIGHT", offsetDays: 2, durationDays: 10, notes: "Provide 12-16 hours of light daily" },
+        { type: "HARVEST", offsetDays: 14, notes: "Ready for first harvest" },
+        { type: "PACK", offsetDays: 14, notes: "Package for delivery" }
+      ],
+      
+      // Subscription settings
+      subscriptionEnabled: true,
+      subscriptionDiscount: 10
     },
     {
       _id: "pea-live-tray",
@@ -144,7 +159,22 @@ export function getProductsWithInventory() {
       weeklyCapacity: inventory.liveTrays.pea,
       currentWeekAvailable: inventory.liveTrays.pea,
       photoUrl: "/images/pea_shoots.png",
-      description: "Fresh pea shoots grown hydroponically in live trays. High yield variety - cut fresh as needed for maximum nutrition and longevity."
+      description: "Fresh pea shoots grown hydroponically in live trays. High yield variety - cut fresh as needed for maximum nutrition and longevity.",
+      
+      // Automation fields
+      leadTimeDays: 12,
+      isSubscriptionEligible: true,
+      stages: [
+        { type: "SEED", offsetDays: 0, notes: "Plant pea seeds in tray" },
+        { type: "GERMINATE", offsetDays: 0, durationDays: 2, notes: "Keep moist, dark conditions" },
+        { type: "LIGHT", offsetDays: 2, durationDays: 8, notes: "Provide bright light for rapid growth" },
+        { type: "HARVEST", offsetDays: 12, notes: "Ready for harvest - high yield" },
+        { type: "PACK", offsetDays: 12, notes: "Package for delivery" }
+      ],
+      
+      // Subscription settings
+      subscriptionEnabled: true,
+      subscriptionDiscount: 10
     },
     {
       _id: "radish-live-tray",
@@ -160,7 +190,22 @@ export function getProductsWithInventory() {
       weeklyCapacity: inventory.liveTrays.radish,
       currentWeekAvailable: inventory.liveTrays.radish,
       photoUrl: "/images/radish_saxa2.png",
-      description: "Spicy radish microgreens grown hydroponically in live trays. Cut fresh as needed for maximum nutrition and longevity."
+      description: "Spicy radish microgreens grown hydroponically in live trays. Cut fresh as needed for maximum nutrition and longevity.",
+      
+      // Automation fields
+      leadTimeDays: 14,
+      isSubscriptionEligible: true,
+      stages: [
+        { type: "SEED", offsetDays: 0, notes: "Plant radish seeds in tray" },
+        { type: "GERMINATE", offsetDays: 0, durationDays: 3, notes: "Keep moist, dark conditions" },
+        { type: "LIGHT", offsetDays: 3, durationDays: 9, notes: "Provide moderate light for spicy flavor" },
+        { type: "HARVEST", offsetDays: 14, notes: "Ready for harvest - spicy flavor" },
+        { type: "PACK", offsetDays: 14, notes: "Package for delivery" }
+      ],
+      
+      // Subscription settings
+      subscriptionEnabled: true,
+      subscriptionDiscount: 10
     },
     {
       _id: "sunflower-live-tray",
@@ -176,7 +221,22 @@ export function getProductsWithInventory() {
       weeklyCapacity: 2, // Add some sunflower live trays
       currentWeekAvailable: 2,
       photoUrl: "/images/sunflower.png",
-      description: "Nutty sunflower microgreens grown hydroponically in live trays. Premium variety - cut fresh as needed for maximum nutrition and longevity."
+      description: "Nutty sunflower microgreens grown hydroponically in live trays. Premium variety - cut fresh as needed for maximum nutrition and longevity.",
+      
+      // Automation fields
+      leadTimeDays: 16,
+      isSubscriptionEligible: true,
+      stages: [
+        { type: "SEED", offsetDays: 0, notes: "Plant sunflower seeds in tray" },
+        { type: "GERMINATE", offsetDays: 0, durationDays: 3, notes: "Keep moist, dark conditions" },
+        { type: "LIGHT", offsetDays: 3, durationDays: 11, notes: "Provide bright light for nutty flavor" },
+        { type: "HARVEST", offsetDays: 16, notes: "Ready for harvest - nutty flavor" },
+        { type: "PACK", offsetDays: 16, notes: "Package for delivery" }
+      ],
+      
+      // Subscription settings
+      subscriptionEnabled: true,
+      subscriptionDiscount: 10
     },
     {
       _id: "amaranth-live-tray",
@@ -192,7 +252,22 @@ export function getProductsWithInventory() {
       weeklyCapacity: 1, // Add amaranth live trays
       currentWeekAvailable: 1,
       photoUrl: "/images/amaranth_dreads.png",
-      description: "Colorful amaranth microgreens grown hydroponically in live trays. Luxe variety with vibrant color - cut fresh as needed for maximum nutrition and longevity."
+      description: "Colorful amaranth microgreens grown hydroponically in live trays. Luxe variety with vibrant color - cut fresh as needed for maximum nutrition and longevity.",
+      
+      // Automation fields
+      leadTimeDays: 18,
+      isSubscriptionEligible: true,
+      stages: [
+        { type: "SEED", offsetDays: 0, notes: "Plant amaranth seeds in tray" },
+        { type: "GERMINATE", offsetDays: 0, durationDays: 4, notes: "Keep moist, dark conditions" },
+        { type: "LIGHT", offsetDays: 4, durationDays: 12, notes: "Provide bright light for vibrant color" },
+        { type: "HARVEST", offsetDays: 18, notes: "Ready for harvest - vibrant color" },
+        { type: "PACK", offsetDays: 18, notes: "Package for delivery" }
+      ],
+      
+      // Subscription settings
+      subscriptionEnabled: true,
+      subscriptionDiscount: 15
     },
     {
       _id: "chefpax-premium-mix-live-tray",
@@ -208,7 +283,22 @@ export function getProductsWithInventory() {
       weeklyCapacity: 1, // Limited premium mixed trays
       currentWeekAvailable: 1,
       photoUrl: "/images/microgeens/chefPax_mix.png",
-      description: "Luxe ChefPax mix curated for brand growth. 6-10 harvests of our finest microgreens grown together in live trays. Perfect for Instagram-worthy dishes and culinary excellence."
+      description: "Luxe ChefPax mix curated for brand growth. 6-10 harvests of our finest microgreens grown together in live trays. Perfect for Instagram-worthy dishes and culinary excellence.",
+      
+      // Automation fields
+      leadTimeDays: 16,
+      isSubscriptionEligible: true,
+      stages: [
+        { type: "SEED", offsetDays: 0, notes: "Plant premium seed mix in tray" },
+        { type: "GERMINATE", offsetDays: 0, durationDays: 3, notes: "Premium growing conditions" },
+        { type: "LIGHT", offsetDays: 3, durationDays: 11, notes: "Optimal light for premium quality" },
+        { type: "HARVEST", offsetDays: 16, notes: "Premium harvest for brand growth" },
+        { type: "PACK", offsetDays: 16, notes: "Premium packaging for delivery" }
+      ],
+      
+      // Subscription settings
+      subscriptionEnabled: true,
+      subscriptionDiscount: 15
     },
     {
       _id: "pea-premium-live-tray",
@@ -224,7 +314,22 @@ export function getProductsWithInventory() {
       weeklyCapacity: 1, // Limited premium trays
       currentWeekAvailable: 1,
       photoUrl: "/images/pea_shoots.png",
-      description: "Luxe pea shoots curated for brand growth. Perfect for elevating your culinary presentation and growing your brand reputation."
+      description: "Luxe pea shoots curated for brand growth. Perfect for elevating your culinary presentation and growing your brand reputation.",
+      
+      // Automation fields
+      leadTimeDays: 14,
+      isSubscriptionEligible: true,
+      stages: [
+        { type: "SEED", offsetDays: 0, notes: "Plant premium pea seeds in tray" },
+        { type: "GERMINATE", offsetDays: 0, durationDays: 3, notes: "Premium growing conditions" },
+        { type: "LIGHT", offsetDays: 3, durationDays: 9, notes: "Optimal light for premium quality" },
+        { type: "HARVEST", offsetDays: 14, notes: "Premium harvest for brand growth" },
+        { type: "PACK", offsetDays: 14, notes: "Premium packaging for delivery" }
+      ],
+      
+      // Subscription settings
+      subscriptionEnabled: true,
+      subscriptionDiscount: 15
     },
     {
       _id: "radish-premium-live-tray",
@@ -240,7 +345,22 @@ export function getProductsWithInventory() {
       weeklyCapacity: 1, // Limited premium trays
       currentWeekAvailable: 1,
       photoUrl: "/images/radish_saxa2.png",
-      description: "Luxe radish microgreens curated for brand growth. Perfect for elevating your culinary presentation and growing your brand reputation."
+      description: "Luxe radish microgreens curated for brand growth. Perfect for elevating your culinary presentation and growing your brand reputation.",
+      
+      // Automation fields
+      leadTimeDays: 16,
+      isSubscriptionEligible: true,
+      stages: [
+        { type: "SEED", offsetDays: 0, notes: "Plant premium radish seeds in tray" },
+        { type: "GERMINATE", offsetDays: 0, durationDays: 4, notes: "Premium growing conditions" },
+        { type: "LIGHT", offsetDays: 4, durationDays: 10, notes: "Optimal light for premium quality" },
+        { type: "HARVEST", offsetDays: 16, notes: "Premium harvest for brand growth" },
+        { type: "PACK", offsetDays: 16, notes: "Premium packaging for delivery" }
+      ],
+      
+      // Subscription settings
+      subscriptionEnabled: true,
+      subscriptionDiscount: 15
     }
   ];
 }

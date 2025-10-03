@@ -33,6 +33,8 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 - **Shop page:** `http://localhost:3000/shop`
 - **Test features:** `http://localhost:3000/test-features`
 - **Admin panel:** `http://localhost:3000/admin/subscription-settings`
+- **Production dashboard:** `http://localhost:3000/admin/production`
+- **Account page:** `http://localhost:3000/account`
 
 ### Test Features Page
 
@@ -87,6 +89,53 @@ http://localhost:3000/admin/subscription-settings
 3. Copy Price IDs from Stripe Dashboard
 4. Paste Price IDs in admin interface
 5. Each product gets its own subscription pricing
+
+## 🚀 Automation Framework
+
+ChefPax includes a comprehensive automation framework for scaling microgreen operations:
+
+### Production Dashboard
+
+Access the production management interface:
+
+```bash
+# Production dashboard
+http://localhost:3000/admin/production
+```
+
+**Features:**
+- View today's production tasks
+- Manage grow cycle scheduling (Seed → Germinate → Light → Harvest → Pack)
+- Track delivery jobs and courier integration
+- Monitor urgent and overdue tasks
+- Complete production tasks with completion notes
+- Real-time task status updates
+
+### Automation Workflows
+
+**Order Processing:**
+1. Customer places order → Stripe checkout
+2. Webhook triggers → Production tasks created
+3. Grow cycle scheduled → Based on product lead times
+4. Delivery job created → For delivery date
+5. Customer notified → Order confirmation
+
+**Subscription Cycles:**
+1. Subscription renews → Stripe invoice paid
+2. Production tasks created → For next delivery
+3. Delivery job scheduled → For delivery date
+4. Next cycle scheduled → Based on frequency
+5. Customer notified → Subscription renewal
+
+### Technical Implementation
+
+- **Enhanced Product Schema:** Products include grow cycle stages and lead times
+- **Production Task Management:** Automated scheduling from seed to harvest
+- **Delivery Automation:** Courier integration and route optimization
+- **Subscription Management:** Hands-off renewals and production scheduling
+- **Admin Operations:** Task management and production monitoring
+
+**Implementation Roadmap:** See `AUTOMATION_ROADMAP.md` for detailed implementation plan and technical specifications.
 
 ## 📁 Project Structure
 
