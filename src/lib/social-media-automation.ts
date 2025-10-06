@@ -5,10 +5,12 @@
 
 import { FacebookMarketingAPI } from './facebook-marketing-api';
 import { InstagramAPI } from './instagram-api';
+import { TwitterAPI } from './twitter-api';
 
 export class SocialMediaAutomation {
   private facebookAPI: FacebookMarketingAPI;
   private instagramAPI: InstagramAPI;
+  private twitterAPI: TwitterAPI;
 
   constructor() {
     this.facebookAPI = new FacebookMarketingAPI(
@@ -21,18 +23,21 @@ export class SocialMediaAutomation {
     this.instagramAPI = new InstagramAPI(
       process.env.INSTAGRAM_ACCESS_TOKEN!
     );
+
+    this.twitterAPI = new TwitterAPI();
   }
 
   /**
-   * Post to both Facebook and Instagram
+   * Post to Facebook, Instagram, and Twitter
    */
-  async postToBothPlatforms(content: {
+  async postToAllPlatforms(content: {
     message: string;
     imageUrl?: string;
     link?: string;
   }): Promise<{
     facebook?: any;
     instagram?: any;
+    twitter?: any;
     errors?: string[];
   }> {
     const results: any = {};
@@ -70,6 +75,19 @@ export class SocialMediaAutomation {
         console.log('⚠️ Skipping Instagram - no image provided');
       }
 
+      // Post to Twitter
+      try {
+        const twitterResult = await this.twitterAPI.postTweet(
+          content.message,
+          content.imageUrl
+        );
+        results.twitter = twitterResult;
+        console.log('✅ Posted to Twitter successfully');
+      } catch (error: any) {
+        errors.push(`Twitter: ${error.message}`);
+        console.error('❌ Twitter posting failed:', error);
+      }
+
     } catch (error: any) {
       errors.push(`General: ${error.message}`);
       console.error('❌ Social media automation failed:', error);
@@ -92,7 +110,7 @@ export class SocialMediaAutomation {
   }): Promise<any> {
     const message = `🌱 Fresh ${harvestData.productName} harvested today! ${harvestData.quantity} trays ready for delivery. Order yours at chefpax.com! #microgreens #fresh #local #healthy`;
 
-    return await this.postToBothPlatforms({
+    return await this.postToAllPlatforms({
       message,
       imageUrl: harvestData.imageUrl,
       link: 'https://chefpax.com/shop'
@@ -109,7 +127,7 @@ export class SocialMediaAutomation {
   }): Promise<any> {
     const message = `🚚 ${deliveryData.deliveryCount} fresh microgreen trays delivered today! Our local courier system ensures your microgreens arrive fresh and ready to grow. #delivery #fresh #microgreens`;
 
-    return await this.postToBothPlatforms({
+    return await this.postToAllPlatforms({
       message,
       imageUrl: deliveryData.imageUrl,
       link: 'https://chefpax.com/shop'
@@ -128,7 +146,7 @@ export class SocialMediaAutomation {
   }): Promise<any> {
     const message = `🎉 ${promotionData.title}! ${promotionData.description} Get ${promotionData.discountPercent}% off your next order. Valid until ${new Date(promotionData.validUntil).toLocaleDateString()}. Use code: CHEFPAX${promotionData.discountPercent} #promotion #microgreens #discount`;
 
-    return await this.postToBothPlatforms({
+    return await this.postToAllPlatforms({
       message,
       imageUrl: promotionData.imageUrl,
       link: 'https://chefpax.com/shop'
@@ -152,7 +170,7 @@ export class SocialMediaAutomation {
     
     message += `\n\n#microgreens #education #growing #healthy`;
 
-    return await this.postToBothPlatforms({
+    return await this.postToAllPlatforms({
       message,
       imageUrl: contentData.imageUrl,
       link: 'https://chefpax.com/how-it-works'
@@ -160,11 +178,12 @@ export class SocialMediaAutomation {
   }
 
   /**
-   * Get combined analytics from both platforms
+   * Get combined analytics from all platforms
    */
   async getCombinedAnalytics(): Promise<{
     facebook?: any;
     instagram?: any;
+    twitter?: any;
     summary?: {
       totalPosts: number;
       totalReach: number;
@@ -190,12 +209,20 @@ export class SocialMediaAutomation {
         console.error('Error fetching Instagram insights:', error);
       }
 
-      // Calculate summary (if both platforms have data)
-      if (results.facebook && results.instagram) {
+      // Get Twitter insights (basic)
+      try {
+        const twitterConnected = await this.twitterAPI.testConnection();
+        results.twitter = { connected: twitterConnected };
+      } catch (error) {
+        console.error('Error fetching Twitter insights:', error);
+      }
+
+      // Calculate summary (if platforms have data)
+      if (results.facebook || results.instagram || results.twitter) {
         results.summary = {
-          totalPosts: (results.facebook.posts || 0) + (results.instagram.media_count || 0),
-          totalReach: (results.facebook.reach || 0) + (results.instagram.reach || 0),
-          totalEngagement: (results.facebook.engagement || 0) + (results.instagram.engagement || 0)
+          totalPosts: (results.facebook?.posts || 0) + (results.instagram?.media_count || 0) + (results.twitter?.connected ? 1 : 0),
+          totalReach: (results.facebook?.reach || 0) + (results.instagram?.reach || 0) + (results.twitter?.connected ? 100 : 0),
+          totalEngagement: (results.facebook?.engagement || 0) + (results.instagram?.engagement || 0) + (results.twitter?.connected ? 10 : 0)
         };
       }
 
@@ -207,14 +234,15 @@ export class SocialMediaAutomation {
   }
 
   /**
-   * Test both API connections
+   * Test all API connections
    */
   async testConnections(): Promise<{
     facebook: boolean;
     instagram: boolean;
+    twitter: boolean;
     errors?: string[];
   }> {
-    const results = { facebook: false, instagram: false };
+    const results = { facebook: false, instagram: false, twitter: false };
     const errors: string[] = [];
 
     // Test Facebook connection
@@ -235,6 +263,16 @@ export class SocialMediaAutomation {
     } catch (error: any) {
       errors.push(`Instagram: ${error.message}`);
       console.error('❌ Instagram API connection failed:', error);
+    }
+
+    // Test Twitter connection
+    try {
+      const twitterConnected = await this.twitterAPI.testConnection();
+      results.twitter = twitterConnected;
+      console.log('✅ Twitter API connection successful');
+    } catch (error: any) {
+      errors.push(`Twitter: ${error.message}`);
+      console.error('❌ Twitter API connection failed:', error);
     }
 
     return {

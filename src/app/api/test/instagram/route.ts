@@ -33,8 +33,8 @@ export async function POST(req: Request) {
     
     const automation = new SocialMediaAutomation();
     
-    // Post to both platforms
-    const result = await automation.postToBothPlatforms({
+    // Post to all platforms (Facebook, Instagram, Twitter)
+    const result = await automation.postToAllPlatforms({
       message: message || 'Test post from ChefPax automation system! 🌱 #microgreens #test',
       imageUrl: imageUrl
     });
