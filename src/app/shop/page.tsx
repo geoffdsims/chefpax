@@ -52,6 +52,7 @@ import {
 import { useSession, signIn, signOut } from "next-auth/react";
 import ProductCard from "@/components/ProductCard";
 import CartDrawer from "@/components/CartDrawer";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 interface Product {
   _id: string;
