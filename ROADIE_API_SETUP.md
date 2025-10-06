@@ -3,8 +3,17 @@
 ## How to Get Your Roadie API Token
 
 ### Step 1: Access Your Roadie Business Dashboard
-1. Go to [https://business.roadie.com/](https://business.roadie.com/)
-2. Log in with your ChefPax LLC account credentials
+**Try these URLs in order:**
+1. [https://business.roadie.com/](https://business.roadie.com/)
+2. [https://www.roadie.com/business/](https://www.roadie.com/business/)
+3. [https://app.roadie.com/](https://app.roadie.com/)
+4. [https://roadie.com/login](https://roadie.com/login)
+
+**If you get DNS errors:**
+- Try a different browser (Chrome, Firefox, Safari)
+- Clear your browser cache and cookies
+- Disable VPN/proxy if using one
+- Try from a different device/network
 
 ### Step 2: Navigate to API Token Generation
 1. In the left sidebar, click on **"Administration"**
@@ -95,9 +104,32 @@ Based on your dashboard, you have access to:
 4. **Set up delivery templates** for your microgreen trays
 5. **Configure your pickup address** in the system
 
+## Alternative: Contact Roadie Support Directly
+
+If you can't access the portal:
+
+### Method 1: Email Support
+- **Email**: support@roadie.com
+- **Subject**: "API Token Request for ChefPax LLC"
+- **Include**: Your Customer ID: `faa62a1d-2708-4eb4-86ea-f9d81c9cb955`
+- **Request**: "Please generate an API token for our delivery integration"
+
+### Method 2: Phone Support
+- **Phone**: 1-844-ROADIE-1 (1-844-762-3431)
+- **Hours**: Monday-Friday, 8 AM - 8 PM EST
+
+### Method 3: Use Roadie Web Interface
+Since you can see the dashboard with "Create A Delivery", you can:
+1. Use the web interface to create deliveries manually
+2. Set up templates for your microgreen deliveries
+3. Use bulk upload for multiple deliveries
+4. Get API access later when the portal is working
+
 ## Support
 
 If you need help:
 - **Roadie Support**: support@roadie.com
+- **Phone**: 1-844-762-3431
+- **Contact Form**: https://www.roadie.com/contact-us-2
 - **Documentation**: https://roadie.io/docs/
 - **API Reference**: https://roadie.io/docs/api/

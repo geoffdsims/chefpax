@@ -326,6 +326,7 @@ async function requestCourierPickup(deliveryJobId: string, address: any, schedul
         
       } catch (roadieError) {
         console.error('❌ Both Uber Direct and Roadie failed:', roadieError);
+        console.log('💡 Roadie may need API token setup - check ROADIE_API_SETUP.md');
         throw roadieError;
       }
     }
