@@ -229,14 +229,19 @@ async function requestCourierPickup(deliveryJobId: string, address: any, schedul
   console.log(`🚚 Requesting courier pickup for ${deliveryJobId}`);
   
   try {
-    // Import Uber Direct API
-    const { UberDirectAPI } = await import('./uber-direct-api');
+    // Try multiple delivery providers in order of preference
+    let deliveryCreated = false;
+    let deliveryResult = null;
     
-    const uberAPI = new UberDirectAPI(
-      process.env.UBER_DIRECT_CLIENT_ID || '',
-      process.env.UBER_DIRECT_CLIENT_SECRET || '',
-      process.env.UBER_DIRECT_CUSTOMER_ID || ''
-    );
+    // First try Uber Direct
+    try {
+      const { UberDirectAPI } = await import('./uber-direct-api');
+      
+      const uberAPI = new UberDirectAPI(
+        process.env.UBER_DIRECT_CLIENT_ID || '',
+        process.env.UBER_DIRECT_CLIENT_SECRET || '',
+        process.env.UBER_DIRECT_CUSTOMER_ID || ''
+      );
 
     // Create delivery request
     const deliveryRequest = {
@@ -265,18 +270,76 @@ async function requestCourierPickup(deliveryJobId: string, address: any, schedul
       specialInstructions: "Live microgreen trays - handle with care, keep upright"
     };
 
-    const delivery = await uberAPI.createDelivery(deliveryRequest);
-    
-    // Update delivery job status with Uber tracking info
-    const { automationEngine } = await import('./automation-engine');
-    await automationEngine.updateDeliveryJobStatus(deliveryJobId, 'SCHEDULED', {
-      trackingNumber: delivery.id,
-      eta: new Date(scheduledFor).toISOString(),
-      courierProvider: 'Uber Direct',
-      courierTrackingUrl: delivery.tracking_url
-    });
+      const delivery = await uberAPI.createDelivery(deliveryRequest);
+      
+      deliveryResult = delivery;
+      deliveryCreated = true;
+      
+      console.log(`✅ Uber Direct delivery created: ${delivery.id}`);
+      
+    } catch (uberError) {
+      console.log('⚠️ Uber Direct failed, trying Roadie...');
+      
+      // Try Roadie as backup
+      try {
+        const { RoadieAPI } = await import('./roadie-api');
+        
+        const roadieAPI = new RoadieAPI(
+          process.env.ROADIE_CUSTOMER_ID || ''
+        );
 
-    console.log(`✅ Uber Direct delivery created: ${delivery.id}`);
+        const roadieDelivery = await roadieAPI.createDelivery({
+          pickupAddress: {
+            street: "Your Address", // Replace with your actual pickup address
+            city: "Austin",
+            state: "TX",
+            zip: "78701",
+            country: "US"
+          },
+          dropoffAddress: {
+            street: address.street || address.address1,
+            city: address.city,
+            state: address.state,
+            zip: address.zip || address.postal_code,
+            country: address.country || "US"
+          },
+          items: [
+            {
+              name: "Live Microgreen Tray",
+              quantity: 1,
+              weight: 2,
+              dimensions: {
+                length: 12,
+                width: 8,
+                height: 4
+              }
+            }
+          ],
+          pickupTime: new Date(scheduledFor).toISOString(),
+          specialInstructions: "Live microgreen trays - handle with care, keep upright"
+        });
+        
+        deliveryResult = roadieDelivery;
+        deliveryCreated = true;
+        
+        console.log(`✅ Roadie delivery created: ${roadieDelivery.id}`);
+        
+      } catch (roadieError) {
+        console.error('❌ Both Uber Direct and Roadie failed:', roadieError);
+        throw roadieError;
+      }
+    }
+    
+    if (deliveryCreated && deliveryResult) {
+      // Update delivery job status with tracking info
+      const { automationEngine } = await import('./automation-engine');
+      await automationEngine.updateDeliveryJobStatus(deliveryJobId, 'SCHEDULED', {
+        trackingNumber: deliveryResult.id,
+        eta: new Date(scheduledFor).toISOString(),
+        courierProvider: deliveryResult.provider || 'Uber Direct',
+        courierTrackingUrl: deliveryResult.tracking_url || deliveryResult.trackingUrl
+      });
+    }
     
   } catch (error) {
     console.error('❌ Uber Direct delivery failed, falling back to local courier:', error);

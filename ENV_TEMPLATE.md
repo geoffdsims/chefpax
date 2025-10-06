@@ -40,6 +40,10 @@ REDIS_URL="your_redis_url"
 UBER_DIRECT_CLIENT_ID="mR-YmI6u9x7FvfgpFMYub4xHBBOdNgwk"
 UBER_DIRECT_CLIENT_SECRET="rdpzmrT0lSqBDKh2ZOntEzrAeK0ZN-jJovCJMnUv"
 UBER_DIRECT_CUSTOMER_ID="2b446f20-b70e-4e79-8b7f-c0b819829454"
+
+# Roadie API (Crowdsourced same-day delivery)
+ROADIE_CUSTOMER_ID="faa62a1d-2708-4eb4-86ea-f9d81c9cb955"
+ROADIE_API_KEY="your_roadie_api_key"
 ```
 
 ## Instagram Setup Steps
@@ -81,6 +85,20 @@ UBER_DIRECT_CUSTOMER_ID="2b446f20-b70e-4e79-8b7f-c0b819829454"
      -d '{"pickupAddress": {"street": "123 Your St", "city": "Austin", "state": "TX", "zip": "78701"}, "dropoffAddress": {"street": "456 Customer Ave", "city": "Austin", "state": "TX", "zip": "78702"}}'
    ```
 
+## Roadie Setup Steps
+
+1. **Test Roadie Connection**
+   ```bash
+   curl https://chefpax.com/api/test/roadie
+   ```
+
+2. **Test Roadie Delivery Estimation**
+   ```bash
+   curl -X POST https://chefpax.com/api/test/roadie \
+     -H "Content-Type: application/json" \
+     -d '{"pickupAddress": {"street": "123 Your St", "city": "Austin", "state": "TX", "zip": "78701"}, "dropoffAddress": {"street": "456 Customer Ave", "city": "Austin", "state": "TX", "zip": "78702"}}'
+   ```
+
 ## Delivery Pricing
 
 **Uber Direct Same-Day Delivery:**
@@ -89,5 +107,16 @@ UBER_DIRECT_CUSTOMER_ID="2b446f20-b70e-4e79-8b7f-c0b819829454"
 - Live tray surcharge: $2.00
 - **Total estimated cost: $12.50**
 
+**Roadie Same-Day Delivery:**
+- Base cost: ~$7.00
+- Distance: ~$0.40/mile
+- Live tray surcharge: $1.50
+- **Total estimated cost: $10.50**
+
+**Delivery Provider Comparison:**
+- **Uber Direct**: Higher cost, professional drivers, faster delivery (45 min)
+- **Roadie**: Lower cost, crowdsourced drivers, slightly slower (60 min)
+- **Local Courier**: Lowest cost, scheduled delivery, most reliable timing
+
 **Your current delivery fee: $5.00**
-**Recommended delivery fee: $15.00** (to cover Uber costs + margin)
+**Recommended delivery fee: $15.00** (to cover delivery costs + margin)
