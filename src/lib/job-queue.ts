@@ -8,14 +8,16 @@ import IORedis from 'ioredis';
 import { automationEngine } from './automation-engine';
 import type { ProductionTask, DeliveryJob, AutomationJob } from './schema-automation';
 
-// Redis connection
-const redis = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379');
+// Redis connection - only connect if not in build mode
+const redis = process.env.NODE_ENV === 'production' && process.env.VERCEL 
+  ? new IORedis(process.env.REDIS_URL || 'redis://localhost:6379')
+  : null;
 
-// Job queues
-export const productionQueue = new Queue('production', { connection: redis });
-export const deliveryQueue = new Queue('delivery', { connection: redis });
-export const notificationQueue = new Queue('notifications', { connection: redis });
-export const automationQueue = new Queue('automation', { connection: redis });
+// Job queues - only create if redis is available
+export const productionQueue = redis ? new Queue('production', { connection: redis }) : null;
+export const deliveryQueue = redis ? new Queue('delivery', { connection: redis }) : null;
+export const notificationQueue = redis ? new Queue('notifications', { connection: redis }) : null;
+export const automationQueue = redis ? new Queue('automation', { connection: redis }) : null;
 
 // Job types
 export interface ProductionJobData {
@@ -48,7 +50,7 @@ export interface AutomationJobData {
 }
 
 // Production job processor
-export const productionWorker = new Worker('production', async (job: Job<ProductionJobData>) => {
+export const productionWorker = redis ? new Worker('production', async (job: Job<ProductionJobData>) => {
   const { taskId, type, productId, quantity, orderId, subscriptionId } = job.data;
   
   console.log(`🌱 Processing production job: ${type} for ${quantity} units of ${productId}`);
@@ -76,10 +78,10 @@ export const productionWorker = new Worker('production', async (job: Job<Product
     console.error(`❌ Failed production job: ${type}`, error);
     throw error;
   }
-}, { connection: redis });
+}, { connection: redis }) : null;
 
 // Delivery job processor
-export const deliveryWorker = new Worker('delivery', async (job: Job<DeliveryJobData>) => {
+export const deliveryWorker = redis ? new Worker('delivery', async (job: Job<DeliveryJobData>) => {
   const { deliveryJobId, action, orderId, address, scheduledFor } = job.data;
   
   console.log(`🚚 Processing delivery job: ${action} for order ${orderId}`);
@@ -102,10 +104,10 @@ export const deliveryWorker = new Worker('delivery', async (job: Job<DeliveryJob
     console.error(`❌ Failed delivery job: ${action}`, error);
     throw error;
   }
-}, { connection: redis });
+}, { connection: redis }) : null;
 
 // Notification job processor
-export const notificationWorker = new Worker('notifications', async (job: Job<NotificationJobData>) => {
+export const notificationWorker = redis ? new Worker('notifications', async (job: Job<NotificationJobData>) => {
   const { type, recipient, template, data } = job.data;
   
   console.log(`📧 Processing notification: ${type} to ${recipient}`);
@@ -119,10 +121,10 @@ export const notificationWorker = new Worker('notifications', async (job: Job<No
     console.error(`❌ Failed to send ${type} notification`, error);
     throw error;
   }
-}, { connection: redis });
+}, { connection: redis }) : null;
 
 // Automation job processor
-export const automationWorker = new Worker('automation', async (job: Job<AutomationJobData>) => {
+export const automationWorker = redis ? new Worker('automation', async (job: Job<AutomationJobData>) => {
   const { type, payload } = job.data;
   
   console.log(`🤖 Processing automation job: ${type}`);
@@ -145,7 +147,7 @@ export const automationWorker = new Worker('automation', async (job: Job<Automat
     console.error(`❌ Failed automation job: ${type}`, error);
     throw error;
   }
-}, { connection: redis });
+}, { connection: redis }) : null;
 
 // Helper functions
 async function scheduleNextProductionStage(
@@ -251,6 +253,8 @@ async function sendDeliveryReminders() {
 
 // Queue management functions
 export async function addProductionTask(task: ProductionTask) {
+  if (!productionQueue) return; // Skip if no Redis connection
+  
   const delay = new Date(task.runAt).getTime() - Date.now();
   
   if (delay > 0) {
@@ -290,6 +294,8 @@ export async function addProductionTask(task: ProductionTask) {
 }
 
 export async function addDeliveryJob(deliveryJob: DeliveryJob) {
+  if (!deliveryQueue) return; // Skip if no Redis connection
+  
   const delay = new Date(deliveryJob.scheduledFor || new Date()).getTime() - Date.now();
   
   await deliveryQueue.add(
@@ -309,24 +315,28 @@ export async function addDeliveryJob(deliveryJob: DeliveryJob) {
 }
 
 export async function addNotificationJob(notification: NotificationJobData) {
+  if (!notificationQueue) return; // Skip if no Redis connection
   await notificationQueue.add('notification', notification);
 }
 
 export async function addAutomationJob(automation: AutomationJobData) {
+  if (!automationQueue) return; // Skip if no Redis connection
   await automationQueue.add('automation', automation);
 }
 
 // Graceful shutdown
 export async function closeQueues() {
+  if (!redis) return; // Skip if no Redis connection
+  
   await Promise.all([
-    productionQueue.close(),
-    deliveryQueue.close(),
-    notificationQueue.close(),
-    automationQueue.close(),
-    productionWorker.close(),
-    deliveryWorker.close(),
-    notificationWorker.close(),
-    automationWorker.close(),
+    productionQueue?.close(),
+    deliveryQueue?.close(),
+    notificationQueue?.close(),
+    automationQueue?.close(),
+    productionWorker?.close(),
+    deliveryWorker?.close(),
+    notificationWorker?.close(),
+    automationWorker?.close(),
     redis.disconnect()
-  ]);
+  ].filter(Boolean));
 }
