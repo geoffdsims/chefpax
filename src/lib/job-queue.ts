@@ -3,21 +3,33 @@
  * Handles production tasks, delivery jobs, and automation workflows
  */
 
-import { Queue, Worker, Job } from 'bullmq';
-import IORedis from 'ioredis';
+// Conditional imports to avoid build-time Redis connection
+let Queue: any, Worker: any, Job: any, IORedis: any;
+
+if (typeof window === 'undefined') {
+  try {
+    const bullmq = require('bullmq');
+    Queue = bullmq.Queue;
+    Worker = bullmq.Worker;
+    Job = bullmq.Job;
+    IORedis = require('ioredis').default;
+  } catch (e) {
+    // Skip if packages not available
+  }
+}
 import { automationEngine } from './automation-engine';
 import type { ProductionTask, DeliveryJob, AutomationJob } from './schema-automation';
 
-// Redis connection - only connect if not in build mode
-const redis = process.env.NODE_ENV === 'production' && process.env.VERCEL 
+// Redis connection - only connect if not in build mode and packages available
+const redis = (process.env.NODE_ENV === 'production' && process.env.VERCEL && IORedis) 
   ? new IORedis(process.env.REDIS_URL || 'redis://localhost:6379')
   : null;
 
-// Job queues - only create if redis is available
-export const productionQueue = redis ? new Queue('production', { connection: redis }) : null;
-export const deliveryQueue = redis ? new Queue('delivery', { connection: redis }) : null;
-export const notificationQueue = redis ? new Queue('notifications', { connection: redis }) : null;
-export const automationQueue = redis ? new Queue('automation', { connection: redis }) : null;
+// Job queues - only create if redis and Queue class are available
+export const productionQueue = (redis && Queue) ? new Queue('production', { connection: redis }) : null;
+export const deliveryQueue = (redis && Queue) ? new Queue('delivery', { connection: redis }) : null;
+export const notificationQueue = (redis && Queue) ? new Queue('notifications', { connection: redis }) : null;
+export const automationQueue = (redis && Queue) ? new Queue('automation', { connection: redis }) : null;
 
 // Job types
 export interface ProductionJobData {
@@ -50,7 +62,7 @@ export interface AutomationJobData {
 }
 
 // Production job processor
-export const productionWorker = redis ? new Worker('production', async (job: Job<ProductionJobData>) => {
+export const productionWorker = (redis && Worker) ? new Worker('production', async (job: any) => {
   const { taskId, type, productId, quantity, orderId, subscriptionId } = job.data;
   
   console.log(`🌱 Processing production job: ${type} for ${quantity} units of ${productId}`);
@@ -81,7 +93,7 @@ export const productionWorker = redis ? new Worker('production', async (job: Job
 }, { connection: redis }) : null;
 
 // Delivery job processor
-export const deliveryWorker = redis ? new Worker('delivery', async (job: Job<DeliveryJobData>) => {
+export const deliveryWorker = (redis && Worker) ? new Worker('delivery', async (job: any) => {
   const { deliveryJobId, action, orderId, address, scheduledFor } = job.data;
   
   console.log(`🚚 Processing delivery job: ${action} for order ${orderId}`);
@@ -107,7 +119,7 @@ export const deliveryWorker = redis ? new Worker('delivery', async (job: Job<Del
 }, { connection: redis }) : null;
 
 // Notification job processor
-export const notificationWorker = redis ? new Worker('notifications', async (job: Job<NotificationJobData>) => {
+export const notificationWorker = (redis && Worker) ? new Worker('notifications', async (job: any) => {
   const { type, recipient, template, data } = job.data;
   
   console.log(`📧 Processing notification: ${type} to ${recipient}`);
@@ -124,7 +136,7 @@ export const notificationWorker = redis ? new Worker('notifications', async (job
 }, { connection: redis }) : null;
 
 // Automation job processor
-export const automationWorker = redis ? new Worker('automation', async (job: Job<AutomationJobData>) => {
+export const automationWorker = (redis && Worker) ? new Worker('automation', async (job: any) => {
   const { type, payload } = job.data;
   
   console.log(`🤖 Processing automation job: ${type}`);
