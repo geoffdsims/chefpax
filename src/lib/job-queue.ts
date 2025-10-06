@@ -226,16 +226,72 @@ async function scheduleDeliveryPreparation(orderId: string) {
 }
 
 async function requestCourierPickup(deliveryJobId: string, address: any, scheduledFor: string) {
-  // Simulate courier request
   console.log(`🚚 Requesting courier pickup for ${deliveryJobId}`);
-  await new Promise(resolve => setTimeout(resolve, 1000));
   
-  // Update delivery job status
-  const { automationEngine } = await import('./automation-engine');
-  await automationEngine.updateDeliveryJobStatus(deliveryJobId, 'SCHEDULED', {
-    trackingNumber: `TRK${Date.now().toString().slice(-8)}`,
-    eta: new Date(scheduledFor).toISOString()
-  });
+  try {
+    // Import Uber Direct API
+    const { UberDirectAPI } = await import('./uber-direct-api');
+    
+    const uberAPI = new UberDirectAPI(
+      process.env.UBER_DIRECT_CLIENT_ID || '',
+      process.env.UBER_DIRECT_CLIENT_SECRET || '',
+      process.env.UBER_DIRECT_CUSTOMER_ID || ''
+    );
+
+    // Create delivery request
+    const deliveryRequest = {
+      pickupAddress: {
+        street: "Your Address", // Replace with your actual pickup address
+        city: "Austin",
+        state: "TX",
+        zip: "78701",
+        country: "US"
+      },
+      dropoffAddress: {
+        street: address.street || address.address1,
+        city: address.city,
+        state: address.state,
+        zip: address.zip || address.postal_code,
+        country: address.country || "US"
+      },
+      items: [
+        {
+          name: "Live Microgreen Tray",
+          quantity: 1,
+          price: 25.00 // Base price for live tray
+        }
+      ],
+      pickupTime: new Date(scheduledFor).toISOString(),
+      specialInstructions: "Live microgreen trays - handle with care, keep upright"
+    };
+
+    const delivery = await uberAPI.createDelivery(deliveryRequest);
+    
+    // Update delivery job status with Uber tracking info
+    const { automationEngine } = await import('./automation-engine');
+    await automationEngine.updateDeliveryJobStatus(deliveryJobId, 'SCHEDULED', {
+      trackingNumber: delivery.id,
+      eta: new Date(scheduledFor).toISOString(),
+      courierProvider: 'Uber Direct',
+      courierTrackingUrl: delivery.tracking_url
+    });
+
+    console.log(`✅ Uber Direct delivery created: ${delivery.id}`);
+    
+  } catch (error) {
+    console.error('❌ Uber Direct delivery failed, falling back to local courier:', error);
+    
+    // Fallback to local courier
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const { automationEngine } = await import('./automation-engine');
+    await automationEngine.updateDeliveryJobStatus(deliveryJobId, 'SCHEDULED', {
+      trackingNumber: `LOCAL-${Date.now().toString().slice(-8)}`,
+      eta: new Date(scheduledFor).toISOString(),
+      courierProvider: 'Local Courier',
+      note: 'Uber Direct unavailable, using local courier'
+    });
+  }
 }
 
 async function updateDeliveryStatus(deliveryJobId: string, status: string) {

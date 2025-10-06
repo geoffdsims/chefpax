@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { UberDirectAPI } from "@/lib/uber-direct-api";
 
 /**
  * Get available delivery options for the next 4 weeks
@@ -37,6 +38,22 @@ export async function GET(req: Request) {
         friday.setDate(weekStart.getDate() + (5 - weekStart.getDay() + 7) % 7);
         
         if (friday > today) {
+          // Get Uber Direct pricing
+          let deliveryPricing = null;
+          try {
+            const uberAPI = new UberDirectAPI(
+              process.env.UBER_DIRECT_CLIENT_ID || '',
+              process.env.UBER_DIRECT_CLIENT_SECRET || '',
+              process.env.UBER_DIRECT_CUSTOMER_ID || ''
+            );
+            deliveryPricing = await uberAPI.estimateMicrogreenDelivery(
+              'Austin, TX', // Your pickup location
+              'Austin, TX'  // Customer location (will be dynamic in production)
+            );
+          } catch (error) {
+            console.error('Error getting Uber Direct pricing:', error);
+          }
+
           options.push({
             date: friday.toISOString(),
             available: true,
@@ -44,7 +61,23 @@ export async function GET(req: Request) {
             deliveryWindow: "9:00-13:00",
             capacityUsed: 30,
             maxCapacity: 50,
-            currentOrders: 15
+            currentOrders: 15,
+            deliveryMethods: [
+              {
+                type: "same_day",
+                provider: "Uber Direct",
+                cost: deliveryPricing?.estimatedCost || 12.50,
+                estimatedTime: deliveryPricing?.estimatedTime || 45,
+                description: "Same-day delivery for live microgreen trays"
+              },
+              {
+                type: "next_day",
+                provider: "Local Courier",
+                cost: 8.00,
+                estimatedTime: 120,
+                description: "Next-day delivery"
+              }
+            ]
           });
         }
         
