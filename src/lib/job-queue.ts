@@ -17,7 +17,6 @@ if (typeof window === 'undefined') {
     // Skip if packages not available
   }
 }
-import { automationEngine } from './automation-engine';
 import type { ProductionTask, DeliveryJob, AutomationJob } from './schema-automation';
 
 // Redis connection - only connect if not in build mode and packages available
@@ -72,6 +71,7 @@ export const productionWorker = (redis && Worker) ? new Worker('production', asy
     await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate work
     
     // Mark task as completed
+    const { automationEngine } = await import('./automation-engine');
     await automationEngine.completeProductionTask(taskId, `Completed by automation at ${new Date().toISOString()}`);
     
     // Trigger next stage if applicable
@@ -144,6 +144,7 @@ export const automationWorker = (redis && Worker) ? new Worker('automation', asy
   try {
     switch (type) {
       case 'subscription_cycle':
+        const { automationEngine } = await import('./automation-engine');
         await automationEngine.processSubscriptionCycle(payload.subscriptionId);
         break;
       case 'inventory_check':
@@ -230,6 +231,7 @@ async function requestCourierPickup(deliveryJobId: string, address: any, schedul
   await new Promise(resolve => setTimeout(resolve, 1000));
   
   // Update delivery job status
+  const { automationEngine } = await import('./automation-engine');
   await automationEngine.updateDeliveryJobStatus(deliveryJobId, 'SCHEDULED', {
     trackingNumber: `TRK${Date.now().toString().slice(-8)}`,
     eta: new Date(scheduledFor).toISOString()
@@ -237,6 +239,7 @@ async function requestCourierPickup(deliveryJobId: string, address: any, schedul
 }
 
 async function updateDeliveryStatus(deliveryJobId: string, status: string) {
+  const { automationEngine } = await import('./automation-engine');
   await automationEngine.updateDeliveryJobStatus(deliveryJobId, status);
 }
 
