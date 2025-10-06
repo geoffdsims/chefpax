@@ -5,7 +5,7 @@
 
 export class RoadieAPI {
   private customerId: string;
-  private baseUrl = 'https://api.roadie.com';
+  private baseUrl = 'https://api.roadie.so';
   private accessToken: string | null = null;
 
   constructor(customerId: string) {
@@ -13,16 +13,16 @@ export class RoadieAPI {
   }
 
   /**
-   * Get OAuth access token (Roadie uses API key authentication)
+   * Get API access token from Roadie Business Portal
    */
   private async getAccessToken(): Promise<string> {
     if (this.accessToken) {
       return this.accessToken;
     }
 
-    // Roadie typically uses API key authentication
-    // You'll need to get your API key from Roadie Business portal
-    this.accessToken = process.env.ROADIE_API_KEY || '';
+    // Roadie uses Bearer token authentication
+    // Get your API token from: Administration > Account > Generate Token
+    this.accessToken = process.env.ROADIE_API_TOKEN || '';
     return this.accessToken;
   }
 

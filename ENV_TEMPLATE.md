@@ -43,7 +43,7 @@ UBER_DIRECT_CUSTOMER_ID="2b446f20-b70e-4e79-8b7f-c0b819829454"
 
 # Roadie API (Crowdsourced same-day delivery)
 ROADIE_CUSTOMER_ID="faa62a1d-2708-4eb4-86ea-f9d81c9cb955"
-ROADIE_API_KEY="your_roadie_api_key"
+ROADIE_API_TOKEN="your_roadie_api_token"
 ```
 
 ## Instagram Setup Steps
@@ -87,16 +87,31 @@ ROADIE_API_KEY="your_roadie_api_key"
 
 ## Roadie Setup Steps
 
-1. **Test Roadie Connection**
+1. **Get Roadie API Token**
+   - Go to your [Roadie Business Dashboard](https://business.roadie.com/)
+   - Navigate to **Administration** > **Account**
+   - Provide a description (e.g., "ChefPax Delivery Integration")
+   - Click **Generate Token**
+   - Copy the API token
+
+2. **Test Roadie Connection**
    ```bash
    curl https://chefpax.com/api/test/roadie
    ```
 
-2. **Test Roadie Delivery Estimation**
+3. **Test Roadie Delivery Estimation**
    ```bash
    curl -X POST https://chefpax.com/api/test/roadie \
      -H "Content-Type: application/json" \
      -d '{"pickupAddress": {"street": "123 Your St", "city": "Austin", "state": "TX", "zip": "78701"}, "dropoffAddress": {"street": "456 Customer Ave", "city": "Austin", "state": "TX", "zip": "78702"}}'
+   ```
+
+4. **Test API Token Directly**
+   ```bash
+   curl -X GET \
+     -H 'Accept: application/json' \
+     -H "Authorization: Bearer YOUR_ROADIE_API_TOKEN" \
+     https://api.roadie.so/api/catalog/entities
    ```
 
 ## Delivery Pricing
