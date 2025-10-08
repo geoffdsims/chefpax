@@ -7,6 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "check": "npm run build",
     "worker": "tsx src/workers/index.ts",
     "init-db": "tsx src/lib/init-db.ts",
     "test-automation": "tsx src/scripts/test-automation.ts"
