@@ -8,21 +8,31 @@ import { InstagramAPI } from './instagram-api';
 import { TwitterAPI } from './twitter-api';
 
 export class SocialMediaAutomation {
-  private facebookAPI: FacebookMarketingAPI;
-  private instagramAPI: InstagramAPI;
-  private twitterAPI: TwitterAPI;
+  private facebookAPI: FacebookMarketingAPI | null = null;
+  private instagramAPI: InstagramAPI | null = null;
+  private twitterAPI: TwitterAPI | null = null;
 
   constructor() {
-    this.facebookAPI = new FacebookMarketingAPI(
-      process.env.FACEBOOK_APP_ID!,
-      process.env.FACEBOOK_APP_SECRET!,
-      process.env.FACEBOOK_ACCESS_TOKEN!,
-      process.env.FACEBOOK_PAGE_ID!
-    );
+    // Only initialize APIs if credentials are available
+    if (
+      process.env.FACEBOOK_APP_ID &&
+      process.env.FACEBOOK_APP_SECRET &&
+      process.env.FACEBOOK_ACCESS_TOKEN &&
+      process.env.FACEBOOK_PAGE_ID
+    ) {
+      this.facebookAPI = new FacebookMarketingAPI(
+        process.env.FACEBOOK_APP_ID,
+        process.env.FACEBOOK_APP_SECRET,
+        process.env.FACEBOOK_ACCESS_TOKEN,
+        process.env.FACEBOOK_PAGE_ID
+      );
+    }
 
-    this.instagramAPI = new InstagramAPI(
-      process.env.INSTAGRAM_ACCESS_TOKEN!
-    );
+    if (process.env.INSTAGRAM_ACCESS_TOKEN) {
+      this.instagramAPI = new InstagramAPI(
+        process.env.INSTAGRAM_ACCESS_TOKEN
+      );
+    }
 
     this.twitterAPI = new TwitterAPI();
   }
@@ -45,21 +55,25 @@ export class SocialMediaAutomation {
 
     try {
       // Post to Facebook
-      try {
-        const facebookResult = await this.facebookAPI.createPost({
-          message: content.message,
-          link: content.link,
-          picture: content.imageUrl
-        });
-        results.facebook = facebookResult;
-        console.log('✅ Posted to Facebook successfully');
-      } catch (error: any) {
-        errors.push(`Facebook: ${error.message}`);
-        console.error('❌ Facebook posting failed:', error);
+      if (this.facebookAPI) {
+        try {
+          const facebookResult = await this.facebookAPI.createPost({
+            message: content.message,
+            link: content.link,
+            picture: content.imageUrl
+          });
+          results.facebook = facebookResult;
+          console.log('✅ Posted to Facebook successfully');
+        } catch (error: any) {
+          errors.push(`Facebook: ${error.message}`);
+          console.error('❌ Facebook posting failed:', error);
+        }
+      } else {
+        console.log('⚠️ Skipping Facebook - not configured');
       }
 
       // Post to Instagram (if image provided)
-      if (content.imageUrl) {
+      if (content.imageUrl && this.instagramAPI) {
         try {
           const instagramResult = await this.instagramAPI.postContent(
             content.message,
@@ -71,21 +85,27 @@ export class SocialMediaAutomation {
           errors.push(`Instagram: ${error.message}`);
           console.error('❌ Instagram posting failed:', error);
         }
-      } else {
+      } else if (!content.imageUrl) {
         console.log('⚠️ Skipping Instagram - no image provided');
+      } else {
+        console.log('⚠️ Skipping Instagram - not configured');
       }
 
       // Post to Twitter
-      try {
-        const twitterResult = await this.twitterAPI.postTweet(
-          content.message,
-          content.imageUrl
-        );
-        results.twitter = twitterResult;
-        console.log('✅ Posted to Twitter successfully');
-      } catch (error: any) {
-        errors.push(`Twitter: ${error.message}`);
-        console.error('❌ Twitter posting failed:', error);
+      if (this.twitterAPI) {
+        try {
+          const twitterResult = await this.twitterAPI.postTweet(
+            content.message,
+            content.imageUrl
+          );
+          results.twitter = twitterResult;
+          console.log('✅ Posted to Twitter successfully');
+        } catch (error: any) {
+          errors.push(`Twitter: ${error.message}`);
+          console.error('❌ Twitter posting failed:', error);
+        }
+      } else {
+        console.log('⚠️ Skipping Twitter - not configured');
       }
 
     } catch (error: any) {
@@ -194,27 +214,33 @@ export class SocialMediaAutomation {
 
     try {
       // Get Facebook insights
-      try {
-        const facebookInsights = await this.facebookAPI.getPageInsights();
-        results.facebook = facebookInsights;
-      } catch (error) {
-        console.error('Error fetching Facebook insights:', error);
+      if (this.facebookAPI) {
+        try {
+          const facebookInsights = await this.facebookAPI.getPageInsights();
+          results.facebook = facebookInsights;
+        } catch (error) {
+          console.error('Error fetching Facebook insights:', error);
+        }
       }
 
       // Get Instagram insights
-      try {
-        const instagramInsights = await this.instagramAPI.getAccountInsights();
-        results.instagram = instagramInsights;
-      } catch (error) {
-        console.error('Error fetching Instagram insights:', error);
+      if (this.instagramAPI) {
+        try {
+          const instagramInsights = await this.instagramAPI.getAccountInsights();
+          results.instagram = instagramInsights;
+        } catch (error) {
+          console.error('Error fetching Instagram insights:', error);
+        }
       }
 
       // Get Twitter insights (basic)
-      try {
-        const twitterConnected = await this.twitterAPI.testConnection();
-        results.twitter = { connected: twitterConnected };
-      } catch (error) {
-        console.error('Error fetching Twitter insights:', error);
+      if (this.twitterAPI) {
+        try {
+          const twitterConnected = await this.twitterAPI.testConnection();
+          results.twitter = { connected: twitterConnected };
+        } catch (error) {
+          console.error('Error fetching Twitter insights:', error);
+        }
       }
 
       // Calculate summary (if platforms have data)
@@ -246,33 +272,45 @@ export class SocialMediaAutomation {
     const errors: string[] = [];
 
     // Test Facebook connection
-    try {
-      await this.facebookAPI.getPageInfo();
-      results.facebook = true;
-      console.log('✅ Facebook API connection successful');
-    } catch (error: any) {
-      errors.push(`Facebook: ${error.message}`);
-      console.error('❌ Facebook API connection failed:', error);
+    if (this.facebookAPI) {
+      try {
+        await this.facebookAPI.getPageInfo();
+        results.facebook = true;
+        console.log('✅ Facebook API connection successful');
+      } catch (error: any) {
+        errors.push(`Facebook: ${error.message}`);
+        console.error('❌ Facebook API connection failed:', error);
+      }
+    } else {
+      console.log('⚠️ Facebook API not configured');
     }
 
     // Test Instagram connection
-    try {
-      await this.instagramAPI.getAccountInfo();
-      results.instagram = true;
-      console.log('✅ Instagram API connection successful');
-    } catch (error: any) {
-      errors.push(`Instagram: ${error.message}`);
-      console.error('❌ Instagram API connection failed:', error);
+    if (this.instagramAPI) {
+      try {
+        await this.instagramAPI.getAccountInfo();
+        results.instagram = true;
+        console.log('✅ Instagram API connection successful');
+      } catch (error: any) {
+        errors.push(`Instagram: ${error.message}`);
+        console.error('❌ Instagram API connection failed:', error);
+      }
+    } else {
+      console.log('⚠️ Instagram API not configured');
     }
 
     // Test Twitter connection
-    try {
-      const twitterConnected = await this.twitterAPI.testConnection();
-      results.twitter = twitterConnected;
-      console.log('✅ Twitter API connection successful');
-    } catch (error: any) {
-      errors.push(`Twitter: ${error.message}`);
-      console.error('❌ Twitter API connection failed:', error);
+    if (this.twitterAPI) {
+      try {
+        const twitterConnected = await this.twitterAPI.testConnection();
+        results.twitter = twitterConnected;
+        console.log('✅ Twitter API connection successful');
+      } catch (error: any) {
+        errors.push(`Twitter: ${error.message}`);
+        console.error('❌ Twitter API connection failed:', error);
+      }
+    } else {
+      console.log('⚠️ Twitter API not configured');
     }
 
     return {
