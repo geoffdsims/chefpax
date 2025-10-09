@@ -19,7 +19,10 @@ export default function AutomationPage() {
           Social Media Automation Platform
         </Typography>
         <Typography variant="h5" color="text.secondary" paragraph>
-          Automated social media management for microgreens businesses
+          Professional SaaS automation platform for microgreens businesses
+        </Typography>
+        <Typography variant="body1" sx={{ maxWidth: 800, mx: 'auto' }}>
+          ChefPax LLC is a registered technology company providing automation services to microgreens growers and agricultural businesses. We specialize in IoT monitoring, social media automation, and business process optimization for the agricultural sector.
         </Typography>
       </Box>
 
@@ -29,7 +32,10 @@ export default function AutomationPage() {
           SaaS Platform Services
         </Typography>
         <Typography variant="body1" paragraph>
-          ChefPax provides a comprehensive SaaS platform for microgreens businesses to automate their social media presence across Facebook, Instagram, and Twitter. Our platform uses Meta's Platform Data to enable automated posting, engagement analytics, and customer communication.
+          <strong>Business Information:</strong> ChefPax LLC operates as a Software-as-a-Service (SaaS) provider, offering automation solutions specifically designed for microgreens cultivation businesses. Our platform integrates with Meta's APIs to provide automated social media management, IoT sensor monitoring, and business analytics.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          <strong>Services Provided:</strong> We provide a comprehensive SaaS platform for microgreens businesses to automate their social media presence across Facebook, Instagram, and Twitter. Our platform uses Meta's Platform Data to enable automated posting, engagement analytics, and customer communication for agricultural businesses.
         </Typography>
         <Typography variant="body1" paragraph>
           <strong>How Platform Data is Used:</strong> We access Facebook Page information, post engagement metrics, and user interaction data to automatically schedule and publish content about microgreens products, harvest updates, and delivery schedules. This data enables our clients to maintain consistent social media presence without manual intervention.
@@ -164,3 +170,4 @@ export default function AutomationPage() {
     </Container>
   );
 }
+
