@@ -38,10 +38,39 @@ export default function AutomationPage() {
           <strong>Services Provided:</strong> We provide a comprehensive SaaS platform for microgreens businesses to automate their social media presence across Facebook, Instagram, and Twitter. Our platform uses Meta's Platform Data to enable automated posting, engagement analytics, and customer communication for agricultural businesses.
         </Typography>
         <Typography variant="body1" paragraph>
-          <strong>How Platform Data is Used:</strong> We access Facebook Page information, post engagement metrics, and user interaction data to automatically schedule and publish content about microgreens products, harvest updates, and delivery schedules. This data enables our clients to maintain consistent social media presence without manual intervention.
+          <strong>How Platform Data is Used:</strong> ChefPax uses Meta's Platform Data through specific API calls to provide automation services to microgreens businesses:
+        </Typography>
+        <Typography variant="body1" component="div" sx={{ pl: 2, borderLeft: '3px solid #2D5016' }}>
+          <Typography variant="subtitle1" gutterBottom><strong>Specific API Calls We Make:</strong></Typography>
+          <Typography variant="body2" component="div">
+            • <strong>pages_show_list:</strong> Retrieve list of Facebook Pages our clients manage<br/>
+            • <strong>pages_read_engagement:</strong> Access post engagement metrics, likes, comments, shares<br/>
+            • <strong>pages_manage_posts:</strong> Automatically create and schedule posts about harvest updates, product availability, delivery schedules<br/>
+            • <strong>instagram_basic:</strong> Access Instagram Business account information and analytics<br/>
+            • <strong>instagram_content_publish:</strong> Automatically post harvest photos and product updates to Instagram<br/>
+            • <strong>read_insights:</strong> Generate automated reports on social media performance for microgreens businesses
+          </Typography>
+        </Typography>
+        <Typography variant="body1" paragraph>
+          <strong>Data Processing:</strong> We process this data to automatically schedule posts about microgreens harvest schedules, delivery updates, and product availability. This enables microgreens businesses to maintain consistent social media presence without manual posting.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          <strong>Technical Implementation:</strong> Our platform uses webhook integrations and scheduled API calls to automatically:
+        </Typography>
+        <Typography variant="body1" component="div" sx={{ pl: 2 }}>
+          <Typography variant="body2" component="div">
+            • Monitor harvest schedules and automatically post "Fresh harvest today!" with product photos<br/>
+            • Track delivery routes and post real-time delivery updates to customers<br/>
+            • Analyze engagement data to optimize posting times for maximum reach<br/>
+            • Generate weekly performance reports for microgreens business owners<br/>
+            • Send automated responses to customer inquiries about product availability
+          </Typography>
         </Typography>
         <Typography variant="body1" paragraph>
           <strong>Client Benefits:</strong> Microgreens businesses can focus on growing while our platform handles their social media marketing, customer engagement, and brand awareness through automated content posting and analytics.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          <strong>Business Model:</strong> ChefPax operates as a subscription-based SaaS platform, charging microgreens businesses monthly fees for automated social media management services. We serve multiple clients in the agricultural sector, each with their own Facebook Pages and Instagram Business accounts.
         </Typography>
       </Paper>
 
