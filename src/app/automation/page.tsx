@@ -71,9 +71,9 @@ export default function AutomationPage() {
         </Typography>
         <Typography variant="body1" component="div" sx={{ pl: 2, borderLeft: '3px solid #2D5016' }}>
           <Typography variant="body2" component="div">
-            • <strong>Facebook Graph API v18.0:</strong> POST /{page_id}/feed for automated harvest announcements<br/>
-            • <strong>Instagram Graph API:</strong> POST /{ig-user-id}/media for product photo posting<br/>
-            • <strong>Pages Insights API:</strong> GET /{page-id}/insights for engagement analytics<br/>
+            • <strong>Facebook Graph API v18.0:</strong> POST /[page_id]/feed for automated harvest announcements<br/>
+            • <strong>Instagram Graph API:</strong> POST /[ig-user-id]/media for product photo posting<br/>
+            • <strong>Pages Insights API:</strong> GET /[page-id]/insights for engagement analytics<br/>
             • <strong>Instagram Basic Display:</strong> GET /me/media for content management<br/>
             • <strong>Webhook Subscriptions:</strong> Real-time order processing triggers social media updates<br/>
             • <strong>I2C Sensor Integration:</strong> BH1750 light sensors trigger Instagram story posts<br/>
