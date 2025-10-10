@@ -67,7 +67,37 @@ export default function AutomationPage() {
           </Typography>
         </Typography>
         <Typography variant="body1" paragraph>
+          <strong>API Integration Examples:</strong>
+        </Typography>
+        <Typography variant="body1" component="div" sx={{ pl: 2, borderLeft: '3px solid #2D5016' }}>
+          <Typography variant="body2" component="div">
+            • <strong>Facebook Graph API v18.0:</strong> POST /{page_id}/feed for automated harvest announcements<br/>
+            • <strong>Instagram Graph API:</strong> POST /{ig-user-id}/media for product photo posting<br/>
+            • <strong>Pages Insights API:</strong> GET /{page-id}/insights for engagement analytics<br/>
+            • <strong>Instagram Basic Display:</strong> GET /me/media for content management<br/>
+            • <strong>Webhook Subscriptions:</strong> Real-time order processing triggers social media updates<br/>
+            • <strong>I2C Sensor Integration:</strong> BH1750 light sensors trigger Instagram story posts<br/>
+            • <strong>IoT Data Processing:</strong> DHT22 temperature/humidity sensors generate Facebook posts about growing conditions
+          </Typography>
+        </Typography>
+        <Typography variant="body1" paragraph>
           <strong>Client Benefits:</strong> Microgreens businesses can focus on growing while our platform handles their social media marketing, customer engagement, and brand awareness through automated content posting and analytics.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          <strong>Multi-Client Architecture:</strong> Our platform manages multiple microgreens businesses simultaneously, each with separate Facebook Pages and Instagram Business accounts. We use OAuth tokens and API keys to authenticate and manage each client's social media presence independently.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          <strong>Data Flow Process:</strong>
+        </Typography>
+        <Typography variant="body1" component="div" sx={{ pl: 2 }}>
+          <Typography variant="body2" component="div">
+            1. <strong>Client Onboarding:</strong> New microgreens business connects their Facebook Page and Instagram Business account<br/>
+            2. <strong>Token Management:</strong> We store and refresh Page Access Tokens for each client<br/>
+            3. <strong>Automated Monitoring:</strong> IoT sensors and harvest schedules trigger API calls<br/>
+            4. <strong>Content Generation:</strong> Platform creates posts using client-specific data and templates<br/>
+            5. <strong>API Publishing:</strong> Content is posted to client's Facebook Page and Instagram Business account<br/>
+            6. <strong>Analytics Collection:</strong> Engagement data is collected and processed for performance reports
+          </Typography>
         </Typography>
         <Typography variant="body1" paragraph>
           <strong>Business Model:</strong> ChefPax operates as a subscription-based SaaS platform, charging microgreens businesses monthly fees for automated social media management services. We serve multiple clients in the agricultural sector, each with their own Facebook Pages and Instagram Business accounts.
