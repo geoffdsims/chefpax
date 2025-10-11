@@ -1,6 +1,13 @@
 "use client";
-import { Card, CardContent, CardActions, Typography, Button, Box } from "@mui/material";
-import { AddShoppingCart } from "@mui/icons-material";
+import { Card, CardContent, CardActions, Typography, Button, Box, Tooltip } from "@mui/material";
+import { AddShoppingCart, Info } from "@mui/icons-material";
+
+interface ProductStage {
+  type: string;
+  offsetDays: number;
+  durationDays?: number;
+  notes: string;
+}
 
 interface Product {
   _id: string;
@@ -9,11 +16,14 @@ interface Product {
   priceCents: number;
   unit: string;
   photoUrl?: string;
-  category?: "mix" | "single" | "live_tray";
-  variety?: "pea" | "sunflower" | "radish" | "amaranth" | "mixed";
+  category?: string;
+  variety?: string;
   sizeOz?: number;
   weeklyCapacity?: number;
   currentWeekAvailable?: number;
+  description?: string;
+  leadTimeDays?: number;
+  stages?: ProductStage[];
 }
 
 interface AvailabilityStatus {
@@ -50,17 +60,110 @@ const getProductImage = (sku: string) => {
 };
 
 
+// Tooltip content with grow card details
+function GrowCardTooltip({ product }: { product: Product }) {
+  return (
+    <Box sx={{ p: 1, maxWidth: 350 }}>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: '#4CAF50' }}>
+        {product.name}
+      </Typography>
+      
+      {product.description && (
+        <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.4 }}>
+          {product.description}
+        </Typography>
+      )}
+      
+      {product.leadTimeDays && (
+        <Typography variant="caption" sx={{ display: 'block', mb: 1, opacity: 0.9 }}>
+          🌱 <strong>Grow Time:</strong> {product.leadTimeDays} days
+        </Typography>
+      )}
+      
+      {product.sizeOz && (
+        <Typography variant="caption" sx={{ display: 'block', mb: 1, opacity: 0.9 }}>
+          📦 <strong>Tray Size:</strong> {product.sizeOz < 50 ? '5×5 inches' : '10×20 inches'}
+        </Typography>
+      )}
+      
+      {product.stages && product.stages.length > 0 && (
+        <Box sx={{ mt: 1.5, pt: 1.5, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+          <Typography variant="caption" sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}>
+            Grow Process:
+          </Typography>
+          {product.stages.slice(0, 4).map((stage, idx) => (
+            <Typography 
+              key={idx} 
+              variant="caption" 
+              sx={{ 
+                display: 'block', 
+                opacity: 0.9,
+                fontSize: '0.7rem',
+                lineHeight: 1.5
+              }}
+            >
+              {idx + 1}. <strong>{stage.type}:</strong> {stage.notes}
+            </Typography>
+          ))}
+        </Box>
+      )}
+      
+      <Typography 
+        variant="caption" 
+        sx={{ 
+          display: 'block', 
+          mt: 1.5, 
+          pt: 1, 
+          borderTop: '1px solid rgba(255,255,255,0.2)',
+          fontStyle: 'italic',
+          opacity: 0.8
+        }}
+      >
+        💡 Hover to see details • Click to add to cart
+      </Typography>
+    </Box>
+  );
+}
+
 export default function ProductCard({ p, onAdd, availability }: ProductCardProps) {
   return (
-    <Card 
-      sx={{ 
-        height: "100%", 
-        display: 'flex', 
-        flexDirection: 'column',
-        overflow: 'hidden',
-        position: 'relative'
+    <Tooltip
+      title={<GrowCardTooltip product={p} />}
+      arrow
+      placement="top"
+      enterDelay={300}
+      leaveDelay={200}
+      slotProps={{
+        tooltip: {
+          sx: {
+            bgcolor: 'rgba(45, 80, 22, 0.98)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(76, 175, 80, 0.3)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            maxWidth: 380,
+            fontSize: '0.875rem',
+            '& .MuiTooltip-arrow': {
+              color: 'rgba(45, 80, 22, 0.98)',
+            }
+          }
+        }
       }}
     >
+      <Card 
+        sx={{ 
+          height: "100%", 
+          display: 'flex', 
+          flexDirection: 'column',
+          overflow: 'hidden',
+          position: 'relative',
+          cursor: 'help',
+          transition: 'box-shadow 0.3s ease, transform 0.2s ease',
+          '&:hover': {
+            boxShadow: '0 8px 24px rgba(45, 80, 22, 0.2)',
+            transform: 'translateY(-2px)'
+          }
+        }}
+      >
       {/* Product Image - Compact */}
       <Box
         sx={{
@@ -223,6 +326,31 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
           {availability?.status === 'sold_out' ? 'Sold Out' : 'Add to Cart'}
         </Button>
       </CardActions>
+      
+      {/* Info icon hint */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 8,
+          left: 8,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(8px)',
+          borderRadius: '50%',
+          width: 28,
+          height: 28,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: 0.7,
+          transition: 'opacity 0.3s ease',
+          '&:hover': {
+            opacity: 1
+          }
+        }}
+      >
+        <Info sx={{ fontSize: 18, color: 'primary.main' }} />
+      </Box>
     </Card>
+    </Tooltip>
   );
 }
