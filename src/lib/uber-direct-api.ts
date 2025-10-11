@@ -1,14 +1,46 @@
 /**
- * Uber Direct API Integration
- * Handles same-day delivery requests for live microgreen trays
+ * Uber Direct API Integration for ChefPax
+ * Handles automated delivery scheduling
  */
+
+export interface DeliveryAddress {
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country?: string;
+  unit?: string;
+}
+
+export interface DeliveryRequest {
+  orderId: string;
+  customerName: string;
+  customerPhone: string;
+  pickupAddress: DeliveryAddress;
+  deliveryAddress: DeliveryAddress;
+  items: Array<{
+    name: string;
+    quantity: number;
+  }>;
+  deliveryInstructions?: string;
+  scheduledTime?: Date;
+}
+
+export interface DeliveryResult {
+  success: boolean;
+  deliveryId?: string;
+  trackingUrl?: string;
+  estimatedPickup?: string;
+  estimatedDelivery?: string;
+  cost?: number;
+  error?: string;
+}
 
 export class UberDirectAPI {
   private clientId: string;
   private clientSecret: string;
   private customerId: string;
-  private baseUrl = 'https://api.uber.com/v1';
-  private accessToken: string | null = null;
+  private apiUrl = 'https://api.uber.com/v1/customers';
 
   constructor(clientId: string, clientSecret: string, customerId: string) {
     this.clientId = clientId;
@@ -17,135 +49,105 @@ export class UberDirectAPI {
   }
 
   /**
-   * Get OAuth access token
+   * Create a delivery
    */
-  private async getAccessToken(): Promise<string> {
-    if (this.accessToken) {
-      return this.accessToken;
-    }
-
+  async createDelivery(request: DeliveryRequest): Promise<DeliveryResult> {
     try {
-      const response = await fetch('https://login.uber.com/oauth/v2/token', {
+      const accessToken = await this.getAccessToken();
+
+      const deliveryPayload = {
+        pickup: {
+          name: 'ChefPax Microgreens',
+          address: this.formatAddress(request.pickupAddress),
+          phone_number: process.env.CHEFPAX_PHONE || '+15125550100',
+          instructions: 'Please pick up fresh microgreens. Handle with care.'
+        },
+        dropoff: {
+          name: request.customerName,
+          address: this.formatAddress(request.deliveryAddress),
+          phone_number: request.customerPhone,
+          instructions: request.deliveryInstructions || 'Please deliver to door'
+        },
+        manifest: {
+          reference: request.orderId,
+          description: `ChefPax Order ${request.orderId}`,
+          items: request.items.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            size: 'medium'
+          }))
+        },
+        ...(request.scheduledTime && {
+          pickup_ready: new Date().toISOString(),
+          pickup_deadline: request.scheduledTime.toISOString(),
+          dropoff_deadline: new Date(request.scheduledTime.getTime() + 7200000).toISOString() // 2 hours later
+        })
+      };
+
+      const response = await fetch(`${this.apiUrl}/${this.customerId}/deliveries`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
         },
-        body: new URLSearchParams({
-          grant_type: 'client_credentials',
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-          scope: 'delivery'
-        })
+        body: JSON.stringify(deliveryPayload)
       });
 
       if (!response.ok) {
-        throw new Error(`Uber OAuth error: ${response.statusText}`);
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create delivery');
       }
 
       const data = await response.json();
-      this.accessToken = data.access_token;
-      return this.accessToken;
-    } catch (error) {
-      console.error('Error getting Uber access token:', error);
-      throw error;
-    }
-  }
 
-  /**
-   * Create a delivery request
-   */
-  async createDelivery(deliveryData: {
-    pickupAddress: {
-      street: string;
-      city: string;
-      state: string;
-      zip: string;
-      country: string;
-      lat?: number;
-      lng?: number;
-    };
-    dropoffAddress: {
-      street: string;
-      city: string;
-      state: string;
-      zip: string;
-      country: string;
-      lat?: number;
-      lng?: number;
-    };
-    items: Array<{
-      name: string;
-      quantity: number;
-      price: number;
-    }>;
-    pickupTime?: string;
-    dropoffTime?: string;
-    specialInstructions?: string;
-  }): Promise<any> {
-    try {
-      const token = await this.getAccessToken();
-
-      const deliveryRequest = {
-        pickup: {
-          address: deliveryData.pickupAddress,
-          ...(deliveryData.pickupTime && { pickup_time: deliveryData.pickupTime }),
-          special_instructions: deliveryData.specialInstructions || 'Live microgreen trays - handle with care'
-        },
-        dropoff: {
-          address: deliveryData.dropoffAddress,
-          ...(deliveryData.dropoffTime && { dropoff_time: deliveryData.dropoffTime })
-        },
-        items: deliveryData.items.map(item => ({
-          name: item.name,
-          quantity: item.quantity,
-          price: Math.round(item.price * 100) // Convert to cents
-        }))
+      return {
+        success: true,
+        deliveryId: data.id,
+        trackingUrl: data.tracking_url,
+        estimatedPickup: data.pickup_eta,
+        estimatedDelivery: data.dropoff_eta,
+        cost: data.quote?.amount
       };
-
-      const response = await fetch(`${this.baseUrl}/customers/${this.customerId}/deliveries`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(deliveryRequest)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Uber Direct API error: ${JSON.stringify(errorData)}`);
-      }
-
-      const result = await response.json();
-      console.log('✅ Uber Direct delivery created:', result);
-      return result;
-    } catch (error) {
-      console.error('Error creating Uber Direct delivery:', error);
-      throw error;
+    } catch (error: any) {
+      console.error('Uber Direct API error:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to create delivery'
+      };
     }
   }
 
   /**
    * Get delivery status
    */
-  async getDeliveryStatus(deliveryId: string): Promise<any> {
+  async getDeliveryStatus(deliveryId: string): Promise<{
+    status: string;
+    location?: { lat: number; lng: number };
+    estimatedDelivery?: string;
+  }> {
     try {
-      const token = await this.getAccessToken();
+      const accessToken = await this.getAccessToken();
 
-      const response = await fetch(`${this.baseUrl}/customers/${this.customerId}/deliveries/${deliveryId}`, {
-        method: 'GET',
+      const response = await fetch(`${this.apiUrl}/${this.customerId}/deliveries/${deliveryId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
         }
       });
 
       if (!response.ok) {
-        throw new Error(`Uber Direct API error: ${response.statusText}`);
+        throw new Error('Failed to get delivery status');
       }
 
-      return await response.json();
-    } catch (error) {
-      console.error('Error getting delivery status:', error);
+      const data = await response.json();
+
+      return {
+        status: data.status,
+        location: data.courier?.location,
+        estimatedDelivery: data.dropoff_eta
+      };
+    } catch (error: any) {
+      console.error('Failed to get delivery status:', error);
       throw error;
     }
   }
@@ -153,106 +155,79 @@ export class UberDirectAPI {
   /**
    * Cancel a delivery
    */
-  async cancelDelivery(deliveryId: string, reason?: string): Promise<any> {
+  async cancelDelivery(deliveryId: string): Promise<boolean> {
     try {
-      const token = await this.getAccessToken();
+      const accessToken = await this.getAccessToken();
 
-      const response = await fetch(`${this.baseUrl}/customers/${this.customerId}/deliveries/${deliveryId}/cancel`, {
+      const response = await fetch(`${this.apiUrl}/${this.customerId}/deliveries/${deliveryId}/cancel`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          reason: reason || 'Customer requested cancellation'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Uber Direct API error: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error canceling delivery:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get delivery quotes
-   */
-  async getDeliveryQuote(quoteData: {
-    pickupAddress: {
-      lat: number;
-      lng: number;
-    };
-    dropoffAddress: {
-      lat: number;
-      lng: number;
-    };
-    pickupTime?: string;
-  }): Promise<any> {
-    try {
-      const token = await this.getAccessToken();
-
-      const quoteRequest = {
-        pickup: {
-          address: quoteData.pickupAddress,
-          ...(quoteData.pickupTime && { pickup_time: quoteData.pickupTime })
-        },
-        dropoff: {
-          address: quoteData.dropoffAddress
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
         }
-      };
-
-      const response = await fetch(`${this.baseUrl}/customers/${this.customerId}/quotes`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(quoteRequest)
       });
 
-      if (!response.ok) {
-        throw new Error(`Uber Direct API error: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error getting delivery quote:', error);
-      throw error;
+      return response.ok;
+    } catch (error: any) {
+      console.error('Failed to cancel delivery:', error);
+      return false;
     }
   }
 
   /**
-   * Estimate delivery cost for live microgreen trays
+   * Get OAuth access token
    */
-  async estimateMicrogreenDelivery(pickupAddress: string, dropoffAddress: string): Promise<{
-    estimatedCost: number;
-    estimatedTime: number;
-    available: boolean;
-  }> {
-    try {
-      // For now, return estimated values based on typical Uber Direct pricing
-      // In production, you'd use the actual quote API
-      const baseCost = 8.50; // Base delivery cost
-      const distanceMultiplier = 0.50; // Per mile
-      const liveTraySurcharge = 2.00; // Special handling for live trays
-      
-      // Estimate based on typical local delivery distances
-      const estimatedCost = baseCost + (5 * distanceMultiplier) + liveTraySurcharge;
-      const estimatedTime = 45; // Minutes
+  private async getAccessToken(): Promise<string> {
+    const response = await fetch('https://login.uber.com/oauth/v2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+        grant_type: 'client_credentials',
+        scope: 'eats.deliveries'
+      })
+    });
 
-      return {
-        estimatedCost: Math.round(estimatedCost * 100) / 100,
-        estimatedTime,
-        available: true
-      };
-    } catch (error) {
-      console.error('Error estimating delivery:', error);
-      throw error;
+    if (!response.ok) {
+      throw new Error('Failed to get Uber Direct access token');
     }
+
+    const data = await response.json();
+    return data.access_token;
   }
+
+  /**
+   * Format address for Uber API
+   */
+  private formatAddress(address: DeliveryAddress): string {
+    const parts = [
+      address.street,
+      address.unit,
+      address.city,
+      address.state,
+      address.zip,
+      address.country || 'US'
+    ].filter(Boolean);
+
+    return parts.join(', ');
+  }
+}
+
+/**
+ * Create Uber Direct API instance from environment variables
+ */
+export function createUberDirectAPI(): UberDirectAPI | null {
+  const clientId = process.env.UBER_DIRECT_CLIENT_ID;
+  const clientSecret = process.env.UBER_DIRECT_CLIENT_SECRET;
+  const customerId = process.env.UBER_DIRECT_CUSTOMER_ID;
+
+  if (!clientId || !clientSecret || !customerId) {
+    console.warn('Uber Direct API not configured');
+    return null;
+  }
+
+  return new UberDirectAPI(clientId, clientSecret, customerId);
 }

@@ -2,15 +2,22 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getDb } from '@/lib/mongo';
 import { EmailService } from '@/lib/email-service';
+import { SMSService } from '@/lib/sms-service';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+// Only initialize Stripe if configured
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-11-20.acacia',
-});
+}) : null;
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(req: Request) {
   try {
+    // Check if Stripe is configured
+    if (!stripe || !webhookSecret) {
+      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
+    }
+
     const body = await req.text();
     const signature = req.headers.get('stripe-signature')!;
 
@@ -23,7 +30,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    const db = await getDb();
+    // Check if MongoDB is configured
+    let db;
+    try {
+      db = await getDb();
+    } catch (error) {
+      console.warn('MongoDB not configured, webhook will run without database operations');
+      db = null;
+    }
 
     switch (event.type) {
       case 'payment_intent.succeeded':
@@ -67,31 +81,46 @@ export async function POST(req: Request) {
 
 async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent, db: any) {
   try {
-    // Update order status
-    const updateResult = await db.collection('orders').updateOne(
-      { paymentIntentId: paymentIntent.id },
-      { 
-        $set: { 
-          status: 'confirmed',
-          paymentStatus: 'paid',
-          updatedAt: new Date()
-        }
-      }
-    );
-    
     console.log(`Payment succeeded for order: ${paymentIntent.metadata?.orderId}`);
     
-    // Send order confirmation email
-    if (updateResult.matchedCount > 0) {
-      try {
-        const order = await db.collection('orders').findOne({ paymentIntentId: paymentIntent.id });
-        if (order) {
-          await sendOrderConfirmationEmail(order);
+    // Update order status if database is available
+    if (db) {
+      const updateResult = await db.collection('orders').updateOne(
+        { paymentIntentId: paymentIntent.id },
+        { 
+          $set: { 
+            status: 'confirmed',
+            paymentStatus: 'paid',
+            updatedAt: new Date()
+          }
         }
-      } catch (emailError) {
-        console.error('Failed to send order confirmation email:', emailError);
-        // Don't fail the webhook if email fails
+      );
+      
+      // Send order confirmation email and SMS
+      if (updateResult.matchedCount > 0) {
+        try {
+          const order = await db.collection('orders').findOne({ paymentIntentId: paymentIntent.id });
+          if (order) {
+            // Send email
+            await sendOrderConfirmationEmail(order);
+            
+            // Send SMS if customer has phone number
+            if (order.customer?.phone) {
+              await SMSService.sendOrderConfirmation({
+                customerPhone: order.customer.phone,
+                orderNumber: order._id?.toString() || 'Unknown',
+                deliveryDate: order.deliveryDate || new Date().toISOString(),
+                trackingUrl: `https://chefpax.com/account?order=${order._id}`
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Failed to send order confirmation notifications:', error);
+          // Don't fail the webhook if notifications fail
+        }
       }
+    } else {
+      console.log('Database not available, skipping order update');
     }
     
     // Trigger order processing (without BullMQ for now)
@@ -134,18 +163,20 @@ async function sendOrderConfirmationEmail(order: any) {
 
 async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent, db: any) {
   try {
-    await db.collection('orders').updateOne(
-      { paymentIntentId: paymentIntent.id },
-      { 
-        $set: { 
-          status: 'payment_failed',
-          paymentStatus: 'failed',
-          updatedAt: new Date()
-        }
-      }
-    );
-    
     console.log(`Payment failed for order: ${paymentIntent.metadata?.orderId}`);
+    
+    if (db) {
+      await db.collection('orders').updateOne(
+        { paymentIntentId: paymentIntent.id },
+        { 
+          $set: { 
+            status: 'payment_failed',
+            paymentStatus: 'failed',
+            updatedAt: new Date()
+          }
+        }
+      );
+    }
   } catch (error) {
     console.error('Error handling payment failed:', error);
   }
@@ -153,18 +184,21 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent, db: any)
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription, db: any) {
   try {
-    const subscriptionData = {
-      stripeSubscriptionId: subscription.id,
-      customerId: subscription.customer as string,
-      status: subscription.status,
-      currentPeriodStart: new Date(subscription.current_period_start * 1000),
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    await db.collection('subscriptions').insertOne(subscriptionData);
     console.log(`Subscription created: ${subscription.id}`);
+    
+    if (db) {
+      const subscriptionData = {
+        stripeSubscriptionId: subscription.id,
+        customerId: subscription.customer as string,
+        status: subscription.status,
+        currentPeriodStart: new Date(subscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      await db.collection('subscriptions').insertOne(subscriptionData);
+    }
   } catch (error) {
     console.error('Error handling subscription created:', error);
   }
@@ -172,19 +206,21 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription, db: 
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription, db: any) {
   try {
-    await db.collection('subscriptions').updateOne(
-      { stripeSubscriptionId: subscription.id },
-      { 
-        $set: { 
-          status: subscription.status,
-          currentPeriodStart: new Date(subscription.current_period_start * 1000),
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-          updatedAt: new Date()
-        }
-      }
-    );
-    
     console.log(`Subscription updated: ${subscription.id}`);
+    
+    if (db) {
+      await db.collection('subscriptions').updateOne(
+        { stripeSubscriptionId: subscription.id },
+        { 
+          $set: { 
+            status: subscription.status,
+            currentPeriodStart: new Date(subscription.current_period_start * 1000),
+            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            updatedAt: new Date()
+          }
+        }
+      );
+    }
   } catch (error) {
     console.error('Error handling subscription updated:', error);
   }
@@ -192,17 +228,19 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription, db: 
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription, db: any) {
   try {
-    await db.collection('subscriptions').updateOne(
-      { stripeSubscriptionId: subscription.id },
-      { 
-        $set: { 
-          status: 'canceled',
-          updatedAt: new Date()
-        }
-      }
-    );
-    
     console.log(`Subscription canceled: ${subscription.id}`);
+    
+    if (db) {
+      await db.collection('subscriptions').updateOne(
+        { stripeSubscriptionId: subscription.id },
+        { 
+          $set: { 
+            status: 'canceled',
+            updatedAt: new Date()
+          }
+        }
+      );
+    }
   } catch (error) {
     console.error('Error handling subscription deleted:', error);
   }
@@ -210,7 +248,9 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription, db: 
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice, db: any) {
   try {
-    if (invoice.subscription) {
+    console.log(`Invoice payment succeeded: ${invoice.id}`);
+    
+    if (db && invoice.subscription) {
       await db.collection('subscriptions').updateOne(
         { stripeSubscriptionId: invoice.subscription as string },
         { 
@@ -221,8 +261,6 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice, db: any) {
         }
       );
     }
-    
-    console.log(`Invoice payment succeeded: ${invoice.id}`);
   } catch (error) {
     console.error('Error handling invoice payment succeeded:', error);
   }
@@ -230,7 +268,9 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice, db: any) {
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice, db: any) {
   try {
-    if (invoice.subscription) {
+    console.log(`Invoice payment failed: ${invoice.id}`);
+    
+    if (db && invoice.subscription) {
       await db.collection('subscriptions').updateOne(
         { stripeSubscriptionId: invoice.subscription as string },
         { 
@@ -242,8 +282,6 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice, db: any) {
         }
       );
     }
-    
-    console.log(`Invoice payment failed: ${invoice.id}`);
   } catch (error) {
     console.error('Error handling invoice payment failed:', error);
   }

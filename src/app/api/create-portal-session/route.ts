@@ -17,14 +17,22 @@ export async function POST() {
     if (!session?.user?.email) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
 
     const email = session.user.email;
-    // Try find stripeCustomerId in your Mongo users collection (optional)
-    const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || "chefpax");
-    const users = db.collection("users"); // NextAuth creates users in this collection
+    let stripeCustomerId: string | undefined;
 
-    // Try to fetch stripeCustomerId from user document
-    const userDoc = await users.findOne({ email });
-    let stripeCustomerId = userDoc?.stripeCustomerId as string | undefined;
+    // Try find stripeCustomerId in your Mongo users collection (optional)
+    if (clientPromise) {
+      try {
+        const client = await clientPromise;
+        const db = client.db(process.env.MONGODB_DB || "chefpax");
+        const users = db.collection("users"); // NextAuth creates users in this collection
+
+        // Try to fetch stripeCustomerId from user document
+        const userDoc = await users.findOne({ email });
+        stripeCustomerId = userDoc?.stripeCustomerId as string | undefined;
+      } catch (error) {
+        console.warn("MongoDB not available, skipping user lookup:", error);
+      }
+    }
 
     if (!stripeCustomerId) {
       // Try find by email
@@ -38,12 +46,10 @@ export async function POST() {
         }
         const cust = await stripe.customers.create({ 
           email, 
-          metadata: { userId: userDoc?._id?.toString?.() || "" } 
+          metadata: { userId: "temp" } 
         });
         stripeCustomerId = cust.id;
       }
-      // persist on user doc (optional)
-      if (userDoc) await users.updateOne({ _id: userDoc._id }, { $set: { stripeCustomerId } });
     }
 
     const portal = await stripe.billingPortal.sessions.create({

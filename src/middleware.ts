@@ -1,8 +1,27 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
+  
+  // Admin authentication check using NextAuth
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    const token = await getToken({ 
+      req: request, 
+      secret: process.env.NEXTAUTH_SECRET 
+    })
+    
+    // Check if user is authenticated AND is an admin
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@chefpax.com'
+    
+    if (!token || token.email !== adminEmail) {
+      // Redirect to login with callback URL
+      const loginUrl = new URL('/api/auth/signin', request.url)
+      loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
   
   // Handle chefpax.shop domain - redirect to shop page
   if (hostname === 'chefpax.shop') {

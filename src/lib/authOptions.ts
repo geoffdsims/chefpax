@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
   // Only use MongoDB adapter if available
   ...(clientPromise && { adapter: MongoDBAdapter(clientPromise) }),
   providers: [
-    // Simple credentials provider for testing
+    // Admin credentials provider with password check
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -28,14 +28,22 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // Simple test authentication - replace with real logic
-        if (credentials?.email && credentials?.password) {
+        const adminEmail = process.env.ADMIN_EMAIL || 'geoff@chefpax.com';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'chefpax2024';
+
+        // Verify BOTH email and password match
+        if (
+          credentials?.email === adminEmail && 
+          credentials?.password === adminPassword
+        ) {
           return {
-            id: "1",
-            email: credentials.email,
-            name: "Test User",
+            id: "admin-1",
+            email: adminEmail,
+            name: "ChefPax Admin",
           };
         }
+        
+        // Invalid credentials
         return null;
       }
     }),

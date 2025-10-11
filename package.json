@@ -37,7 +37,8 @@
     "react-dom": "19.1.0",
     "stripe": "^18.5.0",
     "swr": "^2.3.6",
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "twilio": "^5.3.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
