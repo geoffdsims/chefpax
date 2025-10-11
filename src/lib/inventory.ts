@@ -23,7 +23,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 3,
       currentWeekAvailable: 3,
       photoUrl: "/images/sunflower.png",
-      description: "Nutty, crunchy, lightly sweet. Perfect for salads, avocado toast, and grain bowls. Harvest: 8-10 days.",
+      description: "Nutty, crunchy, lightly sweet. 10×20 live tray - 6-10 harvests. Perfect for salads, avocado toast, grain bowls. 8-10 days to harvest.",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
@@ -51,7 +51,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 4,
       currentWeekAvailable: 4,
       photoUrl: "/images/pea_shoots.png",
-      description: "Sweet snap-pea flavor. Soak seeds 8 hours before sowing. Harvest: 8-10 days.",
+      description: "Sweet snap-pea flavor, tender crunchy stems. 10×20 live tray - 6-10 harvests. Perfect for wraps, omelets, Asian salads. 8-10 days to harvest.",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
@@ -79,7 +79,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 6,
       currentWeekAvailable: 6,
       photoUrl: "/images/radish_saxa2.png",
-      description: "Spicy horseradish-like bite with vibrant purple. Harvest: 7-9 days.",
+      description: "Bold spicy horseradish kick, vibrant purple color. 10×20 live tray - 6-10 harvests. Perfect for tacos, sandwiches, poke bowls. 7-9 days to harvest.",
       leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
@@ -391,7 +391,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/bundle_core.png",
-      description: "Sunflower, Pea Shoots, Rambo Radish, Broccoli (10×20). Save $5!",
+      description: "4 live trays (10×20): Sunflower, Pea Shoots, Rambo Radish, Broccoli. Harvest 8-10 days. Save $5 vs individual!",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
@@ -419,7 +419,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/bundle_brassica.png",
-      description: "Broccoli, Kohlrabi, Wasabi Mustard (10×20). Save $3!",
+      description: "3 live trays (10×20): Broccoli, Kohlrabi, Wasabi Mustard. Bold brassica flavors. Harvest 8-10 days. Save $3!",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
