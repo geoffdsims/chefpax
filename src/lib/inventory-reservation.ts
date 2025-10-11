@@ -251,13 +251,13 @@ export async function getRackUtilization(startDate?: Date, endDate?: Date): Prom
   const mainTotal = RACK_CAPACITY.MAIN_RACK.totalSlots;
   const mainAvailable = mainTotal - mainUsed;
   
-  // Premium Rack utilization
+  // Premium Area utilization
   const premiumReservations = await db.collection<InventoryReservation>('inventoryReservations')
-    .find({ ...dateFilter, rackName: 'PREMIUM_RACK' })
+    .find({ ...dateFilter, rackName: 'PREMIUM_AREA' })
     .toArray();
   
   const premiumUsed = premiumReservations.reduce((total, res) => total + res.slotsReserved, 0);
-  const premiumTotal = RACK_CAPACITY.PREMIUM_RACK.totalSlots;
+  const premiumTotal = RACK_CAPACITY.PREMIUM_AREA.totalSlots;
   const premiumAvailable = premiumTotal - premiumUsed;
   
   return {
