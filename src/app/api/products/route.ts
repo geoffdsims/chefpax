@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongo";
 import { getProductsWithInventory } from "@/lib/inventory";
+import { checkAvailability } from "@/lib/inventory-reservation";
 import type { Product } from "@/lib/schema";
 
 export async function GET() {
@@ -16,30 +17,34 @@ export async function GET() {
       return NextResponse.json(getProductsWithInventory());
     }
     
-    // Calculate real-time availability
+    // Calculate real-time availability using reservation system
     const productsWithAvailability = await Promise.all(products.map(async (product) => {
-      // Get orders for current week that include this product
-      const orders = await db.collection("orders").find({
-        "cart.productId": product._id.toString(),
-        status: { $in: ["paid", "confirmed", "processing"] },
-        createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // Last 7 days
-      }).toArray();
-      
-      // Calculate sold quantity
-      const soldQty = orders.reduce((total, order) => {
-        const cartItem = order.cart?.find((item: any) => item.productId === product._id.toString());
-        return total + (cartItem?.qty || 0);
-      }, 0);
-      
-      // Calculate available
-      const weeklyCapacity = product.weeklyCapacity || 0;
-      const available = Math.max(0, weeklyCapacity - soldQty);
-      
-      return {
-        ...product,
-        currentWeekAvailable: available,
-        soldThisWeek: soldQty
-      };
+      try {
+        // Determine tray size from product data
+        const traySize = (product.sizeOz && product.sizeOz < 50) ? '5x5' : '10x20';
+        
+        // Get next delivery date (simplified: 2 days from now)
+        const nextDeliveryDate = new Date();
+        nextDeliveryDate.setDate(nextDeliveryDate.getDate() + 2);
+        
+        // Check availability using reservation system
+        const availability = await checkAvailability(traySize as '10x20' | '5x5', 1, nextDeliveryDate);
+        
+        return {
+          ...product,
+          currentWeekAvailable: availability.availableSlots,
+          reservationBased: true,
+          rackName: availability.rackName
+        };
+      } catch (error) {
+        console.error(`Error calculating availability for ${product.name}:`, error);
+        // Fallback to static capacity if reservation system fails
+        return {
+          ...product,
+          currentWeekAvailable: product.weeklyCapacity || 0,
+          reservationBased: false
+        };
+      }
     }));
     
     return NextResponse.json(productsWithAvailability);

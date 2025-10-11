@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { getDb } from '@/lib/mongo';
 import { EmailService } from '@/lib/email-service';
 import { SMSService } from '@/lib/sms-service';
+import { createReservation } from '@/lib/inventory-reservation';
 
 // Only initialize Stripe if configured
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -96,11 +97,38 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent, db: a
         }
       );
       
-      // Send order confirmation email and SMS
+      // Send order confirmation email and SMS + Reserve inventory
       if (updateResult.matchedCount > 0) {
         try {
           const order = await db.collection('orders').findOne({ paymentIntentId: paymentIntent.id });
           if (order) {
+            // Reserve inventory for each cart item
+            for (const item of (order.cart || [])) {
+              try {
+                // Determine tray size from product SKU or name
+                const traySize = (item.name?.includes('5×5') || item.sku?.includes('5X5')) ? '5x5' : '10x20';
+                
+                const reservation = await createReservation(
+                  order._id.toString(),
+                  item.productId,
+                  item.name,
+                  traySize as '10x20' | '5x5',
+                  item.qty,
+                  new Date(order.deliveryDate),
+                  [] // Production task IDs will be added later
+                );
+                
+                if (reservation.success) {
+                  console.log(`✅ Inventory reserved: ${item.qty}× ${item.name} (${reservation.reservation?.rackName})`);
+                } else {
+                  console.error(`⚠️ Failed to reserve inventory for ${item.name}: ${reservation.error}`);
+                  // Log but don't fail the order - manual intervention needed
+                }
+              } catch (resError) {
+                console.error(`Error reserving inventory for ${item.name}:`, resError);
+              }
+            }
+            
             // Send email
             await sendOrderConfirmationEmail(order);
             
