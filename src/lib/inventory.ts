@@ -107,7 +107,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/broccoli.png",
-      description: "Mild brassica, slightly earthy. Perfect for smoothies and health shots. Harvest: 8-10 days.",
+      description: "Mild earthy brassica flavor, tender crisp. 10×20 live tray - 6-10 harvests. Perfect for smoothies, salads, health shots. 8-10 days.",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
@@ -135,7 +135,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/kohlrabi.png",
-      description: "Mild brassica, sweet crunch. Perfect for salads and slaws. Harvest: 8-10 days.",
+      description: "Mild brassica with sweet crunch, purple stems. 10×20 live tray - 6-10 harvests. Perfect for salads, slaws. 8-10 days.",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
@@ -163,7 +163,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/superfood_mix.png",
-      description: "Peppery + mild mix: Radish, Cabbage, Kale, Broccoli, Kohlrabi. Harvest: 8-10 days.",
+      description: "Balanced peppery-to-sweet brassica mix. 10×20 live tray - 6-10 harvests. Perfect salad base, juice blend. 8-10 days.",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
@@ -191,7 +191,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/wasabi_mustard.png",
-      description: "⚠️ EXTREME HEAT! True wasabi flavor. Harvest: 7-9 days.",
+      description: "⚠️ EXTREME HEAT! True wasabi flavor, aromatic. 10×20 live tray - 6-10 harvests. For sushi, bold accents. 7-9 days.",
       leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
@@ -219,7 +219,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/wasabi_mustard.png",
-      description: "⚠️ EXTREME HEAT! Small batch wasabi mustard. Harvest: 7-9 days.",
+      description: "⚠️ EXTREME HEAT! True wasabi flavor. 5×5 live tray - 4-6 harvests. For sushi, Asian dishes. 7-9 days.",
       leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
@@ -249,7 +249,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/amaranth_dreads.png",
-      description: "Earthy, beet-like, delicate. Rich magenta color. Harvest: 10-12 days. NO BLACKOUT - light from Day 0!",
+      description: "Rich magenta color, earthy beet-like flavor. 5×5 live tray - 4-6 harvests. Fine-dining garnish, visual contrast. 10-12 days.",
       leadTimeDays: 12,
       isSubscriptionEligible: true,
       stages: [
@@ -277,7 +277,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/basil_dark_opal.png",
-      description: "Sweet, clove scent. Deep purple leaves. Harvest: 12-15 days. NO BLACKOUT - light from Day 0!",
+      description: "Sweet clove scent, deep purple leaves. 5×5 live tray - 4-6 harvests. Cocktails, desserts, basil oil. 12-15 days.",
       leadTimeDays: 15,
       isSubscriptionEligible: true,
       stages: [
@@ -305,7 +305,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/basil_lemon.png",
-      description: "Bright lemon-citrus basil. Perfect for seafood and beverages. Harvest: 12-15 days. NO BLACKOUT!",
+      description: "Bright lemon-citrus flavor. 5×5 live tray - 4-6 harvests. Perfect for seafood, fruit plates, beverages. 12-15 days.",
       leadTimeDays: 15,
       isSubscriptionEligible: true,
       stages: [
@@ -333,7 +333,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/basil_thai.png",
-      description: "Sweet-spice, anise aroma. Dark green with purple stems. Harvest: 12-15 days. NO BLACKOUT!",
+      description: "Sweet-spice with anise aroma, purple stems. 5×5 live tray - 4-6 harvests. Asian curries, seafood, Thai dishes. 12-15 days.",
       leadTimeDays: 15,
       isSubscriptionEligible: true,
       stages: [
@@ -361,7 +361,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/shiso.png",
-      description: "Basil-mint-cinnamon flavor. Serrated leaves. Harvest: 14-18 days. NO BLACKOUT!",
+      description: "Mint-basil-cinnamon blend, serrated aromatic leaves. 5×5 live tray - 4-6 harvests. Sushi, cocktails, Asian cuisine. 14-18 days.",
       leadTimeDays: 18,
       isSubscriptionEligible: true,
       stages: [
@@ -447,7 +447,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/bundle_superfood.png",
-      description: "Superfood Mix + Rambo Radish (10×20). Save $3!",
+      description: "2 live trays (10×20): Superfood Mix + Rambo Radish. Balanced flavors. 6-10 harvests each. Save $3!",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
@@ -475,7 +475,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/bundle_premium.png",
-      description: "Shiso, Dark Opal Basil, Lemon Basil, Thai Basil (5×5). Premium herb collection!",
+      description: "4 live trays (5×5): Shiso, Dark Opal, Lemon, Thai Basil. Premium herb collection - 4-6 harvests each. Perfect variety pack!",
       leadTimeDays: 15,
       isSubscriptionEligible: true,
       stages: [
@@ -503,7 +503,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/bundle_colorpop.png",
-      description: "Red Garnet Amaranth + three basils (5×5). Stunning visual variety!",
+      description: "4 live trays (5×5): Red Amaranth + 3 basils. Stunning colors, diverse flavors. 4-6 harvests each. Visual variety pack!",
       leadTimeDays: 15,
       isSubscriptionEligible: true,
       stages: [
