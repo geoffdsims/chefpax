@@ -31,11 +31,19 @@ ChefPax uses this permission to:
       message: testMessage
     });
 
+    if (!result.success) {
+      return NextResponse.json({
+        success: false,
+        error: result.error || 'Failed to create post',
+        timestamp: new Date().toISOString()
+      }, { status: 500 });
+    }
+
     return NextResponse.json({
       success: true,
       message: '✅ pages_manage_posts permission working',
-      postId: result.id,
-      postUrl: `https://facebook.com/${result.id}`,
+      postId: result.postId,
+      postUrl: `https://facebook.com/${result.postId}`,
       testMessage,
       timestamp: new Date().toISOString()
     });
@@ -51,4 +59,5 @@ ChefPax uses this permission to:
     }, { status: 500 });
   }
 }
+
 
