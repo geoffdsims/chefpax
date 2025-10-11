@@ -61,10 +61,10 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
         position: 'relative'
       }}
     >
-      {/* Product Image - Your beautiful microgreens photography */}
+      {/* Product Image - Compact */}
       <Box
         sx={{
-          height: '320px',
+          height: '200px',
           position: 'relative',
           overflow: 'hidden'
         }}
@@ -78,184 +78,149 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
             height: '100%',
             objectFit: 'cover',
             objectPosition: 'center',
-            transition: 'transform 0.4s ease-in-out',
+            transition: 'transform 0.3s ease',
             '&:hover': {
               transform: 'scale(1.05)'
             }
           }}
         />
-        
-        {/* Gradient overlay */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '50%',
-            background: 'linear-gradient(transparent, rgba(45, 80, 22, 0.4))'
-          }}
-        />
 
-        {/* Premium badge - only show on premium items */}
-        {p.sku.includes('PREMIUM') && (
+        {/* Category badge */}
+        {(p.category === 'premium' || p.category === 'bundle') && (
           <Box
-            className="premium-badge-shimmer"
             sx={{
               position: 'absolute',
-              top: 16,
-              right: 16,
+              top: 8,
+              right: 8,
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: 2,
-              px: 2,
-              py: 1,
-              border: '1px solid rgba(212, 175, 55, 0.2)'
+              backdropFilter: 'blur(8px)',
+              borderRadius: 1,
+              px: 1.5,
+              py: 0.5
             }}
           >
             <Typography variant="caption" sx={{ 
-              fontWeight: 600,
-              color: 'secondary.main',
+              fontWeight: 700,
+              color: p.category === 'premium' ? 'secondary.main' : 'primary.main',
               textTransform: 'uppercase',
+              fontSize: '0.65rem',
               letterSpacing: '0.5px'
             }}>
-              Premium
+              {p.category}
+            </Typography>
+          </Box>
+        )}
+
+        {/* Availability badge */}
+        {availability && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 8,
+              left: 8,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 1,
+              px: 1,
+              py: 0.5
+            }}
+          >
+            <Box
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                backgroundColor: 
+                  availability.status === 'sold_out' ? 'error.main' :
+                  availability.status === 'low_stock' ? 'warning.main' : 'success.main'
+              }}
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.primary',
+                fontWeight: 600,
+                fontSize: '0.65rem'
+              }}
+            >
+              {availability.status === 'sold_out' ? 'Sold Out' :
+               availability.status === 'low_stock' ? 'Low Stock' : 'In Stock'}
             </Typography>
           </Box>
         )}
       </Box>
 
-            <CardContent sx={{ flexGrow: 1, p: 3, pb: 2 }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  fontWeight: 600,
-                  fontSize: '0.7rem',
-                  display: 'block',
-                  mb: 1,
-                  lineHeight: 1.2
-                }}
-              >
-                {p.sku}
-              </Typography>
+      <CardContent sx={{ flexGrow: 1, p: 2, pb: 1 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 600,
+            color: 'primary.main',
+            lineHeight: 1.3,
+            mb: 1,
+            fontSize: '0.95rem'
+          }}
+        >
+          {p.name}
+        </Typography>
 
-              <Typography
-                variant="h6"
-                sx={{
-                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontWeight: 600,
-                  color: 'primary.main',
-                  lineHeight: 1.3,
-                  mb: 1.5,
-                  fontSize: '0.95rem',
-                  wordWrap: 'break-word',
-                  overflowWrap: 'break-word',
-                  whiteSpace: 'normal',
-                  height: 'auto',
-                  minHeight: '2.6rem'
-                }}
-              >
-                {p.name}
-              </Typography>
+        {/* Price row - compact */}
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5, mb: 1 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+              color: 'primary.main',
+              fontSize: '1.4rem'
+            }}
+          >
+            ${(p.priceCents/100).toFixed(2)}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'success.main',
+              fontWeight: 600,
+              fontSize: '0.75rem'
+            }}
+          >
+            ${((p.priceCents * 0.9)/100).toFixed(2)}/week
+          </Typography>
+        </Box>
 
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  fontSize: '0.8rem',
-                  lineHeight: 1.4,
-                  mb: 2,
-                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-                }}
-              >
-                {p.unit === 'tray' ? 'Live growing tray • 10×20 inches • Cut as needed' : 'Fresh clamshell • Ready to enjoy'}
-              </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            fontSize: '0.75rem',
+            lineHeight: 1.4
+          }}
+        >
+          {p.unit === 'bundle' ? '🎁 Bundle • Multiple trays' :
+           p.unit === 'tray' && p.sizeOz && p.sizeOz < 50 ? '5×5 live tray • 4-6 harvests' :
+           p.unit === 'tray' ? '10×20 live tray • 6-10 harvests' : 
+           'Fresh & ready to use'}
+        </Typography>
+      </CardContent>
 
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontWeight: 700,
-                      color: 'primary.main',
-                      fontSize: '1.3rem'
-                    }}
-                  >
-                    ${(p.priceCents/100).toFixed(2)}
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'success.main',
-                    fontWeight: 600,
-                    fontSize: '0.8rem',
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                    px: 1,
-                    py: 0.5,
-                    borderRadius: 1,
-                    border: '1px solid rgba(76, 175, 80, 0.3)',
-                    display: 'inline-block',
-                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-                  }}
-                >
-                  ${((p.priceCents * 0.9)/100).toFixed(2)} with subscription
-                </Typography>
-              </Box>
-                
-                {/* Availability indicator */}
-                {availability && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box
-                      sx={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: '50%',
-                        backgroundColor: 
-                          availability.status === 'sold_out' ? 'error.main' :
-                          availability.status === 'low_stock' ? 'warning.main' : 'success.main'
-                      }}
-                    />
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: 
-                          availability.status === 'sold_out' ? 'error.main' :
-                          availability.status === 'low_stock' ? 'warning.main' : 'success.main',
-                        fontWeight: 600,
-                        fontSize: '0.7rem',
-                        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-                      }}
-                    >
-                      {availability.message}
-                    </Typography>
-                  </Box>
-                )}
-            </CardContent>
-
-      <CardActions sx={{ p: 3, pt: 1 }}>
+      <CardActions sx={{ p: 2, pt: 0 }}>
         <Button 
           onClick={() => onAdd(p)} 
           variant="contained" 
           fullWidth
           startIcon={<AddShoppingCart />}
-          size="large"
           disabled={availability?.status === 'sold_out'}
           sx={{
-            py: 2,
-            fontSize: '1rem',
+            py: 1.5,
+            fontSize: '0.9rem',
             fontWeight: 600,
             opacity: availability?.status === 'sold_out' ? 0.6 : 1
           }}
         >
-          {availability?.status === 'sold_out' 
-            ? 'Sold Out' 
-            : 'Add to Cart'
-          }
+          {availability?.status === 'sold_out' ? 'Sold Out' : 'Add to Cart'}
         </Button>
       </CardActions>
     </Card>
