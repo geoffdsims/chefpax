@@ -35,26 +35,26 @@ export class FacebookMarketingAPI {
    */
   async createPost(params: { message: string; link?: string; picture?: string }): Promise<FacebookPostResult> {
     try {
-      const url = `${this.baseUrl}/${this.pageId}/feed`;
-      
-      const body: any = {
+      const urlParams = new URLSearchParams({
         message: params.message,
         access_token: this.accessToken,
-      };
+      });
 
       if (params.link) {
-        body.link = params.link;
+        urlParams.append('link', params.link);
       }
       if (params.picture) {
-        body.picture = params.picture;
+        urlParams.append('picture', params.picture);
       }
+
+      const url = `${this.baseUrl}/${this.pageId}/feed`;
 
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(body),
+        body: urlParams.toString(),
       });
 
       const data = await response.json();
@@ -85,23 +85,23 @@ export class FacebookMarketingAPI {
    */
   async postPhoto(imageUrl: string, caption?: string): Promise<FacebookPostResult> {
     try {
-      const url = `${this.baseUrl}/${this.pageId}/photos`;
-      
-      const body: any = {
+      const urlParams = new URLSearchParams({
         url: imageUrl,
         access_token: this.accessToken,
-      };
+      });
 
       if (caption) {
-        body.caption = caption;
+        urlParams.append('caption', caption);
       }
+
+      const url = `${this.baseUrl}/${this.pageId}/photos`;
 
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(body),
+        body: urlParams.toString(),
       });
 
       const data = await response.json();
