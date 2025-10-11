@@ -63,64 +63,30 @@ const getProductImage = (sku: string) => {
 // Tooltip content with grow card details
 function GrowCardTooltip({ product }: { product: Product }) {
   return (
-    <Box sx={{ p: 1, maxWidth: 350 }}>
-      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: '#4CAF50' }}>
+    <Box sx={{ p: 1.5, maxWidth: 320 }}>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: '#4CAF50' }}>
         {product.name}
       </Typography>
       
       {product.description && (
-        <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.4 }}>
+        <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.5 }}>
           {product.description}
         </Typography>
       )}
       
-      {product.leadTimeDays && (
-        <Typography variant="caption" sx={{ display: 'block', mb: 1, opacity: 0.9 }}>
-          🌱 <strong>Grow Time:</strong> {product.leadTimeDays} days
-        </Typography>
-      )}
-      
-      {product.sizeOz && (
-        <Typography variant="caption" sx={{ display: 'block', mb: 1, opacity: 0.9 }}>
-          📦 <strong>Tray Size:</strong> {product.sizeOz < 50 ? '5×5 inches' : '10×20 inches'}
-        </Typography>
-      )}
-      
-      {product.stages && product.stages.length > 0 && (
-        <Box sx={{ mt: 1.5, pt: 1.5, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
-          <Typography variant="caption" sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}>
-            Grow Process:
+      <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+        {product.leadTimeDays && (
+          <Typography variant="caption" sx={{ display: 'block', opacity: 0.95 }}>
+            🌱 <strong>{product.leadTimeDays} days</strong> to harvest
           </Typography>
-          {product.stages.slice(0, 4).map((stage, idx) => (
-            <Typography 
-              key={idx} 
-              variant="caption" 
-              sx={{ 
-                display: 'block', 
-                opacity: 0.9,
-                fontSize: '0.7rem',
-                lineHeight: 1.5
-              }}
-            >
-              {idx + 1}. <strong>{stage.type}:</strong> {stage.notes}
-            </Typography>
-          ))}
-        </Box>
-      )}
-      
-      <Typography 
-        variant="caption" 
-        sx={{ 
-          display: 'block', 
-          mt: 1.5, 
-          pt: 1, 
-          borderTop: '1px solid rgba(255,255,255,0.2)',
-          fontStyle: 'italic',
-          opacity: 0.8
-        }}
-      >
-        💡 Hover to see details • Click to add to cart
-      </Typography>
+        )}
+        
+        {product.sizeOz && (
+          <Typography variant="caption" sx={{ display: 'block', opacity: 0.95 }}>
+            📦 <strong>{product.sizeOz < 50 ? '5×5' : '10×20'}</strong> inches
+          </Typography>
+        )}
+      </Box>
     </Box>
   );
 }
