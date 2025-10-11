@@ -9,6 +9,8 @@ export default function FacebookDemoPage() {
   const [selectedPage, setSelectedPage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [testResult, setTestResult] = useState<any>(null);
+  const [testLoading, setTestLoading] = useState(false);
 
   const handleFacebookLogin = async () => {
     setLoading(true);
@@ -36,6 +38,38 @@ export default function FacebookDemoPage() {
 
   const handleSelectPage = (pageId: string) => {
     setSelectedPage(pageId);
+  };
+
+  const testReadPermission = async () => {
+    setTestLoading(true);
+    setTestResult(null);
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/test/facebook-pages-read');
+      const data = await response.json();
+      setTestResult(data);
+    } catch (err: any) {
+      setError(err.message || 'Failed to test read permission');
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const testPostPermission = async () => {
+    setTestLoading(true);
+    setTestResult(null);
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/test/facebook-post');
+      const data = await response.json();
+      setTestResult(data);
+    } catch (err: any) {
+      setError(err.message || 'Failed to test post permission');
+    } finally {
+      setTestLoading(false);
+    }
   };
 
   return (
@@ -122,17 +156,57 @@ export default function FacebookDemoPage() {
                 </Alert>
               )}
 
-              <Box sx={{ mt: 3 }}>
+              <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Button
                   variant="outlined"
                   onClick={() => {
                     setPages([]);
                     setSelectedPage(null);
+                    setTestResult(null);
                   }}
                 >
                   Disconnect & Reset Demo
                 </Button>
+                
+                <Button
+                  variant="contained"
+                  onClick={testReadPermission}
+                  disabled={testLoading}
+                  sx={{ bgcolor: '#1877f2', '&:hover': { bgcolor: '#166fe5' } }}
+                >
+                  {testLoading ? <CircularProgress size={20} color="inherit" /> : 'Test Read Permission'}
+                </Button>
+                
+                <Button
+                  variant="contained"
+                  onClick={testPostPermission}
+                  disabled={testLoading}
+                  sx={{ bgcolor: '#00c853', '&:hover': { bgcolor: '#00b248' } }}
+                >
+                  {testLoading ? <CircularProgress size={20} color="inherit" /> : 'Test Post Permission'}
+                </Button>
               </Box>
+              
+              {testResult && (
+                <Alert 
+                  severity={testResult.success ? "success" : "error"} 
+                  sx={{ mt: 2 }}
+                >
+                  <Typography variant="subtitle2" gutterBottom>
+                    {testResult.message || testResult.error}
+                  </Typography>
+                  {testResult.pageInfo && (
+                    <Typography variant="body2">
+                      Page: {testResult.pageInfo.name} (ID: {testResult.pageInfo.id})
+                    </Typography>
+                  )}
+                  {testResult.postId && (
+                    <Typography variant="body2">
+                      Post created! <a href={testResult.postUrl} target="_blank" rel="noopener noreferrer">View on Facebook</a>
+                    </Typography>
+                  )}
+                </Alert>
+              )}
             </Box>
           )}
         </Box>
