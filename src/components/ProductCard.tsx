@@ -40,6 +40,7 @@ const getProductImage = (sku: string) => {
     case 'RADISH_PREMIUM_LIVE_TRAY':
       return '/images/radish_saxa2.png';
     case 'SUNFLOWER_LIVE_TRAY':
+    case 'SUNFLOWER_PREMIUM_LIVE_TRAY':
       return '/images/sunflower.png';
     case 'AMARANTH_LIVE_TRAY':
       return '/images/amaranth_dreads.png';

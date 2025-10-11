@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getDb } from '@/lib/mongo';
+import { EmailService } from '@/lib/email-service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-11-20.acacia',
@@ -66,7 +67,8 @@ export async function POST(req: Request) {
 
 async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent, db: any) {
   try {
-    await db.collection('orders').updateOne(
+    // Update order status
+    const updateResult = await db.collection('orders').updateOne(
       { paymentIntentId: paymentIntent.id },
       { 
         $set: { 
@@ -79,12 +81,54 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent, db: a
     
     console.log(`Payment succeeded for order: ${paymentIntent.metadata?.orderId}`);
     
+    // Send order confirmation email
+    if (updateResult.matchedCount > 0) {
+      try {
+        const order = await db.collection('orders').findOne({ paymentIntentId: paymentIntent.id });
+        if (order) {
+          await sendOrderConfirmationEmail(order);
+        }
+      } catch (emailError) {
+        console.error('Failed to send order confirmation email:', emailError);
+        // Don't fail the webhook if email fails
+      }
+    }
+    
     // Trigger order processing (without BullMQ for now)
     if (paymentIntent.metadata?.orderId) {
       console.log(`Order ${paymentIntent.metadata.orderId} ready for processing`);
     }
   } catch (error) {
     console.error('Error handling payment succeeded:', error);
+  }
+}
+
+async function sendOrderConfirmationEmail(order: any) {
+  try {
+    const orderData = {
+      customerName: order.customer?.name || order.customer?.email || 'Customer',
+      orderNumber: order._id?.toString() || 'Unknown',
+      items: order.cart?.map((item: any) => ({
+        name: item.name || 'Microgreens',
+        quantity: item.qty || 1,
+        price: (item.price || 0) / 100 // Convert cents to dollars
+      })) || [],
+      total: (order.totalAmount || 0) / 100, // Convert cents to dollars
+      deliveryDate: order.deliveryDate || new Date().toISOString(),
+      deliveryAddress: [
+        order.customer?.address1,
+        order.customer?.address2,
+        order.customer?.city,
+        order.customer?.state,
+        order.customer?.zip
+      ].filter(Boolean).join(', '),
+      trackingUrl: `https://chefpax.com/account?order=${order._id}`
+    };
+
+    await EmailService.sendOrderConfirmation(orderData);
+    console.log(`✅ Order confirmation email sent for order ${order._id}`);
+  } catch (error) {
+    console.error('Failed to send order confirmation email:', error);
   }
 }
 
