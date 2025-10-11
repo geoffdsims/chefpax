@@ -343,3 +343,8 @@ export const IOT_DEVICE_CONFIGS: IoTDevice[] = [
     ]
   }
 ];
+
+
+
+
+

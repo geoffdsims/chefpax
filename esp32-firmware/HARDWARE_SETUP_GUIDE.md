@@ -307,3 +307,8 @@ If you have issues:
 
 The monitoring dashboard will show device status, battery levels, and signal strength in real-time.
 
+
+
+
+
+

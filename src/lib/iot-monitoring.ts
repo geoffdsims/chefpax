@@ -395,3 +395,8 @@ export function getDeviceStatus(): IoTDeviceStatus[] {
     uptime: Math.floor(Math.random() * 86400) // 0-24 hours in seconds
   }));
 }
+
+
+
+
+

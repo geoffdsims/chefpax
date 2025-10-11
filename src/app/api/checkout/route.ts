@@ -6,6 +6,7 @@ import type { Product } from "@/lib/schema";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import { EmailService } from "@/lib/email-service";
 
 export async function POST(req: Request) {
   try {

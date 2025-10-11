@@ -5,10 +5,41 @@
 
 export class InstagramAPI {
   private accessToken: string;
-  private baseUrl = 'https://graph.instagram.com';
+  private businessAccountId: string;
+  private baseUrl = 'https://graph.facebook.com/v18.0';
 
-  constructor(accessToken: string) {
+  constructor(accessToken: string, businessAccountId?: string) {
     this.accessToken = accessToken;
+    this.businessAccountId = businessAccountId || '';
+  }
+
+  /**
+   * Test Instagram API connection
+   */
+  async testConnection(): Promise<boolean> {
+    try {
+      if (!this.businessAccountId) {
+        console.log('⚠️ Instagram Business Account ID not configured');
+        return false;
+      }
+
+      const response = await fetch(
+        `${this.baseUrl}/${this.businessAccountId}?fields=id,username,name&access_token=${this.accessToken}`
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Instagram API test failed:', errorData);
+        return false;
+      }
+
+      const data = await response.json();
+      console.log(`✅ Instagram API connected: @${data.username}`);
+      return true;
+    } catch (error) {
+      console.error('Error testing Instagram connection:', error);
+      return false;
+    }
   }
 
   /**
@@ -16,10 +47,17 @@ export class InstagramAPI {
    */
   async getAccountInfo(): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/me?fields=id,username,account_type,media_count&access_token=${this.accessToken}`);
+      if (!this.businessAccountId) {
+        throw new Error('Instagram Business Account ID is required');
+      }
+
+      const response = await fetch(
+        `${this.baseUrl}/${this.businessAccountId}?fields=id,username,name,profile_picture_url,followers_count,follows_count,media_count&access_token=${this.accessToken}`
+      );
       
       if (!response.ok) {
-        throw new Error(`Instagram API error: ${response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(`Instagram API error: ${JSON.stringify(errorData)}`);
       }
 
       return await response.json();
@@ -52,8 +90,13 @@ export class InstagramAPI {
    */
   async postContent(caption: string, imageUrl: string): Promise<any> {
     try {
+      if (!this.businessAccountId) {
+        throw new Error('Instagram Business Account ID is required for posting');
+      }
+
       // Step 1: Create media container
-      const createContainerResponse = await fetch(`${this.baseUrl}/me/media`, {
+      const createContainerUrl = `${this.baseUrl}/${this.businessAccountId}/media`;
+      const createContainerResponse = await fetch(createContainerUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +117,8 @@ export class InstagramAPI {
       const containerId = containerData.id;
 
       // Step 2: Publish the media
-      const publishResponse = await fetch(`${this.baseUrl}/me/media_publish`, {
+      const publishUrl = `${this.baseUrl}/${this.businessAccountId}/media_publish`;
+      const publishResponse = await fetch(publishUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

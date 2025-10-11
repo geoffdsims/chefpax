@@ -28,9 +28,11 @@ export class SocialMediaAutomation {
       );
     }
 
-    if (process.env.INSTAGRAM_ACCESS_TOKEN) {
+    // Instagram uses the same Facebook Page Access Token
+    if (process.env.FACEBOOK_ACCESS_TOKEN && process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID) {
       this.instagramAPI = new InstagramAPI(
-        process.env.INSTAGRAM_ACCESS_TOKEN
+        process.env.FACEBOOK_ACCESS_TOKEN,
+        process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID
       );
     }
 
@@ -288,9 +290,7 @@ export class SocialMediaAutomation {
     // Test Instagram connection
     if (this.instagramAPI) {
       try {
-        await this.instagramAPI.getAccountInfo();
-        results.instagram = true;
-        console.log('✅ Instagram API connection successful');
+        results.instagram = await this.instagramAPI.testConnection();
       } catch (error: any) {
         errors.push(`Instagram: ${error.message}`);
         console.error('❌ Instagram API connection failed:', error);
