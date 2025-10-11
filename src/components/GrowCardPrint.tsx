@@ -2,7 +2,7 @@
 
 import { Box, Paper, Typography, Button } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
-import growCardsData from '@/../docs/product-lineup/grow-cards.json';
+import growCardsData from '@/data/grow-cards.json';
 
 export default function GrowCardPrint() {
   const handlePrint = () => {
