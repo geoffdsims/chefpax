@@ -1,0 +1,381 @@
+{
+  "version": "1.0",
+  "generated_at": "2025-10-11T18:32:54.529098Z",
+  "collection": "chefpax_grow_cards_full",
+  "crops": [
+    {
+      "id": "sunflower-live-tray",
+      "name": "Black Oil Sunflower",
+      "category": "core",
+      "botanical_name": "Helianthus annuus",
+      "tray_sizes": ["10x20"],
+      "seeding_density": {
+        "10x20": {"amount": 11, "unit": "oz"}
+      },
+      "germination": {
+        "blackout_days": 2.5,
+        "light_germination": false
+      },
+      "light": {
+        "start_day": 3,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "high",
+        "flood_minutes": 25
+      },
+      "rack": {
+        "preferred_tier": 1
+      },
+      "harvest": {
+        "window_days": [8, 10]
+      },
+      "flavor": {
+        "notes": "Nutty, crunchy, lightly sweet"
+      }
+    },
+    {
+      "id": "peas-live-tray",
+      "name": "Dun Pea Shoots",
+      "category": "core",
+      "botanical_name": "Pisum sativum",
+      "tray_sizes": ["10x20"],
+      "seeding_density": {
+        "10x20": {"amount": 8.5, "unit": "oz"}
+      },
+      "germination": {
+        "blackout_days": 2,
+        "light_germination": false
+      },
+      "light": {
+        "start_day": 3,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "high",
+        "flood_minutes": 25
+      },
+      "rack": {
+        "preferred_tier": 2
+      },
+      "harvest": {
+        "window_days": [8, 10]
+      },
+      "flavor": {
+        "notes": "Sweet snap-pea flavor"
+      }
+    },
+    {
+      "id": "radish-rambo-live-tray",
+      "name": "Rambo Purple Radish",
+      "category": "core",
+      "botanical_name": "Raphanus sativus",
+      "tray_sizes": ["10x20"],
+      "seeding_density": {
+        "10x20": {"amount": 1.75, "unit": "oz"}
+      },
+      "germination": {
+        "blackout_days": 2,
+        "light_germination": false
+      },
+      "light": {
+        "start_day": 3,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "moderate",
+        "flood_minutes": 25
+      },
+      "rack": {
+        "preferred_tier": 3
+      },
+      "harvest": {
+        "window_days": [7, 9]
+      },
+      "flavor": {
+        "notes": "Spicy, horseradish-like bite"
+      }
+    },
+    {
+      "id": "broccoli-live-tray",
+      "name": "Waltham 29 Broccoli",
+      "category": "core",
+      "botanical_name": "Brassica oleracea var. italica",
+      "tray_sizes": ["10x20"],
+      "seeding_density": {
+        "10x20": {"amount": 1.5, "unit": "oz"}
+      },
+      "germination": {
+        "blackout_days": 2,
+        "light_germination": false
+      },
+      "light": {
+        "start_day": 3,
+        "hours_per_day": [12, 14]
+      },
+      "water": {
+        "preference": "moderate",
+        "flood_minutes": 25
+      },
+      "rack": {
+        "preferred_tier": 2
+      },
+      "harvest": {
+        "window_days": [8, 10]
+      },
+      "flavor": {
+        "notes": "Mild brassica, slightly earthy"
+      }
+    },
+    {
+      "id": "superfood-mix-live-tray",
+      "name": "Superfood Mix",
+      "category": "core",
+      "contents": ["Radish", "Cabbage", "Kale", "Broccoli", "Kohlrabi"],
+      "tray_sizes": ["10x20"],
+      "seeding_density": {
+        "10x20": {"amount": 2, "unit": "oz"}
+      },
+      "germination": {
+        "blackout_days": 2
+      },
+      "light": {
+        "start_day": 3,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "moderate",
+        "flood_minutes": 25
+      },
+      "rack": {
+        "preferred_tier": 3
+      },
+      "harvest": {
+        "window_days": [8, 10]
+      },
+      "flavor": {
+        "notes": "Peppery + mild mix"
+      }
+    },
+    {
+      "id": "kohlrabi-early-purple-live-tray",
+      "name": "Early Purple Vienna Kohlrabi",
+      "category": "core",
+      "botanical_name": "Brassica oleracea var. gongylodes",
+      "tray_sizes": ["10x20"],
+      "seeding_density": {
+        "10x20": {"amount": 1.5, "unit": "oz"}
+      },
+      "germination": {
+        "blackout_days": 2
+      },
+      "light": {
+        "start_day": 3,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "moderate",
+        "flood_minutes": 25
+      },
+      "rack": {
+        "preferred_tier": 3
+      },
+      "harvest": {
+        "window_days": [8, 10]
+      },
+      "flavor": {
+        "notes": "Mild brassica, sweet crunch"
+      }
+    },
+    {
+      "id": "wasabi-mustard-live-tray",
+      "name": "Wasabi Mustard",
+      "category": "core-premium",
+      "botanical_name": "Brassica juncea",
+      "tray_sizes": ["10x20", "5x5"],
+      "seeding_density": {
+        "10x20": {"amount": 1.75, "unit": "oz"}
+      },
+      "germination": {
+        "blackout_days": 2
+      },
+      "light": {
+        "start_day": 3,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "moderate",
+        "flood_minutes": 25
+      },
+      "rack": {
+        "preferred_tier": 3
+      },
+      "harvest": {
+        "window_days": [7, 9]
+      },
+      "flavor": {
+        "notes": "True wasabi heat, aromatic"
+      }
+    },
+    {
+      "id": "amaranth-red-5x5",
+      "name": "Red Garnet Amaranth",
+      "category": "premium",
+      "botanical_name": "Amaranthus sp.",
+      "tray_sizes": ["5x5"],
+      "seeding_density": {
+        "5x5": {"amount": 1, "unit": "g"},
+        "10x20": {"amount": 4.5, "unit": "g"}
+      },
+      "germination": {
+        "blackout_days": 0,
+        "light_germination": true
+      },
+      "light": {
+        "start_day": 0,
+        "hours_per_day": [12, 14]
+      },
+      "water": {
+        "preference": "light",
+        "flood_minutes": 18
+      },
+      "rack": {
+        "preferred_tier": 5
+      },
+      "harvest": {
+        "window_days": [10, 12]
+      },
+      "flavor": {
+        "notes": "Earthy, beet-like, delicate"
+      }
+    },
+    {
+      "id": "basil-dark-opal-5x5",
+      "name": "Basil Dark Opal",
+      "category": "premium",
+      "botanical_name": "Ocimum basilicum",
+      "tray_sizes": ["5x5"],
+      "seeding_density": {
+        "5x5": {"amount": 1.5, "unit": "g"},
+        "10x20": {"amount": 7, "unit": "g"}
+      },
+      "germination": {
+        "blackout_days": 0,
+        "light_germination": true
+      },
+      "light": {
+        "start_day": 0,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "light",
+        "flood_minutes": 20
+      },
+      "rack": {
+        "preferred_tier": 5
+      },
+      "harvest": {
+        "window_days": [12, 15]
+      },
+      "flavor": {
+        "notes": "Sweet, clove scent"
+      }
+    },
+    {
+      "id": "basil-lemon-5x5",
+      "name": "Basil Lemon",
+      "category": "premium",
+      "botanical_name": "Ocimum × africanum",
+      "tray_sizes": ["5x5"],
+      "seeding_density": {
+        "5x5": {"amount": 1.5, "unit": "g"},
+        "10x20": {"amount": 7, "unit": "g"}
+      },
+      "germination": {
+        "blackout_days": 0,
+        "light_germination": true
+      },
+      "light": {
+        "start_day": 0,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "light",
+        "flood_minutes": 20
+      },
+      "rack": {
+        "preferred_tier": 4
+      },
+      "harvest": {
+        "window_days": [12, 15]
+      },
+      "flavor": {
+        "notes": "Bright lemon-citrus basil"
+      }
+    },
+    {
+      "id": "basil-thai-5x5",
+      "name": "Basil Thai",
+      "category": "premium",
+      "botanical_name": "Ocimum basilicum",
+      "tray_sizes": ["5x5"],
+      "seeding_density": {
+        "5x5": {"amount": 1.5, "unit": "g"},
+        "10x20": {"amount": 7, "unit": "g"}
+      },
+      "germination": {
+        "blackout_days": 0,
+        "light_germination": true
+      },
+      "light": {
+        "start_day": 0,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "light",
+        "flood_minutes": 20
+      },
+      "rack": {
+        "preferred_tier": 4
+      },
+      "harvest": {
+        "window_days": [12, 15]
+      },
+      "flavor": {
+        "notes": "Sweet-spice, anise aroma"
+      }
+    },
+    {
+      "id": "shiso-5x5",
+      "name": "Shiso (Perilla Korean)",
+      "category": "premium",
+      "botanical_name": "Perilla frutescens var. frutescens",
+      "tray_sizes": ["5x5"],
+      "seeding_density": {
+        "5x5": {"amount": 1, "unit": "g"},
+        "10x20": {"amount": 4.5, "unit": "g"}
+      },
+      "germination": {
+        "blackout_days": 0,
+        "light_germination": true
+      },
+      "light": {
+        "start_day": 0,
+        "hours_per_day": [12, 16]
+      },
+      "water": {
+        "preference": "light",
+        "flood_minutes": 18
+      },
+      "rack": {
+        "preferred_tier": 5
+      },
+      "harvest": {
+        "window_days": [14, 18]
+      },
+      "flavor": {
+        "notes": "Basil-mint-cinnamon flavor"
+      }
+    }
+  ]
+}
