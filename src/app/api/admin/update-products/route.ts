@@ -6,9 +6,17 @@ export const dynamic = 'force-dynamic';
 
 /**
  * Admin endpoint to update product catalog in MongoDB
- * This replaces all products with the latest from inventory.ts
+ * Also accessible via GET for easy browser access
  */
 export async function POST() {
+  return updateProducts();
+}
+
+export async function GET() {
+  return updateProducts();
+}
+
+async function updateProducts() {
   try {
     const db = await getDb();
     
@@ -28,7 +36,7 @@ export async function POST() {
       message: 'Products updated successfully',
       deleted: deleteResult.deletedCount,
       inserted: insertResult.insertedCount,
-      products: products.map(p => ({ id: p._id, name: p.name, sku: p.sku }))
+      products: products.map(p => ({ id: p._id, name: p.name, sku: p.sku, price: p.priceCents/100 }))
     });
   } catch (error: any) {
     console.error('Error updating products:', error);
@@ -38,4 +46,3 @@ export async function POST() {
     }, { status: 500 });
   }
 }
-
