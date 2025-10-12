@@ -1,7 +1,9 @@
 "use client";
+import { useState } from "react";
 import { Card, CardContent, CardActions, Typography, Button, Box, Tooltip } from "@mui/material";
 import { AddShoppingCart, Info } from "@mui/icons-material";
 import ProductSchema from "./ProductSchema";
+import RecipeModal from "./RecipeModal";
 
 interface ProductStage {
   type: string;
@@ -63,7 +65,7 @@ const getProductImage = (sku: string) => {
 
 
 // Tooltip content with flavor/use and recipe link
-function GrowCardTooltip({ product }: { product: Product }) {
+function GrowCardTooltip({ product, onRecipeClick }: { product: Product; onRecipeClick: () => void }) {
   // Extract only the flavor/use part (after first sentence)
   const getFlavorText = (description?: string) => {
     if (!description) return '';
@@ -102,15 +104,21 @@ function GrowCardTooltip({ product }: { product: Product }) {
 
       {/* Recipe link */}
       <Box 
-        component="a"
-        href="/recipes"
-        target="_blank"
+        component="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onRecipeClick();
+        }}
         sx={{ 
           display: 'inline-flex',
           alignItems: 'center',
           gap: 0.5,
           color: '#D4AF37',
-          textDecoration: 'none',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 0,
           fontSize: '0.875rem',
           fontWeight: 600,
           mt: 1,
@@ -127,6 +135,8 @@ function GrowCardTooltip({ product }: { product: Product }) {
 }
 
 export default function ProductCard({ p, onAdd, availability, onShowCartConfirmation }: ProductCardProps) {
+  const [recipeModalOpen, setRecipeModalOpen] = useState(false);
+
   return (
     <>
       {/* Product Schema for SEO */}
@@ -139,7 +149,7 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
       />
       
       <Tooltip
-        title={<GrowCardTooltip product={p} />}
+        title={<GrowCardTooltip product={p} onRecipeClick={() => setRecipeModalOpen(true)} />}
         arrow
         placement="top"
         enterDelay={300}
@@ -432,6 +442,14 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
       </Box>
     </Card>
     </Tooltip>
+
+    {/* Recipe Modal */}
+    <RecipeModal
+      open={recipeModalOpen}
+      onClose={() => setRecipeModalOpen(false)}
+      productName={p.name}
+      variety={p.variety}
+    />
     </>
   );
 }
