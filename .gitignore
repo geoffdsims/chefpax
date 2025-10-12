@@ -40,9 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Documentation backup files
+# Environment backups and sensitive docs
 .env.backup
-docs/ENV_VARIABLES_REFERENCE.md
+.env.local.backup
+.env.local.template
 
-# Documentation with sensitive info
-docs/
+# Exclude sensitive documentation (but allow most docs/)
+docs/ENV_VARIABLES_REFERENCE.md
+docs/**/CREDENTIALS*.md
+docs/**/*_PRIVATE*.md

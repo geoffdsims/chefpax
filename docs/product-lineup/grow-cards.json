@@ -1,0 +1,383 @@
+{
+  "growCards": [
+    {
+      "id": "sunflower",
+      "rank": "🥇",
+      "name": "Black Oil Sunflower",
+      "icon": "🌻",
+      "botanical": "Helianthus annuus",
+      "category": "Core Live Tray",
+      "traySize": "10×20",
+      "seedingDensity": "10–12 oz per tray",
+      "germination": {
+        "blackoutDays": "2–3",
+        "blackoutNotes": "Weighted dome, ~10 lbs evenly distributed",
+        "temperature": "72–75°F",
+        "humidity": "90–95%"
+      },
+      "lightPhase": {
+        "startDay": "3–4",
+        "hoursPerDay": "12–16",
+        "notes": "Maintain consistent airflow to reduce hull stickiness"
+      },
+      "water": {
+        "requirement": "High",
+        "schedule": "Flood once/day for 25 min",
+        "tier": "Tier 1 (bottom)",
+        "notes": "Prefers longest drain cycle for moisture retention"
+      },
+      "harvest": {
+        "days": "8–10",
+        "readyWhen": "Cotyledons fully opened",
+        "prep": "Rinse and spin-dry before live delivery"
+      },
+      "flavor": {
+        "profile": "Nutty, crisp, slightly sweet",
+        "texture": "Thick stem, satisfying crunch",
+        "chefUse": "Salads, avocado toast, grain bowls, sandwich garnish"
+      },
+      "orderInfo": {
+        "leadTimeDays": 16,
+        "weeklyCapacity": 2,
+        "priceCents": 3200
+      }
+    },
+    {
+      "id": "pea-shoots",
+      "rank": "🥈",
+      "name": "Dun Pea Shoots",
+      "icon": "🌱",
+      "botanical": "Pisum sativum",
+      "category": "Core Live Tray",
+      "traySize": "10×20",
+      "seedingDensity": "8–9 oz per tray",
+      "seedingNotes": "Soak 8 hrs before sowing",
+      "germination": {
+        "blackoutDays": "2",
+        "blackoutNotes": "Weighted, damp mat",
+        "temperature": "70–75°F",
+        "humidity": "85–95%"
+      },
+      "lightPhase": {
+        "startDay": "3",
+        "hoursPerDay": "12–16",
+        "notes": "Maintain airflow to reduce mildew risk"
+      },
+      "water": {
+        "requirement": "High",
+        "schedule": "Flood 25 min/day",
+        "tier": "Tier 2 (second from bottom)",
+        "notes": "Tolerant of standing water"
+      },
+      "harvest": {
+        "days": "8–10",
+        "readyWhen": "Tendrils unfurl",
+        "prep": "Cut 2\" above mat, trim bottom roots"
+      },
+      "flavor": {
+        "profile": "Sweet, grassy, sugar snap pea taste",
+        "texture": "Tender yet crunchy stems",
+        "chefUse": "Wraps, omelets, Asian salads, grain bowls"
+      },
+      "orderInfo": {
+        "leadTimeDays": 12,
+        "weeklyCapacity": 1,
+        "priceCents": 2500
+      }
+    },
+    {
+      "id": "radish",
+      "rank": "🥉",
+      "name": "Rambo Purple Radish",
+      "icon": "🌶️",
+      "botanical": "Raphanus sativus",
+      "category": "Core Live Tray",
+      "traySize": "10×20",
+      "seedingDensity": "1.5–2 oz per tray",
+      "germination": {
+        "blackoutDays": "2",
+        "blackoutNotes": "Lightly covered dome",
+        "temperature": "70–75°F",
+        "humidity": "85–90%"
+      },
+      "lightPhase": {
+        "startDay": "3",
+        "hoursPerDay": "12–16",
+        "notes": "Strong airflow to prevent legginess"
+      },
+      "water": {
+        "requirement": "Medium",
+        "schedule": "Consistent but not saturated",
+        "tier": "Tier 3 (middle rack)",
+        "notes": "Balanced drainage"
+      },
+      "harvest": {
+        "days": "7–9",
+        "readyWhen": "Leaves 2–3 inches tall, vibrant purple"
+      },
+      "flavor": {
+        "profile": "Bold, spicy horseradish kick",
+        "texture": "Crisp, firm cotyledons",
+        "chefUse": "Sandwiches, tacos, poke bowls, flavor contrast"
+      },
+      "orderInfo": {
+        "leadTimeDays": 14,
+        "weeklyCapacity": 2,
+        "priceCents": 2800
+      }
+    },
+    {
+      "id": "broccoli",
+      "rank": "🥦",
+      "name": "Broccoli (Waltham 29)",
+      "icon": "🥬",
+      "botanical": "Brassica oleracea var. italica",
+      "category": "Core Live Tray",
+      "traySize": "10×20",
+      "seedingDensity": "1.5 oz per tray",
+      "germination": {
+        "blackoutDays": "2",
+        "temperature": "70–72°F",
+        "humidity": "85–90%"
+      },
+      "lightPhase": {
+        "startDay": "3",
+        "hoursPerDay": "12–14",
+        "notes": "Keep canopy even for uniform growth"
+      },
+      "water": {
+        "requirement": "Moderate",
+        "tier": "Tier 2–3",
+        "notes": "Avoid standing water, even drain"
+      },
+      "harvest": {
+        "days": "8–10",
+        "readyWhen": "Cotyledons flat and green"
+      },
+      "flavor": {
+        "profile": "Mild, earthy brassica taste",
+        "texture": "Tender and crisp",
+        "chefUse": "Smoothies, cold salads, soups, health shots"
+      },
+      "orderInfo": {
+        "leadTimeDays": 14,
+        "weeklyCapacity": 0,
+        "priceCents": 0,
+        "notes": "Not currently offered - can add later"
+      }
+    },
+    {
+      "id": "superfood-mix",
+      "rank": "🥗",
+      "name": "Superfood Mix",
+      "icon": "🥬",
+      "contents": "Radish (Rambo), Red Acre Cabbage, Purple Vienna Kohlrabi, Lacinato Kale, Di Cicco Broccoli",
+      "category": "Core Live Tray Mix",
+      "traySize": "10×20",
+      "seedingDensity": "2 oz per tray",
+      "germination": {
+        "blackoutDays": "2",
+        "temperature": "70–75°F",
+        "humidity": "85–90%"
+      },
+      "lightPhase": {
+        "startDay": "3",
+        "hoursPerDay": "12–16"
+      },
+      "water": {
+        "requirement": "Moderate",
+        "tier": "Tier 3"
+      },
+      "harvest": {
+        "days": "8–10",
+        "readyWhen": "Full cotyledon with color variation"
+      },
+      "flavor": {
+        "profile": "Balanced peppery-to-sweet mix",
+        "texture": "Diverse, colorful, visually appealing",
+        "chefUse": "Salad base, garnish, juice blend"
+      },
+      "orderInfo": {
+        "leadTimeDays": 14,
+        "weeklyCapacity": 0,
+        "priceCents": 0,
+        "notes": "Premium mix - can add as special offering"
+      }
+    },
+    {
+      "id": "basil-duo",
+      "rank": "🌿",
+      "name": "Basil Duo — Purple & Lemon",
+      "icon": "🍋",
+      "botanical": "Ocimum basilicum (Dark Opal) + Ocimum × africanum (Lemon)",
+      "category": "Premium Live Tray",
+      "traySize": "5×5 and 10×20",
+      "seedingDensity": "5×5: 1.5g | 10×20: 6-8g",
+      "seedingNotes": "Broadcast evenly on pre-moistened mat, mist lightly",
+      "germination": {
+        "blackoutDays": "None",
+        "blackoutNotes": "Light-sensitive seeds need surface exposure",
+        "temperature": "72–78°F",
+        "humidity": "85–90%",
+        "care": "Light mist twice daily until sprouting (~4–6 days)"
+      },
+      "lightPhase": {
+        "startDay": "0",
+        "hoursPerDay": "12–16",
+        "notes": "Indirect light Day 0, full light by Day 3. Gentle airflow"
+      },
+      "water": {
+        "requirement": "Light",
+        "tier": "Tier 3–4",
+        "notes": "Avoid pooling, even moisture and bright light"
+      },
+      "harvest": {
+        "days": "12–15",
+        "readyWhen": "Leaves show both purple and green hues",
+        "prep": "Cut ½\" above mat"
+      },
+      "flavor": {
+        "profile": "Sweet + citrusy with clove undertone",
+        "texture": "Tender, aromatic leaves",
+        "visual": "Striking purple/green contrast",
+        "chefUse": "Cocktails, fruit plates, dessert garnish, basil oil"
+      },
+      "orderInfo": {
+        "leadTimeDays": 15,
+        "weeklyCapacity": 0,
+        "priceCents": 4000,
+        "notes": "Premium herb variety - new offering"
+      }
+    },
+    {
+      "id": "basil-fusion",
+      "rank": "🌶️",
+      "name": "Basil Fusion — Thai & Lemon",
+      "icon": "🌿",
+      "botanical": "Ocimum basilicum + Ocimum × africanum",
+      "category": "Premium Live Tray",
+      "traySize": "5×5 and 10×20",
+      "seedingDensity": "5×5: 1.5g | 10×20: 6-7g",
+      "seedingNotes": "Evenly spread on damp mat and mist lightly",
+      "germination": {
+        "blackoutDays": "None",
+        "temperature": "74°F",
+        "humidity": "85–90%",
+        "notes": "Keep lights on from Day 0 (Thai basil germinates better with warmth)"
+      },
+      "lightPhase": {
+        "startDay": "0",
+        "hoursPerDay": "14",
+        "notes": "Consistent light, supplement if needed. Thin to avoid crowding"
+      },
+      "water": {
+        "requirement": "Moderate",
+        "tier": "Tier 4 or 5",
+        "notes": "Slight dry-back encourages flavor oil production. Best light penetration"
+      },
+      "harvest": {
+        "days": "12–15",
+        "readyWhen": "True leaves show anise aroma",
+        "prep": "Snip carefully"
+      },
+      "flavor": {
+        "profile": "Sweet spice with anise and lemon notes",
+        "visual": "Glossy dark green with purple stems",
+        "chefUse": "Asian curries, seafood, lime-based dishes, mocktails"
+      },
+      "orderInfo": {
+        "leadTimeDays": 15,
+        "weeklyCapacity": 0,
+        "priceCents": 4000,
+        "notes": "Premium Asian herb blend"
+      }
+    },
+    {
+      "id": "shiso",
+      "rank": "🍃",
+      "name": "Shiso (Korean Perilla)",
+      "icon": "🌸",
+      "botanical": "Perilla frutescens var. frutescens",
+      "category": "Premium Live Tray",
+      "traySize": "5×5 and 10×20",
+      "seedingDensity": "5×5: 1g | 10×20: 4-5g",
+      "seedingNotes": "Surface sow; press gently (no cover)",
+      "germination": {
+        "blackoutDays": "None",
+        "blackoutNotes": "Requires light",
+        "temperature": "72–75°F",
+        "humidity": "90%",
+        "care": "Misting twice daily for 5–7 days"
+      },
+      "lightPhase": {
+        "startDay": "0",
+        "hoursPerDay": "12–16",
+        "notes": "Full light from Day 0, avoid direct heat. Ensure fans for airflow"
+      },
+      "water": {
+        "requirement": "Low-to-moderate",
+        "tier": "Tier 5",
+        "notes": "Sensitive to over-watering. High light, fast drain"
+      },
+      "harvest": {
+        "days": "14–18",
+        "readyWhen": "Leaves reach ¾ inch",
+        "prep": "Trim above mat"
+      },
+      "flavor": {
+        "profile": "Mint-basil blend with cinnamon and anise notes",
+        "visual": "Bright green with serrated edges, aromatic fragrance",
+        "chefUse": "Sushi, cocktails, pickled vegetables, plating accent"
+      },
+      "orderInfo": {
+        "leadTimeDays": 18,
+        "weeklyCapacity": 0,
+        "priceCents": 4500,
+        "notes": "Specialty Asian herb - limited production"
+      }
+    },
+    {
+      "id": "amaranth",
+      "rank": "❤️",
+      "name": "Red Garnet Amaranth",
+      "icon": "🌸",
+      "botanical": "Amaranthus sp.",
+      "category": "Premium Live Tray",
+      "traySize": "5×5 and 10×20",
+      "seedingDensity": "5×5: 1g | 10×20: 4-5g",
+      "seedingNotes": "Scatter lightly on surface (do not cover)",
+      "germination": {
+        "blackoutDays": "None",
+        "blackoutNotes": "Requires light",
+        "temperature": "72–76°F",
+        "humidity": "80–85%",
+        "timeline": "Germinates in 2–4 days"
+      },
+      "lightPhase": {
+        "startDay": "1",
+        "hoursPerDay": "12–14",
+        "notes": "Continuous light from Day 1 for intense color. Avoid excess heat"
+      },
+      "water": {
+        "requirement": "Light",
+        "tier": "Tier 5",
+        "notes": "Light watering only, avoid saturation. Quick drain zone"
+      },
+      "harvest": {
+        "days": "10–12",
+        "readyWhen": "Stems 2–3 inches tall and vibrant red",
+        "prep": "Cut carefully to preserve color"
+      },
+      "flavor": {
+        "profile": "Earthy like beet greens, slightly sweet",
+        "visual": "Rich magenta microgreens — chef-favorite contrast",
+        "chefUse": "Fine-dining garnish, sushi rolls, soups, brunch plating"
+      },
+      "orderInfo": {
+        "leadTimeDays": 18,
+        "weeklyCapacity": 1,
+        "priceCents": 4500
+      }
+    }
+  ]
+}
