@@ -4,6 +4,7 @@ import { getDb } from '@/lib/mongo';
 import { EmailService } from '@/lib/email-service';
 import { SMSService } from '@/lib/sms-service';
 import { createReservation } from '@/lib/inventory-reservation';
+import { createProductionTasksFromOrder } from '@/lib/production-scheduler';
 
 // Only initialize Stripe if configured
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -140,6 +141,31 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent, db: a
                 deliveryDate: order.deliveryDate || new Date().toISOString(),
                 trackingUrl: `https://chefpax.com/account?order=${order._id}`
               });
+            }
+
+            // Create production tasks for each cart item
+            if (order.cart && order.cart.length > 0) {
+              try {
+                const productionResult = await createProductionTasksFromOrder(
+                  order._id.toString(),
+                  order.cart.map(item => ({
+                    productId: item.productId,
+                    name: item.name,
+                    qty: item.qty,
+                    sku: item.sku
+                  })),
+                  order.deliveryDate,
+                  false // Not a subscription order
+                );
+
+                if (productionResult.success) {
+                  console.log(`✅ Created ${productionResult.taskIds.length} production tasks for order ${order._id}`);
+                } else {
+                  console.error(`⚠️ Failed to create production tasks: ${productionResult.error}`);
+                }
+              } catch (prodError) {
+                console.error('Error creating production tasks:', prodError);
+              }
             }
           }
         } catch (error) {
