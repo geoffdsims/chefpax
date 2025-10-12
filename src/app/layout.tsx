@@ -3,6 +3,7 @@ import { CssBaseline } from "@mui/material";
 import "./globals.css";
 import ThemeProvider from "@/components/ThemeProvider";
 import SessionProvider from "@/components/SessionProvider";
+import AxeProvider from "@/components/AxeProvider";
 import Schema from "./_components/Schema";
 
 export const metadata: Metadata = { 
@@ -48,13 +49,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
       </head>
       <body>
-        <SessionProvider>
-          <ThemeProvider>
-            <CssBaseline />
-            {children}
-            <Schema />
-          </ThemeProvider>
-        </SessionProvider>
+        <AxeProvider>
+          <SessionProvider>
+            <ThemeProvider>
+              <CssBaseline />
+              {children}
+              <Schema />
+            </ThemeProvider>
+          </SessionProvider>
+        </AxeProvider>
       </body>
     </html>
   );

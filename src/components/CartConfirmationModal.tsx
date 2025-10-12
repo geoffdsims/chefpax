@@ -78,6 +78,8 @@ export default function CartConfirmationModal({
       onClose={onClose}
       maxWidth="md"
       fullWidth
+      aria-labelledby="cart-confirmation-title"
+      aria-describedby="cart-confirmation-description"
       PaperProps={{
         sx: {
           borderRadius: 2,
@@ -85,19 +87,26 @@ export default function CartConfirmationModal({
         }
       }}
     >
-      <DialogTitle sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: 1,
-        pb: 1,
-        borderBottom: '1px solid',
-        borderColor: 'divider'
-      }}>
+      <DialogTitle 
+        id="cart-confirmation-title"
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1,
+          pb: 1,
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
         <CheckCircle sx={{ color: 'success.main' }} />
         <Typography variant="h6" sx={{ fontWeight: 600, flexGrow: 1 }}>
           Added to cart
         </Typography>
-        <IconButton onClick={onClose} size="small">
+        <IconButton 
+          onClick={onClose} 
+          size="small"
+          aria-label="Close cart confirmation dialog"
+        >
           <Close />
         </IconButton>
       </DialogTitle>

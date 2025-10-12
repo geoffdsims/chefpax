@@ -106,42 +106,46 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
       />
       
       <Tooltip
-      title={<GrowCardTooltip product={p} />}
-      arrow
-      placement="top"
-      enterDelay={300}
-      leaveDelay={200}
-      slotProps={{
-        tooltip: {
-          sx: {
-            bgcolor: 'rgba(45, 80, 22, 0.98)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(76, 175, 80, 0.3)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-            maxWidth: 380,
-            fontSize: '0.875rem',
-            '& .MuiTooltip-arrow': {
-              color: 'rgba(45, 80, 22, 0.98)',
+        title={<GrowCardTooltip product={p} />}
+        arrow
+        placement="top"
+        enterDelay={300}
+        leaveDelay={200}
+        slotProps={{
+          tooltip: {
+            sx: {
+              bgcolor: 'rgba(45, 80, 22, 0.98)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(76, 175, 80, 0.3)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              maxWidth: 380,
+              fontSize: '0.875rem',
+              '& .MuiTooltip-arrow': {
+                color: 'rgba(45, 80, 22, 0.98)',
+              }
             }
-          }
-        }
-      }}
-    >
-      <Card 
-        sx={{ 
-          height: "100%", 
-          display: 'flex', 
-          flexDirection: 'column',
-          overflow: 'hidden',
-          position: 'relative',
-          cursor: 'help',
-          transition: 'box-shadow 0.3s ease, transform 0.2s ease',
-          '&:hover': {
-            boxShadow: '0 8px 24px rgba(45, 80, 22, 0.2)',
-            transform: 'translateY(-2px)'
           }
         }}
       >
+        <Card
+          component="article"
+          role="article"
+          aria-labelledby={`product-title-${p._id}`}
+          aria-describedby={`product-description-${p._id}`}
+          sx={{
+            height: "100%",
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            position: 'relative',
+            cursor: 'help',
+            transition: 'box-shadow 0.3s ease, transform 0.2s ease',
+            '&:hover': {
+              boxShadow: '0 8px 24px rgba(45, 80, 22, 0.2)',
+              transform: 'translateY(-2px)'
+            }
+          }}
+        >
       {/* Product Image - Compact */}
       <Box
         sx={{
@@ -153,7 +157,8 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
         <Box
           component="img"
           src={p.photoUrl || getProductImage(p.sku)}
-          alt={p.name}
+          alt={`${p.name} microgreens tray - Fresh, locally grown microgreens`}
+          loading="lazy"
           sx={{
             width: '100%',
             height: '100%',
@@ -236,7 +241,9 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
 
       <CardContent sx={{ flexGrow: 1, p: 2, pb: 1 }}>
         <Typography
+          id={`product-title-${p._id}`}
           variant="h6"
+          component="h3"
           sx={{
             fontWeight: 600,
             color: 'primary.main',
@@ -247,6 +254,23 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
         >
           {p.name}
         </Typography>
+
+        {/* Product description for screen readers */}
+        {p.description && (
+          <Typography
+            id={`product-description-${p._id}`}
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+              fontSize: '0.8rem',
+              lineHeight: 1.4,
+              mb: 1,
+              display: { xs: 'none', sm: 'block' } // Hide on mobile, show on larger screens
+            }}
+          >
+            {p.description}
+          </Typography>
+        )}
 
         {/* Price row - compact */}
         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5, mb: 1 }}>
@@ -297,6 +321,8 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
           fullWidth
           startIcon={<AddShoppingCart />}
           disabled={availability?.status === 'sold_out'}
+          aria-label={`Add ${p.name} to cart${availability?.status === 'sold_out' ? ' (currently sold out)' : ''}`}
+          aria-describedby={`product-description-${p._id}`}
           sx={{
             py: 1.5,
             fontSize: '0.9rem',
@@ -310,6 +336,9 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
       
       {/* Info icon hint */}
       <Box
+        role="button"
+        aria-label={`View details for ${p.name}`}
+        tabIndex={0}
         sx={{
           position: 'absolute',
           top: 8,
@@ -324,8 +353,14 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
           justifyContent: 'center',
           opacity: 0.7,
           transition: 'opacity 0.3s ease',
+          cursor: 'help',
           '&:hover': {
             opacity: 1
+          },
+          '&:focus': {
+            opacity: 1,
+            outline: '2px solid #4CAF50',
+            outlineOffset: '2px'
           }
         }}
       >

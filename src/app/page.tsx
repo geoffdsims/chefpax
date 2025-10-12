@@ -204,7 +204,8 @@ export default function Home() {
             {/* Logo and Header */}
             <Box sx={{ textAlign: "center", mb: 3 }}>
               <Typography
-                variant="h3"
+                variant="h1"
+                component="h1"
                 sx={{
                   fontSize: { xs: "2rem", md: "2.5rem" },
                   fontWeight: 600,
