@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongo";
 import { getProductsWithInventory } from "@/lib/inventory";
-import { checkAvailability } from "@/lib/inventory-reservation";
+import { batchCalculateAvailability } from "@/lib/availability-cache";
 import type { Product } from "@/lib/schema";
 
 export async function GET() {
@@ -17,8 +17,21 @@ export async function GET() {
       return NextResponse.json(getProductsWithInventory());
     }
     
-    // Return products with their static capacity (real-time availability calculation causes timeouts)
-    return NextResponse.json(products);
+    // Calculate availability in parallel with caching (fast!)
+    const nextDeliveryDate = new Date();
+    nextDeliveryDate.setDate(nextDeliveryDate.getDate() + 2);
+    
+    const availabilityMap = await batchCalculateAvailability(products, nextDeliveryDate);
+    
+    // Merge availability data with products
+    const productsWithAvailability = products.map(product => ({
+      ...product,
+      currentWeekAvailable: availabilityMap.get(product._id)?.availableSlots ?? product.weeklyCapacity ?? 0,
+      reservationBased: true,
+      rackName: availabilityMap.get(product._id)?.rackName ?? 'MAIN_RACK'
+    }));
+    
+    return NextResponse.json(productsWithAvailability);
   } catch (error) {
     console.error("Error getting products:", error);
     // Fallback to hardcoded if database fails
