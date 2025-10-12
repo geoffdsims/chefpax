@@ -67,7 +67,7 @@ const getProductImage = (sku: string) => {
 function GrowCardTooltip({ product }: { product: Product }) {
   return (
     <Box sx={{ p: 1.5, maxWidth: 320 }}>
-      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: '#4CAF50' }}>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: '#22A442' }}>
         {product.name}
       </Typography>
       

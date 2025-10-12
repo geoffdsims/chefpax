@@ -1,274 +1,349 @@
 "use client";
-import { Typography, Box, Container, Stack, Button, Card, CardContent } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion";
-import { keyframes, styled } from "@mui/material/styles";
+import { Typography, Box, Container, Grid, Button, Card, CardContent } from "@mui/material";
+import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
-
-// Ken Burns animation (subtle zoom + drift)
-const panZoom = keyframes`
-  0%   { transform: scale(1.05) translate3d(0, 0, 0); }
-  50%  { transform: scale(1.08) translate3d(-1.5%, -1.5%, 0); }
-  100% { transform: scale(1.05) translate3d(0, 0, 0); }
-`;
-
-// Background layer with animation
-const AnimatedBg = styled("div")(() => ({
-  position: "absolute",
-  inset: 0,
-  backgroundImage: "url('/images/austinChefPack.png')",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  filter: "saturate(1.05) contrast(1.05)",
-  transformOrigin: "center center",
-  animation: `${panZoom} 6s ease-in-out infinite`,
-  // Reduce motion: stop animation
-  ["@media (prefers-reduced-motion: reduce)"]: {
-    animation: "none",
-    transform: "none",
-  },
-}));
-
-// Animated background for feature cards
-const AnimatedFeatureBg = styled("div")(() => ({
-  position: "absolute",
-  inset: 0,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  filter: "blur(2px) brightness(0.7)",
-  transformOrigin: "center center",
-  animation: `${panZoom} 8s ease-in-out infinite`,
-  // Reduce motion: stop animation
-  ["@media (prefers-reduced-motion: reduce)"]: {
-    animation: "none",
-    transform: "none",
-  },
-}));
-
-// Consistent button styling - matching original Shop Now button
-const shopNowButtonStyle = {
-  px: 3,
-  py: 1,
-  borderRadius: 4,
-  backgroundColor: "rgba(255, 255, 255, 0.2)",
-  color: "white",
-  fontSize: "0.9rem",
-  fontWeight: 600,
-  border: "1px solid rgba(255, 255, 255, 0.3)",
-  "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-    boxShadow: "0 4px 15px rgba(255, 255, 255, 0.2)",
-  },
-  transition: "all 0.3s ease",
-};
+import { Agriculture, LocalShipping, AutoAwesome, CheckCircle } from "@mui/icons-material";
 
 export default function Home() {
-  const [activeFeature, setActiveFeature] = useState<number | null>(null);
-
   const features = [
     {
-      icon: "/chefpax-live-tray.svg",
-      title: "Live Growing Trays",
-      description: "Fresh microgreens delivered as live growing trays. Cut as needed for maximum nutrition and longevity.",
-      detail: "Our hydroponic systems grow microgreens to peak stage, then deliver them live so you can harvest 6-10 times per tray.",
-      color: "#4CAF50",
-      backgroundImage: "url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
+      icon: <Agriculture sx={{ fontSize: 48, color: "#22A442" }} />,
+      title: "Automated Growth",
+      description: "AI-monitored growing with precision racks and computer vision quality checks.",
+      details: ["Hydroponic precision", "CV quality control", "LLM scheduling"]
     },
     {
-      icon: "/chefpax-delivery.svg",
-      title: "Flexible Delivery",
-      description: "Order anytime and choose your preferred delivery day. Live trays delivered when it's convenient for you.",
-      detail: "Skip the grocery store lines. We bring live microgreen trays directly to your door on your schedule.",
-      color: "#2196F3",
-      backgroundImage: "url('https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
+      icon: <LocalShipping sx={{ fontSize: 48, color: "#2AB3C6" }} />,
+      title: "Direct Delivery",
+      description: "Local courier or Uber Direct—fresh microgreens delivered on your schedule.",
+      details: ["Same-day options", "Subscription discounts", "No-contact delivery"]
     },
     {
-      icon: "/chefpax-grow-brand.svg",
-      title: "Grow Your Brand",
-      description: "Premium live trays that elevate your culinary brand. From home chefs to professional kitchens, we help you stand out.",
-      detail: "Our luxe microgreen offerings help restaurants and home cooks create Instagram-worthy dishes that grow their brand and reputation.",
-      color: "#FF9800",
-      backgroundImage: "url('https://images.unsplash.com/photo-1546554137-f86b9593a222?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
+      icon: <AutoAwesome sx={{ fontSize: 48, color: "#22A442" }} />,
+      title: "Live Harvest",
+      description: "Trays delivered live for 6-10 harvests. Cut as you need for maximum nutrition.",
+      details: ["6-10 harvests per tray", "Peak nutrition", "Zero waste"]
     }
+  ];
+
+  const benefits = [
+    "AI-assisted scheduling & monitoring",
+    "Computer vision quality checks",
+    "Delivery-only (no storefront)",
+    "Austin-area coverage",
+    "Subscribe & save up to 15%"
   ];
 
   return (
     <>
-
-      {/* Interactive Features Section */}
+      {/* Hero Section */}
       <Box
         sx={{
           position: "relative",
-          py: { xs: 4, md: 6 },
-          minHeight: { xs: "auto", md: "100vh" },
+          minHeight: { xs: "70vh", md: "85vh" },
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          background: activeFeature === 0
-            ? "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)" // Hydroponic - Green
-            : activeFeature === 1
-            ? "linear-gradient(135deg, #2196F3 0%, #64B5F6 100%)" // Delivery - Blue
-            : activeFeature === 2
-            ? "linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)" // Chef Quality - Orange
-            : "linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)", // Default - Green
+          alignItems: "center",
+          background: "linear-gradient(135deg, #22A442 0%, #2AB3C6 100%)",
           color: "white",
-          transition: "background 0.5s ease-in-out",
-          overflow: "hidden",
+          overflow: "hidden"
         }}
       >
-        {/* Motion Background Images */}
+        {/* Background Pattern */}
         <Box
           sx={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1,
-            pointerEvents: "none",
-            overflow: "hidden",
+            inset: 0,
+            opacity: 0.1,
+            backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+            backgroundSize: "40px 40px"
           }}
-        >
-          {/* Hydroponic Excellence Background */}
-          {activeFeature === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-            >
-              <AnimatedFeatureBg
-                style={{
-                  backgroundImage: features[0].backgroundImage,
-                }}
-              />
-            </motion.div>
-          )}
-
-          {/* Flexible Delivery Background */}
-          {activeFeature === 1 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-            >
-              <AnimatedFeatureBg
-                style={{
-                  backgroundImage: features[1].backgroundImage,
-                }}
-              />
-            </motion.div>
-          )}
-
-          {/* Chef Quality Background */}
-          {activeFeature === 2 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-            >
-              <AnimatedFeatureBg
-                style={{
-                  backgroundImage: features[2].backgroundImage,
-                }}
-              />
-            </motion.div>
-          )}
-
-          {/* Default Background */}
-          {activeFeature === null && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.3 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-            >
-              <AnimatedFeatureBg
-                style={{
-                  backgroundImage: "url('https://images.unsplash.com/photo-1559181567-c3190ca9959b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')",
-                }}
-              />
-            </motion.div>
-          )}
-        </Box>
+        />
 
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2 }}>
-          <Box sx={{ textAlign: "center", mb: 4 }}>
-            {/* Logo and Header */}
-            <Box sx={{ textAlign: "center", mb: 3 }}>
-              <Typography
-                variant="h1"
-                component="h1"
-                sx={{
-                  fontSize: { xs: "2rem", md: "2.5rem" },
-                  fontWeight: 600,
-                  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                }}
+          <Grid container spacing={6} alignItems="center">
+            <Grid item xs={12} md={7}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
               >
-                Why Choose ChefPax?
-              </Typography>
-            </Box>
+                <Typography
+                  variant="h1"
+                  component="h1"
+                  sx={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontSize: { xs: "2.5rem", md: "4rem" },
+                    fontWeight: 700,
+                    lineHeight: 1.15,
+                    mb: 3,
+                    textShadow: "0 2px 20px rgba(0,0,0,0.2)"
+                  }}
+                >
+                  Fresh. Local. Automated.
+                </Typography>
+                
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontSize: { xs: "1.125rem", md: "1.5rem" },
+                    fontWeight: 400,
+                    lineHeight: 1.6,
+                    mb: 4,
+                    opacity: 0.95,
+                    maxWidth: "600px"
+                  }}
+                >
+                  Live microgreens grown with precision racks and AI monitoring. Harvested locally and delivered direct to your door.
+                </Typography>
+
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                  <Button
+                    component={Link}
+                    href="/shop"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      px: 4,
+                      py: 1.5,
+                      fontSize: "1.125rem",
+                      background: "#FFFFFF",
+                      color: "#22A442",
+                      "&:hover": {
+                        background: "rgba(255,255,255,0.9)",
+                        transform: "translateY(-2px)"
+                      }
+                    }}
+                  >
+                    Start Shopping
+                  </Button>
+                  
+                  <Button
+                    component={Link}
+                    href="/how-it-works"
+                    variant="outlined"
+                    size="large"
+                    sx={{
+                      px: 4,
+                      py: 1.5,
+                      fontSize: "1.125rem",
+                      borderColor: "rgba(255,255,255,0.5)",
+                      color: "white",
+                      "&:hover": {
+                        borderColor: "white",
+                        background: "rgba(255,255,255,0.1)"
+                      }
+                    }}
+                  >
+                    How It Works
+                  </Button>
+                </Box>
+              </motion.div>
+            </Grid>
+
+            <Grid item xs={12} md={5}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <Box
+                  component="img"
+                  src="/images/austinChefPack.png"
+                  alt="ChefPax microgreens live trays"
+                  sx={{
+                    width: "100%",
+                    height: "auto",
+                    borderRadius: "16px",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.3)"
+                  }}
+                />
+              </motion.div>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Features Section */}
+      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: "#FFFFFF" }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: "center", mb: 8 }}>
             <Typography
-              variant="h6"
+              variant="h2"
+              component="h2"
               sx={{
-                opacity: 0.9,
-                maxWidth: "600px",
-                mx: "auto",
-                lineHeight: 1.6,
-                mb: 3,
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                fontFamily: "Poppins, sans-serif",
+                fontSize: { xs: "2rem", md: "2.5rem" },
+                fontWeight: 700,
+                color: "#111214",
+                mb: 2
               }}
             >
-              Experience the difference of live microgreen trays grown with precision and delivered fresh to your kitchen
+              Why Choose ChefPax?
             </Typography>
-
-            {/* Action Buttons */}
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="center">
-              <Button
-                component={Link}
-                href="/shop"
-                size="large"
-                variant="contained"
-                sx={shopNowButtonStyle}
-              >
-                View Products
-              </Button>
-              <Button
-                component={Link}
-                href="/how-it-works"
-                size="large"
-                variant="contained"
-                sx={shopNowButtonStyle}
-              >
-                How It Works
-              </Button>
-            </Stack>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "1.125rem",
+                color: "#5B616A",
+                maxWidth: "600px",
+                mx: "auto"
+              }}
+            >
+              Three-step freshness from automated growth to your door
+            </Typography>
           </Box>
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-              gap: 3,
-              alignItems: "start",
-            }}
-          >
-            {features.map((feature, index) => (
-              <FeatureCard
-                key={index}
-                feature={feature}
-                index={index}
-                isActive={activeFeature === index}
-                onHover={setActiveFeature}
-              />
+          <Grid container spacing={4}>
+            {features.map((feature, idx) => (
+              <Grid item xs={12} md={4} key={idx}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                >
+                  <Card
+                    sx={{
+                      height: "100%",
+                      textAlign: "center",
+                      p: 3,
+                      background: "linear-gradient(135deg, rgba(34, 164, 66, 0.02) 0%, rgba(42, 179, 198, 0.02) 100%)",
+                      border: "1px solid rgba(34, 164, 66, 0.1)",
+                      transition: "all 0.3s",
+                      "&:hover": {
+                        transform: "translateY(-8px)",
+                        boxShadow: "0 12px 40px rgba(34, 164, 66, 0.15)",
+                        border: "1px solid rgba(34, 164, 66, 0.3)"
+                      }
+                    }}
+                  >
+                    <CardContent>
+                      <Box sx={{ mb: 2 }}>
+                        {feature.icon}
+                      </Box>
+                      
+                      <Typography
+                        variant="h5"
+                        component="h3"
+                        sx={{
+                          fontFamily: "Poppins, sans-serif",
+                          fontWeight: 600,
+                          color: "#111214",
+                          mb: 2
+                        }}
+                      >
+                        {feature.title}
+                      </Typography>
+                      
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: "#5B616A",
+                          mb: 3,
+                          lineHeight: 1.6
+                        }}
+                      >
+                        {feature.description}
+                      </Typography>
+
+                      <Box sx={{ textAlign: "left" }}>
+                        {feature.details.map((detail, i) => (
+                          <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                            <CheckCircle sx={{ fontSize: 18, color: "#22A442" }} />
+                            <Typography variant="body2" sx={{ color: "#2E3135" }}>
+                              {detail}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Grid>
             ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Benefits Section */}
+      <Box
+        sx={{
+          py: { xs: 8, md: 12 },
+          background: "linear-gradient(135deg, rgba(34, 164, 66, 0.05) 0%, rgba(42, 179, 198, 0.05) 100%)"
+        }}
+      >
+        <Container maxWidth="md">
+          <Box sx={{ textAlign: "center", mb: 6 }}>
+            <Typography
+              variant="h2"
+              component="h2"
+              sx={{
+                fontFamily: "Poppins, sans-serif",
+                fontSize: { xs: "2rem", md: "2.5rem" },
+                fontWeight: 700,
+                color: "#111214",
+                mb: 2
+              }}
+            >
+              What Makes Us Different
+            </Typography>
+          </Box>
+
+          <Grid container spacing={2}>
+            {benefits.map((benefit, idx) => (
+              <Grid item xs={12} sm={6} key={idx}>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: idx * 0.05 }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      p: 2,
+                      borderRadius: "12px",
+                      background: "#FFFFFF",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                      transition: "all 0.2s",
+                      "&:hover": {
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+                        transform: "translateX(4px)"
+                      }
+                    }}
+                  >
+                    <CheckCircle sx={{ color: "#22A442", fontSize: 24, flexShrink: 0 }} />
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: "#111214",
+                        fontWeight: 500
+                      }}
+                    >
+                      {benefit}
+                    </Typography>
+                  </Box>
+                </motion.div>
+              </Grid>
+            ))}
+          </Grid>
+
+          <Box sx={{ textAlign: "center", mt: 6 }}>
+            <Button
+              component={Link}
+              href="/shop"
+              variant="contained"
+              size="large"
+              sx={{
+                px: 5,
+                py: 1.5,
+                fontSize: "1.125rem"
+              }}
+            >
+              Browse Products
+            </Button>
           </Box>
         </Container>
       </Box>
@@ -276,209 +351,79 @@ export default function Home() {
       {/* CTA Section */}
       <Box
         sx={{
-          py: { xs: 4, md: 6 },
-          background: "linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)",
+          py: { xs: 8, md: 12 },
+          background: "linear-gradient(135deg, #22A442 0%, #2AB3C6 100%)",
           color: "white",
+          textAlign: "center"
         }}
       >
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center" }}>
-            <Typography 
-              variant="h3" 
-              sx={{ 
-                mb: 3,
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              }}
-            >
-              Ready to Experience Fresh?
-            </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                opacity: 0.9, 
-                mb: 4, 
-                maxWidth: "600px", 
-                mx: "auto",
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              }}
-            >
-              Join hundreds of Austin families who trust ChefPax for their live microgreen trays and fresh, nutritious produce.
-            </Typography>
+        <Container maxWidth="md">
+          <Typography
+            variant="h2"
+            component="h2"
+            sx={{
+              fontFamily: "Poppins, sans-serif",
+              fontSize: { xs: "2rem", md: "3rem" },
+              fontWeight: 700,
+              mb: 3
+            }}
+          >
+            Ready to Get Started?
+          </Typography>
+          
+          <Typography
+            variant="h5"
+            sx={{
+              fontSize: { xs: "1.125rem", md: "1.25rem" },
+              mb: 4,
+              opacity: 0.95
+            }}
+          >
+            Subscribe and save up to 15% on live microgreen trays
+          </Typography>
+
+          <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Button
               component={Link}
               href="/shop"
               variant="contained"
               size="large"
-              sx={shopNowButtonStyle}
+              sx={{
+                px: 5,
+                py: 1.5,
+                fontSize: "1.125rem",
+                background: "#FFFFFF",
+                color: "#22A442",
+                "&:hover": {
+                  background: "rgba(255,255,255,0.9)"
+                }
+              }}
             >
-              Start Your Order
+              View Subscription Plans
+            </Button>
+            
+            <Button
+              component={Link}
+              href="/recipes"
+              variant="outlined"
+              size="large"
+              sx={{
+                px: 5,
+                py: 1.5,
+                fontSize: "1.125rem",
+                borderColor: "rgba(255,255,255,0.5)",
+                color: "white",
+                "&:hover": {
+                  borderColor: "white",
+                  background: "rgba(255,255,255,0.1)"
+                }
+              }}
+            >
+              See Recipes
             </Button>
           </Box>
         </Container>
       </Box>
     </>
-  );
-}
-
-// FeatureCard Component
-function FeatureCard({
-  feature,
-  index,
-  isActive,
-  onHover
-}: {
-  feature: any;
-  index: number;
-  isActive: boolean;
-  onHover: (index: number | null) => void;
-}) {
-  const handleCardInteraction = () => {
-    // Toggle the card state on click/tap
-    if (isActive) {
-      onHover(null);
-    } else {
-      onHover(index);
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.2 }}
-      onMouseEnter={() => onHover(index)}
-      onMouseLeave={() => onHover(null)}
-      onClick={handleCardInteraction}
-    >
-      <Card
-        sx={{
-          textAlign: "center",
-          p: 3,
-          borderRadius: 4,
-          minHeight: 280,
-          display: "flex",
-          flexDirection: "column",
-          border: isActive ? "2px solid rgba(255, 255, 255, 0.8)" : "1px solid rgba(255, 255, 255, 0.2)",
-          background: isActive
-            ? "rgba(255, 255, 255, 0.15)"
-            : "rgba(255, 255, 255, 0.05)",
-          cursor: "pointer",
-          transition: "all 0.3s ease",
-          transform: isActive ? "translateY(-8px)" : "translateY(0)",
-          boxShadow: isActive
-            ? "0 20px 40px rgba(0, 0, 0, 0.3)"
-            : "0 4px 20px rgba(0, 0, 0, 0.1)",
-          backdropFilter: "blur(10px)",
-          // Add mobile tap feedback
-          "&:active": {
-            transform: "scale(0.98)",
-          },
-          // Show tap hint on mobile
-          "@media (hover: none)": {
-            position: "relative",
-            "&::before": {
-              content: '"Tap to learn more"',
-              position: "absolute",
-              bottom: "8px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              fontSize: "0.75rem",
-              opacity: 0.7,
-              color: "white",
-              pointerEvents: "none",
-            }
-          }
-        }}
-      >
-        <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <motion.div
-            animate={{
-              scale: isActive ? 1.2 : 1,
-              rotate: isActive ? 10 : 0
-            }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Box
-              sx={{
-                mb: 2,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "80px",
-              }}
-            >
-              <Image
-                src={feature.icon}
-                alt={feature.title}
-                width={60}
-                height={60}
-                style={{
-                  objectFit: "contain"
-                }}
-                unoptimized={true}
-              />
-            </Box>
-          </motion.div>
-
-          <Typography
-            variant="h5"
-            sx={{
-              mb: 2,
-              color: "white",
-              fontWeight: 600,
-              fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            }}
-          >
-            {feature.title}
-          </Typography>
-
-          <AnimatePresence>
-            {isActive && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Typography
-                  variant="body1"
-                  sx={{
-                    mb: 2,
-                    color: "rgba(255, 255, 255, 0.9)",
-                    lineHeight: 1.6,
-                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  }}
-                >
-                  {feature.description}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontStyle: "italic",
-                    color: "rgba(255, 255, 255, 0.8)",
-                    mb: 3,
-                    lineHeight: 1.5,
-                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  }}
-                >
-                  {feature.detail}
-                </Typography>
-
-                {/* Shop Now Button */}
-                <Button
-                  component={Link}
-                  href="/shop"
-                  variant="contained"
-                  size="small"
-                  sx={shopNowButtonStyle}
-                >
-                  Shop Now
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardContent>
-      </Card>
-    </motion.div>
   );
 }
