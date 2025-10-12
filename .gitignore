@@ -45,7 +45,5 @@ next-env.d.ts
 .env.local.backup
 .env.local.template
 
-# Exclude sensitive documentation (but allow most docs/)
-docs/ENV_VARIABLES_REFERENCE.md
-docs/**/CREDENTIALS*.md
-docs/**/*_PRIVATE*.md
+# Keep ALL documentation private (business intelligence & competitive advantage)
+docs/
