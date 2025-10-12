@@ -1,0 +1,186 @@
+{
+  "recipes": [
+    {
+      "id": "sunflower-avocado-toast",
+      "title": "Sunflower Microgreens Avocado Toast",
+      "image": "/images/sunflower.png",
+      "time": "8 min",
+      "uses": ["Sunflower"],
+      "ingredients": [
+        "2 slices sourdough, toasted",
+        "1 ripe avocado, mashed with lemon",
+        "1 cup sunflower microgreens",
+        "Flaky salt & pepper",
+        "Olive oil"
+      ],
+      "steps": [
+        "Spread avocado on toast.",
+        "Top generously with sunflower microgreens.",
+        "Drizzle oil; season with salt and pepper."
+      ]
+    },
+    {
+      "id": "pea-shoot-egg-scramble",
+      "title": "Pea Shoot & Soft Scrambled Eggs",
+      "image": "/images/pea_shoots.png",
+      "time": "10 min",
+      "uses": ["Pea"],
+      "ingredients": [
+        "3 eggs, whisked",
+        "1 cup pea shoots",
+        "1 tbsp butter",
+        "Salt & pepper"
+      ],
+      "steps": [
+        "Melt butter, add eggs on low heat.",
+        "Fold in pea shoots just before set.",
+        "Season and serve."
+      ]
+    },
+    {
+      "id": "radish-taco-finish",
+      "title": "Radish Rambo Street Taco Finish",
+      "image": "/images/radish_saxa2.png",
+      "time": "12 min",
+      "uses": ["Radish"],
+      "ingredients": [
+        "Warm tortillas",
+        "Leftover brisket or chicken",
+        "Pico de gallo",
+        "1 cup radish microgreens"
+      ],
+      "steps": [
+        "Fill tortillas with meat and pico.",
+        "Crown with crunchy radish microgreens."
+      ]
+    },
+    {
+      "id": "broccoli-lemon-pasta",
+      "title": "Lemony Broccoli Microgreen Pasta",
+      "image": "/images/chefPax_logo.png",
+      "time": "18 min",
+      "uses": ["Broccoli"],
+      "ingredients": [
+        "8 oz pasta",
+        "1 cup broccoli microgreens",
+        "1 lemon (zest & juice)",
+        "2 tbsp olive oil",
+        "Parmesan, salt & pepper"
+      ],
+      "steps": [
+        "Cook pasta; reserve 1/4 cup water.",
+        "Toss with oil, lemon, and greens off heat.",
+        "Adjust with pasta water; finish with parmesan."
+      ]
+    },
+    {
+      "id": "amaranth-goat-cheese-crostini",
+      "title": "Red Amaranth & Goat Cheese Crostini",
+      "image": "/images/amaranth_dreads.png",
+      "time": "14 min",
+      "uses": ["Amaranth"],
+      "ingredients": [
+        "Baguette slices, toasted",
+        "Soft goat cheese",
+        "1 cup red amaranth",
+        "Honey & black pepper"
+      ],
+      "steps": [
+        "Spread goat cheese on crostini.",
+        "Top with amaranth; drizzle honey and pepper."
+      ]
+    },
+    {
+      "id": "basil-caprese-toast",
+      "title": "Basil Micro Caprese Toast",
+      "image": "/images/chefPax_logo.png",
+      "time": "9 min",
+      "uses": ["Basil"],
+      "ingredients": [
+        "Ciabatta, toasted",
+        "Fresh mozzarella",
+        "Tomato slices",
+        "1 cup basil microgreens",
+        "Balsamic glaze"
+      ],
+      "steps": [
+        "Layer mozzarella and tomato.",
+        "Top with basil micros; drizzle balsamic."
+      ]
+    }
+  ],
+  "benefits": [
+    {
+      "id": "sunflower-vitE",
+      "crop": "Sunflower",
+      "claim": "Sunflower shoots are a source of vitamin E and folate.",
+      "strength": "moderate",
+      "citation": {
+        "title": "Nutrient profiles of microgreens",
+        "source": "Journal of Agricultural and Food Chemistry",
+        "url": "https://pubs.acs.org/journal/jafcau",
+        "year": 2020
+      }
+    },
+    {
+      "id": "pea-vitC",
+      "crop": "Pea",
+      "claim": "Pea shoots provide vitamin C and plant protein.",
+      "strength": "moderate",
+      "citation": {
+        "title": "Edible shoot nutrition overview",
+        "source": "Nutrition Reviews",
+        "url": "https://academic.oup.com/nutritionreviews",
+        "year": 2019
+      }
+    },
+    {
+      "id": "radish-glucosinolates",
+      "crop": "Radish",
+      "claim": "Radish microgreens contain glucosinolates and spicy phenolics.",
+      "strength": "emerging",
+      "citation": {
+        "title": "Glucosinolate content in radish seedlings",
+        "source": "Food Chemistry",
+        "url": "https://www.journals.elsevier.com/food-chemistry",
+        "year": 2021
+      }
+    },
+    {
+      "id": "broccoli-sulforaphane",
+      "crop": "Broccoli",
+      "claim": "Broccoli microgreens are rich in sulforaphane precursors.",
+      "strength": "strong",
+      "citation": {
+        "title": "Sulforaphane in brassica sprouts",
+        "source": "Clinical Nutrition",
+        "url": "https://www.clinicalnutritionjournal.com",
+        "year": 2018
+      }
+    },
+    {
+      "id": "amaranth-betacyanins",
+      "crop": "Amaranth",
+      "claim": "Red amaranth carries betacyanin pigments with antioxidant activity.",
+      "strength": "emerging",
+      "citation": {
+        "title": "Betacyanin profile of amaranth microgreens",
+        "source": "Food Research International",
+        "url": "https://www.journals.elsevier.com/food-research-international",
+        "year": 2022
+      }
+    },
+    {
+      "id": "basil-eugenol",
+      "crop": "Basil",
+      "claim": "Basil provides vitamin K and eugenol compounds contributing aroma.",
+      "strength": "moderate",
+      "citation": {
+        "title": "Sweet basil phytochemicals",
+        "source": "Phytochemistry",
+        "url": "https://www.journals.elsevier.com/phytochemistry",
+        "year": 2016
+      }
+    }
+  ]
+}
