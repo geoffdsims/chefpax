@@ -75,26 +75,26 @@ function GrowCardTooltip({ product }: { product: Product }) {
   const flavorText = getFlavorText(product.description);
 
   return (
-    <Box sx={{ p: 1.5, maxWidth: 320 }}>
-      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: '#22A442' }}>
+    <Box sx={{ p: 0.5 }}>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: '#FFFFFF' }}>
         {product.name}
       </Typography>
       
       {flavorText && (
-        <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.5 }}>
+        <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.5, color: '#FFFFFF' }}>
           {flavorText}
         </Typography>
       )}
       
       <Box sx={{ display: 'flex', gap: 2, mt: 1, mb: 1.5 }}>
         {product.leadTimeDays && (
-          <Typography variant="caption" sx={{ display: 'block', opacity: 0.95 }}>
+          <Typography variant="caption" sx={{ display: 'block', color: '#FFFFFF', opacity: 0.95 }}>
             🌱 <strong>{product.leadTimeDays} days</strong> to harvest
           </Typography>
         )}
         
         {product.sizeOz && (
-          <Typography variant="caption" sx={{ display: 'block', opacity: 0.95 }}>
+          <Typography variant="caption" sx={{ display: 'block', color: '#FFFFFF', opacity: 0.95 }}>
             📦 <strong>{product.sizeOz < 50 ? '5×5' : '10×20'}</strong> inches
           </Typography>
         )}
@@ -109,14 +109,14 @@ function GrowCardTooltip({ product }: { product: Product }) {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 0.5,
-          color: '#22A442',
+          color: '#D4AF37',
           textDecoration: 'none',
           fontSize: '0.875rem',
           fontWeight: 600,
           mt: 1,
           '&:hover': {
             textDecoration: 'underline',
-            color: '#1B7F35'
+            color: '#E6C896'
           }
         }}
       >
@@ -145,6 +145,21 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
         enterDelay={300}
         leaveDelay={200}
         disableInteractive={false}
+        slotProps={{
+          tooltip: {
+            sx: {
+              bgcolor: '#2D5016',
+              color: '#FFFFFF',
+              fontSize: '0.875rem',
+              maxWidth: 320,
+              p: 2,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              '& .MuiTooltip-arrow': {
+                color: '#2D5016'
+              }
+            }
+          }
+        }}
       >
         <Card
           component="article"
