@@ -1,305 +1,416 @@
 "use client";
-import { Box, Container, Typography, Grid, Card, CardContent, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import { motion } from "framer-motion";
-import { Agriculture, Science, LocalShipping, ExpandMore, CheckCircle } from "@mui/icons-material";
+
+import { useState, useRef, Suspense } from "react";
 import FAQSchema from "@/components/FAQSchema";
+import {
+  Box,
+  Container,
+  Stack,
+  Typography,
+  Card,
+  CardContent,
+  Chip,
+  Button,
+} from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
+
+
+// Step Card Component
+function StepCard({ 
+  step, 
+  index, 
+  isActive, 
+  onHover 
+}: { 
+  step: any; 
+  index: number; 
+  isActive: boolean; 
+  onHover: (index: number | null) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.2 }}
+      onHoverStart={() => onHover(index)}
+      onHoverEnd={() => onHover(null)}
+    >
+      <Card
+        sx={{
+          textAlign: "center",
+          p: 2,
+          borderRadius: 4,
+          minHeight: 220,
+          display: "flex",
+          flexDirection: "column",
+          border: isActive ? "2px solid #2D5016" : "1px solid rgba(45, 80, 22, 0.1)",
+          background: isActive 
+            ? "linear-gradient(135deg, rgba(45, 80, 22, 0.05) 0%, rgba(76, 175, 80, 0.05) 100%)"
+            : "white",
+          cursor: "pointer",
+          transition: "all 0.3s ease",
+          transform: isActive ? "translateY(-4px)" : "translateY(0)",
+          boxShadow: isActive 
+            ? "0 8px 25px rgba(45, 80, 22, 0.2)" 
+            : "0 2px 10px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <motion.div
+            animate={{ 
+              scale: isActive ? 1.1 : 1,
+              rotate: isActive ? 5 : 0 
+            }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <Box
+              sx={{
+                color: step.color,
+                mb: 1,
+                display: "flex",
+                justifyContent: "center",
+                fontSize: "2.5rem",
+              }}
+            >
+              {step.icon}
+            </Box>
+          </motion.div>
+          
+          <Typography
+            variant="h6"
+            sx={{
+              mb: 1,
+              color: "#2D5016",
+            }}
+          >
+            {step.title}
+          </Typography>
+          
+          <AnimatePresence>
+            {isActive && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Typography 
+                  variant="body1" 
+                  color="text.secondary"
+                  sx={{ 
+                    mb: 2
+                  }}
+                >
+                  {step.description}
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    fontStyle: "italic",
+                    color: step.color,
+                    mb: 3
+                  }}
+                >
+                  {step.detail}
+                </Typography>
+                
+                {/* Start Shopping Now Button */}
+                <Button
+                  variant="contained"
+                  size="small"
+                  href="/shop"
+                  sx={{
+                    px: 3,
+                    py: 1,
+                    borderRadius: 4,
+                    backgroundColor: "#2D5016",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                    border: "1px solid rgba(45, 80, 22, 0.2)",
+                    "&:hover": {
+                      backgroundColor: "#1A3009",
+                      boxShadow: "0 4px 15px rgba(45, 80, 22, 0.3)",
+                    },
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Start Shopping Now
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
 
 export default function HowItWorksPage() {
+  const [activeStep, setActiveStep] = useState<number | null>(null);
+
   const steps = [
     {
-      number: "01",
-      icon: <Agriculture sx={{ fontSize: 56, color: "#22A442" }} />,
-      title: "AI-Monitored Growing",
-      description: "Our precision racks use LLM-assisted scheduling and computer vision to monitor growth stages.",
-      details: [
-        "Hydroponic precision growing",
-        "Temperature & humidity monitoring",
-        "Automated lighting schedules",
-        "CV quality checks at harvest"
-      ]
+      icon: "📱",
+      title: "Order Anytime",
+      description: "Place your order whenever it's convenient for you. No more Wednesday cutoffs!",
+      detail: "Our flexible ordering system means you can order live microgreen trays whenever you need them.",
+      color: "#2D5016",
     },
     {
-      number: "02",
-      icon: <Science sx={{ fontSize: 56, color: "#2AB3C6" }} />,
-      title: "Local Harvest",
-      description: "Grown in Austin, harvested at peak nutrition, and delivered as live trays within 24 hours.",
-      details: [
-        "Harvested at peak stage",
-        "No cold storage needed",
-        "6-10 harvests per tray",
-        "Cut fresh as you need"
-      ]
+      icon: "🌱",
+      title: "Live Growing Trays",
+      description: "We deliver live microgreen trays at peak growing stage for maximum nutrition and longevity.",
+      detail: "Each tray is carefully grown and delivered at the perfect stage, giving you 6-10 harvests of fresh microgreens.",
+      color: "#4CAF50",
     },
     {
-      number: "03",
-      icon: <LocalShipping sx={{ fontSize: 56, color: "#22A442" }} />,
-      title: "Direct Delivery",
-      description: "Choose local courier or Uber Direct for same-day delivery. Subscribe and save up to 15%.",
-      details: [
-        "Same-day delivery options",
-        "Subscription discounts",
-        "Austin-area coverage",
-        "No-contact delivery"
-      ]
-    }
-  ];
-
-  const faqs = [
-    {
-      question: "How do live microgreen trays work?",
-      answer: "Our microgreens are delivered as live, growing trays. You can harvest them 6-10 times by cutting just above the growing mat. This keeps them fresh for weeks and ensures maximum nutrition with zero waste."
+      icon: "🚚",
+      title: "Flexible Delivery",
+      description: "Choose your preferred delivery date. Live trays delivered when you need them.",
+      detail: "Our local Austin delivery network ensures your live microgreen trays arrive fresh and ready to grow.",
+      color: "#2196F3",
     },
     {
-      question: "What's the delivery area?",
-      answer: "We currently deliver to Austin, Travis County, and Williamson County via local courier or Uber Direct. Same-day delivery is available for most locations within a 40km radius."
+      icon: "✨",
+      title: "Cut & Enjoy",
+      description: "Cut fresh microgreens as needed. Subscribe for 10% savings and weekly tray deliveries.",
+      detail: "Experience the ultimate freshness - cut your microgreens right when you need them for maximum nutrition and flavor.",
+      color: "#FF9800",
     },
-    {
-      question: "How does the subscription work?",
-      answer: "Subscribe for weekly, bi-weekly, or monthly deliveries and save 10-15%. You can pause, skip, or cancel anytime. Manage your subscription through your account dashboard."
-    },
-    {
-      question: "What makes your microgreens different?",
-      answer: "We use AI-assisted scheduling, computer vision quality checks, and precision hydroponic growing. Our microgreens are delivered live for maximum freshness and nutrition—no cold storage, no wilting."
-    },
-    {
-      question: "Can I choose my delivery day?",
-      answer: "Yes! When you order or subscribe, you can select your preferred delivery day. We deliver Tuesday through Saturday, with same-day options available via Uber Direct."
-    },
-    {
-      question: "Do you have a storefront?",
-      answer: "No, we're delivery-only. This allows us to focus on growing the freshest microgreens and delivering them directly to you at peak nutrition."
-    }
   ];
 
   return (
-    <>
-      <FAQSchema />
-      
-      {/* Hero Section */}
+    <Box sx={{ minHeight: "100vh", bgcolor: "#FEFEFE" }}>
+      {/* Hero Section with Dynamic Motion Backgrounds */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, rgba(34, 164, 66, 0.05) 0%, rgba(42, 179, 198, 0.05) 100%)",
-          py: { xs: 8, md: 12 },
-          borderBottom: "1px solid rgba(34, 164, 66, 0.1)"
+          background: activeStep === 0 
+            ? "linear-gradient(135deg, #1976D2 0%, #42A5F5 100%)" // Order Online - Blue
+            : activeStep === 1 
+            ? "linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%)" // Fresh Harvest - Green
+            : activeStep === 2 
+            ? "linear-gradient(135deg, #1565C0 0%, #2196F3 100%)" // Quick Delivery - Blue
+            : activeStep === 3 
+            ? "linear-gradient(135deg, #E65100 0%, #FF9800 100%)" // Enjoy Fresh - Orange
+            : "linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)", // Default - Green
+          color: "white",
+          py: 4,
+          position: "relative",
+          overflow: "hidden",
+          transition: "background 0.5s ease-in-out",
         }}
       >
-        <Container maxWidth="lg">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Typography
-              variant="h1"
-              component="h1"
-              sx={{
-                fontFamily: "Poppins, sans-serif",
-                fontSize: { xs: "2.5rem", md: "3.5rem" },
-                fontWeight: 700,
-                color: "#111214",
-                mb: 3,
-                textAlign: "center"
-              }}
-            >
-              How ChefPax Works
-            </Typography>
-            
-            <Typography
-              variant="h5"
-              sx={{
-                fontSize: { xs: "1.125rem", md: "1.25rem" },
-                color: "#5B616A",
-                textAlign: "center",
-                maxWidth: "700px",
-                mx: "auto",
-                lineHeight: 1.6
-              }}
-            >
-              LLM-assisted scheduling, computer-vision quality checks, and on-demand delivery options like Uber Direct.
-            </Typography>
-          </motion.div>
-        </Container>
-      </Box>
-
-      {/* Steps Section */}
-      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: "#FFFFFF" }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={6}>
-            {steps.map((step, idx) => (
-              <Grid item xs={12} md={4} key={idx}>
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.15 }}
-                >
-                  <Card
-                    sx={{
-                      height: "100%",
-                      position: "relative",
-                      overflow: "visible",
-                      p: 4,
-                      background: "linear-gradient(135deg, rgba(34, 164, 66, 0.02) 0%, rgba(42, 179, 198, 0.02) 100%)",
-                      border: "1px solid rgba(34, 164, 66, 0.1)",
-                      transition: "all 0.3s",
-                      "&:hover": {
-                        transform: "translateY(-8px)",
-                        boxShadow: "0 12px 40px rgba(34, 164, 66, 0.15)",
-                        border: "1px solid rgba(34, 164, 66, 0.3)"
-                      }
-                    }}
-                  >
-                    {/* Step Number */}
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: -20,
-                        left: 20,
-                        width: 60,
-                        height: 60,
-                        borderRadius: "50%",
-                        background: "linear-gradient(135deg, #22A442 0%, #2AB3C6 100%)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "white",
-                        fontFamily: "Poppins, sans-serif",
-                        fontSize: "1.5rem",
-                        fontWeight: 700,
-                        boxShadow: "0 4px 20px rgba(34, 164, 66, 0.3)"
-                      }}
-                    >
-                      {step.number}
-                    </Box>
-
-                    <CardContent sx={{ pt: 4 }}>
-                      <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
-                        {step.icon}
-                      </Box>
-
-                      <Typography
-                        variant="h5"
-                        component="h3"
-                        sx={{
-                          fontFamily: "Poppins, sans-serif",
-                          fontWeight: 600,
-                          color: "#111214",
-                          mb: 2,
-                          textAlign: "center"
-                        }}
-                      >
-                        {step.title}
-                      </Typography>
-
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: "#5B616A",
-                          mb: 3,
-                          textAlign: "center",
-                          lineHeight: 1.6
-                        }}
-                      >
-                        {step.description}
-                      </Typography>
-
-                      <Box>
-                        {step.details.map((detail, i) => (
-                          <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
-                            <CheckCircle sx={{ fontSize: 20, color: "#22A442", flexShrink: 0 }} />
-                            <Typography variant="body2" sx={{ color: "#2E3135", lineHeight: 1.5 }}>
-                              {detail}
-                            </Typography>
-                          </Box>
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* FAQ Section */}
-      <Box
-        sx={{
-          py: { xs: 8, md: 12 },
-          background: "linear-gradient(135deg, rgba(34, 164, 66, 0.05) 0%, rgba(42, 179, 198, 0.05) 100%)"
-        }}
-      >
-        <Container maxWidth="md">
-          <Typography
-            variant="h2"
-            component="h2"
-            sx={{
-              fontFamily: "Poppins, sans-serif",
-              fontSize: { xs: "2rem", md: "2.5rem" },
-              fontWeight: 700,
-              color: "#111214",
-              mb: 6,
-              textAlign: "center"
-            }}
-          >
-            Frequently Asked Questions
-          </Typography>
-
-          {faqs.map((faq, idx) => (
+        {/* Motion Background Videos */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+            pointerEvents: "none",
+            overflow: "hidden",
+          }}
+        >
+          {/* Step 0: Order Online - Person ordering on phone/laptop */}
+          {activeStep === 0 && (
             <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.05 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover",
+                filter: "blur(2px) brightness(0.7)",
+              }}
+            />
+          )}
+
+          {/* Step 1: Fresh Harvest - Person harvesting microgreens */}
+          {activeStep === 1 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover",
+                filter: "blur(2px) brightness(0.7)",
+              }}
+            />
+          )}
+
+          {/* Step 2: Quick Delivery - Food delivery person */}
+          {activeStep === 2 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "url('https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover",
+                filter: "blur(2px) brightness(0.7)",
+              }}
+            />
+          )}
+
+          {/* Step 3: Enjoy Fresh - Person enjoying fresh food */}
+          {activeStep === 3 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "url('https://images.unsplash.com/photo-1546554137-f86b9593a222?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover",
+                filter: "blur(2px) brightness(0.7)",
+              }}
+            />
+          )}
+
+          {/* Default: Microgreens growing */}
+          {activeStep === null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.3 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover",
+                filter: "blur(2px) brightness(0.7)",
+              }}
+            />
+          )}
+        </Box>
+
+        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 10 }}>
+          <Stack spacing={2} alignItems="center" textAlign="center">
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              <Accordion
+              <Typography
                 sx={{
-                  mb: 2,
-                  borderRadius: "12px !important",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                  "&:before": { display: "none" },
-                  "&.Mui-expanded": {
-                    boxShadow: "0 4px 16px rgba(34, 164, 66, 0.1)"
-                  }
+                  color: "white",
+                  textShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                  fontSize: "2.5rem",
+                  fontWeight: 600,
                 }}
               >
-                <AccordionSummary
-                  expandIcon={<ExpandMore sx={{ color: "#22A442" }} />}
-                  sx={{
-                    "& .MuiAccordionSummary-content": {
-                      my: 2
-                    }
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontFamily: "Poppins, sans-serif",
-                      fontWeight: 600,
-                      color: "#111214",
-                      fontSize: "1.125rem"
-                    }}
-                  >
-                    {faq.question}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: "#5B616A",
-                      lineHeight: 1.6
-                    }}
-                  >
-                    {faq.answer}
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
+                How ChefPax Works
+              </Typography>
             </motion.div>
-          ))}
+            
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <Typography
+                sx={{
+                  maxWidth: 500,
+                  opacity: 0.9,
+                  textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                }}
+              >
+                From our growing facility to your kitchen in Austin - here's how we bring you live microgreen trays
+              </Typography>
+            </motion.div>
+          </Stack>
         </Container>
       </Box>
-    </>
+
+
+      {/* CTA Section */}
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <Box
+            sx={{
+              textAlign: "center",
+              p: 3,
+              borderRadius: 4,
+              background: "linear-gradient(135deg, rgba(45, 80, 22, 0.1) 0%, rgba(76, 175, 80, 0.1) 100%)",
+              border: "1px solid rgba(45, 80, 22, 0.2)",
+            }}
+          >
+            
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" },
+                gap: 2,
+                mb: 3,
+                alignItems: "start",
+              }}
+            >
+              {steps.map((step, index) => (
+                <StepCard
+                  key={index}
+                  step={step}
+                  index={index}
+                  isActive={activeStep === index}
+                  onHover={setActiveStep}
+                />
+              ))}
+            </Box>
+
+            <Box sx={{ textAlign: "center" }}>
+              <Button
+                variant="text"
+                href="/"
+                sx={{
+                  color: "#2D5016",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  textDecoration: "underline",
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    textDecoration: "none",
+                  },
+                }}
+              >
+                ← Back to Home
+              </Button>
+            </Box>
+          </Box>
+        </motion.div>
+      </Container>
+
+      {/* FAQ Schema for SEO */}
+      <FAQSchema />
+    </Box>
   );
 }

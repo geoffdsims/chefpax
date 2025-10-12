@@ -1,11 +1,7 @@
 import { createTheme } from "@mui/material/styles";
-import { chefPaxTheme } from "./designTheme";
 
-// Use new ChefPax design system theme
-export const theme = chefPaxTheme;
-
-// Legacy theme for reference
-export const legacyTheme = createTheme({
+// ChefPax theme - keeping the original beautiful design
+export const theme = createTheme({
   palette: { 
     mode: "light", 
     primary: { 
