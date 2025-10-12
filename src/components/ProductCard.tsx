@@ -2,6 +2,7 @@
 import { Card, CardContent, CardActions, Typography, Button, Box, Tooltip } from "@mui/material";
 import { AddShoppingCart, Info } from "@mui/icons-material";
 import ProductSchema from "./ProductSchema";
+import MobileFriendlyTooltip from "./MobileFriendlyTooltip";
 
 interface ProductStage {
   type: string;
@@ -105,27 +106,12 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
         availability={availability?.status === 'sold_out' ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"}
       />
       
-      <Tooltip
+      <MobileFriendlyTooltip
         title={<GrowCardTooltip product={p} />}
         arrow
         placement="top"
         enterDelay={300}
         leaveDelay={200}
-        slotProps={{
-          tooltip: {
-            sx: {
-              bgcolor: 'rgba(45, 80, 22, 0.98)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(76, 175, 80, 0.3)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-              maxWidth: 380,
-              fontSize: '0.875rem',
-              '& .MuiTooltip-arrow': {
-                color: 'rgba(45, 80, 22, 0.98)',
-              }
-            }
-          }
-        }}
       >
         <Card
           component="article"
@@ -334,11 +320,23 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
         </Button>
       </CardActions>
       
-      {/* Info icon hint */}
+      {/* Info icon hint - Mobile-friendly */}
       <Box
         role="button"
         aria-label={`View details for ${p.name}`}
         tabIndex={0}
+        // Mobile touch events
+        onTouchStart={(e) => {
+          e.preventDefault();
+          e.currentTarget.style.opacity = '1';
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          // Keep tooltip open on mobile after touch
+          setTimeout(() => {
+            e.currentTarget.style.opacity = '0.7';
+          }, 2000);
+        }}
         sx={{
           position: 'absolute',
           top: 8,
@@ -346,28 +344,42 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
           backgroundColor: 'rgba(255, 255, 255, 0.9)',
           backdropFilter: 'blur(8px)',
           borderRadius: '50%',
-          width: 28,
-          height: 28,
+          width: { xs: 32, sm: 28 }, // Larger touch target on mobile
+          height: { xs: 32, sm: 28 },
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           opacity: 0.7,
-          transition: 'opacity 0.3s ease',
+          transition: 'opacity 0.3s ease, transform 0.2s ease',
           cursor: 'help',
+          // Mobile-specific styles
+          '@media (max-width: 600px)': {
+            width: 36,
+            height: 36,
+            opacity: 0.8, // More visible on mobile
+          },
           '&:hover': {
-            opacity: 1
+            opacity: 1,
+            transform: 'scale(1.1)'
           },
           '&:focus': {
             opacity: 1,
             outline: '2px solid #4CAF50',
-            outlineOffset: '2px'
+            outlineOffset: '2px',
+            transform: 'scale(1.1)'
+          },
+          '&:active': {
+            transform: 'scale(0.95)'
           }
         }}
       >
-        <Info sx={{ fontSize: 18, color: 'primary.main' }} />
+        <Info sx={{ 
+          fontSize: { xs: 20, sm: 18 }, 
+          color: 'primary.main' 
+        }} />
       </Box>
     </Card>
-    </Tooltip>
+    </MobileFriendlyTooltip>
     </>
   );
 }

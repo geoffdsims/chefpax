@@ -78,12 +78,25 @@ export default function CartConfirmationModal({
       onClose={onClose}
       maxWidth="md"
       fullWidth
+      fullScreen={false}
       aria-labelledby="cart-confirmation-title"
       aria-describedby="cart-confirmation-description"
+      // Mobile-friendly dialog behavior
+      disableEscapeKeyDown={false}
+      disableBackdropClick={false}
       PaperProps={{
         sx: {
-          borderRadius: 2,
-          maxHeight: '90vh'
+          borderRadius: { xs: 0, sm: 2 },
+          maxHeight: '90vh',
+          margin: { xs: 0, sm: 2 },
+          width: { xs: '100%', sm: 'auto' },
+          maxWidth: { xs: '100%', sm: 'md' },
+          // Mobile-specific styling
+          '@media (max-width: 600px)': {
+            margin: 0,
+            borderRadius: 0,
+            maxHeight: '100vh',
+          }
         }
       }}
     >
@@ -252,13 +265,21 @@ export default function CartConfirmationModal({
             </List>
           </Box>
 
-          {/* Action Buttons */}
-          <Stack direction="row" spacing={2} sx={{ pt: 1 }}>
+          {/* Action Buttons - Mobile-friendly */}
+          <Stack 
+            direction={{ xs: 'column', sm: 'row' }} 
+            spacing={{ xs: 1.5, sm: 2 }} 
+            sx={{ pt: 1 }}
+          >
             <Button
               variant="outlined"
               onClick={onViewCart}
               startIcon={<ShoppingCart />}
-              sx={{ flex: 1 }}
+              sx={{ 
+                flex: 1,
+                minHeight: { xs: 48, sm: 36 }, // Larger touch target on mobile
+                fontSize: { xs: '1rem', sm: '0.875rem' }
+              }}
             >
               See in cart
             </Button>
@@ -267,6 +288,8 @@ export default function CartConfirmationModal({
               onClick={onCheckout}
               sx={{ 
                 flex: 1,
+                minHeight: { xs: 48, sm: 36 }, // Larger touch target on mobile
+                fontSize: { xs: '1rem', sm: '0.875rem' },
                 backgroundColor: 'primary.main',
                 '&:hover': {
                   backgroundColor: 'primary.dark'
