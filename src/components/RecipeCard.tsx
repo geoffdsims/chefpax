@@ -54,7 +54,7 @@ export function RecipeCard({ r }: RecipeCardProps) {
       >
         <CardMedia
           component="img"
-          height="200"
+          height="140"
           image={r.image}
           alt={r.title}
           sx={{
@@ -63,7 +63,7 @@ export function RecipeCard({ r }: RecipeCardProps) {
           }}
         />
         
-        <CardContent sx={{ flexGrow: 1, p: 3 }}>
+        <CardContent sx={{ flexGrow: 1, p: 2 }}>
           <Typography
             variant="h6"
             component="h3"
@@ -71,8 +71,9 @@ export function RecipeCard({ r }: RecipeCardProps) {
               fontFamily: "Playfair Display, serif",
               fontWeight: 600,
               color: "#2D5016",
-              mb: 2,
-              lineHeight: 1.3
+              mb: 1.5,
+              lineHeight: 1.3,
+              fontSize: "1rem"
             }}
           >
             {r.title}

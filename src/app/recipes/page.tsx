@@ -131,9 +131,9 @@ export default function RecipesPage() {
               />
             </Box>
             
-            <Grid container spacing={3}>
+            <Grid container spacing={2.5}>
               {filteredRecipes.map((recipe: Recipe) => (
-                <Grid item xs={12} sm={6} md={4} key={recipe.id}>
+                <Grid item xs={12} sm={6} md={4} lg={3} key={recipe.id}>
                   <RecipeCard r={recipe} />
                 </Grid>
               ))}
