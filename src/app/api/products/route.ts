@@ -21,21 +21,8 @@ export async function GET() {
       return NextResponse.json(getProductsWithInventory());
     }
     
-    // Use cached batch calculation for fast parallel availability checks
-    const nextDeliveryDate = new Date();
-    nextDeliveryDate.setDate(nextDeliveryDate.getDate() + 2);
-    
-    const availabilityMap = await batchCalculateAvailability(products, nextDeliveryDate);
-    
-    // Merge availability with products
-    const productsWithAvailability = products.map(product => ({
-      ...product,
-      currentWeekAvailable: availabilityMap.get(product._id)?.availableSlots ?? product.weeklyCapacity ?? 0,
-      reservationBased: true,
-      rackName: availabilityMap.get(product._id)?.rackName ?? 'MAIN_RACK'
-    }));
-    
-    return NextResponse.json(productsWithAvailability);
+    // Return products as-is from MongoDB (they already have currentWeekAvailable set)
+    return NextResponse.json(products);
   } catch (error) {
     console.error("Error getting products:", error);
     // Fallback to hardcoded if database fails or times out
