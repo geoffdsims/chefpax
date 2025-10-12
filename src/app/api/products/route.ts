@@ -8,33 +8,30 @@ export async function GET() {
   try {
     const db = await getDb();
     
-    // Get products from MongoDB
-    const products = await db.collection("products").find({ active: true }).sort({ sort: 1 }).toArray();
+    if (!db) {
+      console.warn("Database not available, using hardcoded catalog");
+      return NextResponse.json(getProductsWithInventory());
+    }
     
-    if (products.length === 0) {
+    // Get products from MongoDB with timeout
+    const productsPromise = db.collection("products").find({ active: true }).sort({ sort: 1 }).toArray();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Database query timeout')), 3000)
+    );
+    
+    const products = await Promise.race([productsPromise, timeoutPromise]) as any[];
+    
+    if (!products || products.length === 0) {
       // Fallback to hardcoded products if database is empty
       console.warn("No products in database, using hardcoded catalog");
       return NextResponse.json(getProductsWithInventory());
     }
     
-    // Calculate availability in parallel with caching (fast!)
-    const nextDeliveryDate = new Date();
-    nextDeliveryDate.setDate(nextDeliveryDate.getDate() + 2);
-    
-    const availabilityMap = await batchCalculateAvailability(products, nextDeliveryDate);
-    
-    // Merge availability data with products
-    const productsWithAvailability = products.map(product => ({
-      ...product,
-      currentWeekAvailable: availabilityMap.get(product._id)?.availableSlots ?? product.weeklyCapacity ?? 0,
-      reservationBased: true,
-      rackName: availabilityMap.get(product._id)?.rackName ?? 'MAIN_RACK'
-    }));
-    
-    return NextResponse.json(productsWithAvailability);
+    // Return products directly from MongoDB (they already have currentWeekAvailable)
+    return NextResponse.json(products);
   } catch (error) {
     console.error("Error getting products:", error);
-    // Fallback to hardcoded if database fails
+    // Fallback to hardcoded if database fails or times out
     return NextResponse.json(getProductsWithInventory());
   }
 }
