@@ -17,37 +17,8 @@ export async function GET() {
       return NextResponse.json(getProductsWithInventory());
     }
     
-    // Calculate real-time availability using reservation system
-    const productsWithAvailability = await Promise.all(products.map(async (product) => {
-      try {
-        // Determine tray size from product data
-        const traySize = (product.sizeOz && product.sizeOz < 50) ? '5x5' : '10x20';
-        
-        // Get next delivery date (simplified: 2 days from now)
-        const nextDeliveryDate = new Date();
-        nextDeliveryDate.setDate(nextDeliveryDate.getDate() + 2);
-        
-        // Check availability using reservation system
-        const availability = await checkAvailability(traySize as '10x20' | '5x5', 1, nextDeliveryDate);
-        
-        return {
-          ...product,
-          currentWeekAvailable: availability.availableSlots,
-          reservationBased: true,
-          rackName: availability.rackName
-        };
-      } catch (error) {
-        console.error(`Error calculating availability for ${product.name}:`, error);
-        // Fallback to static capacity if reservation system fails
-        return {
-          ...product,
-          currentWeekAvailable: product.weeklyCapacity || 0,
-          reservationBased: false
-        };
-      }
-    }));
-    
-    return NextResponse.json(productsWithAvailability);
+    // Return products with their static capacity (real-time availability calculation causes timeouts)
+    return NextResponse.json(products);
   } catch (error) {
     console.error("Error getting products:", error);
     // Fallback to hardcoded if database fails
