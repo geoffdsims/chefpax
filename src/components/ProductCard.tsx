@@ -35,6 +35,7 @@ interface ProductCardProps {
   p: Product;
   onAdd: (p: Product) => void;
   availability?: AvailabilityStatus | null;
+  onShowCartConfirmation?: (product: Product) => void;
 }
 
 // Get the appropriate image for each product
@@ -91,7 +92,7 @@ function GrowCardTooltip({ product }: { product: Product }) {
   );
 }
 
-export default function ProductCard({ p, onAdd, availability }: ProductCardProps) {
+export default function ProductCard({ p, onAdd, availability, onShowCartConfirmation }: ProductCardProps) {
   return (
     <Tooltip
       title={<GrowCardTooltip product={p} />}
@@ -277,7 +278,10 @@ export default function ProductCard({ p, onAdd, availability }: ProductCardProps
 
       <CardActions sx={{ p: 2, pt: 0 }}>
         <Button 
-          onClick={() => onAdd(p)} 
+          onClick={() => {
+            onAdd(p);
+            onShowCartConfirmation?.(p);
+          }} 
           variant="contained" 
           fullWidth
           startIcon={<AddShoppingCart />}

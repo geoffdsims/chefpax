@@ -52,6 +52,7 @@ import {
 import { useSession, signIn, signOut } from "next-auth/react";
 import ProductCard from "@/components/ProductCard";
 import CartDrawer from "@/components/CartDrawer";
+import CartConfirmationModal from "@/components/CartConfirmationModal";
 import PushNotificationManager from "@/components/PushNotificationManager";
 
 interface Product {
@@ -108,6 +109,8 @@ export default function Shop() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [showCartConfirmation, setShowCartConfirmation] = useState(false);
+  const [lastAddedProduct, setLastAddedProduct] = useState<Product | null>(null);
   const { data: session } = useSession();
 
   // Set mounted state to prevent hydration issues
@@ -219,6 +222,9 @@ export default function Shop() {
         name: p.name, 
         priceCents: p.priceCents, 
         qty: 1,
+        photoUrl: p.photoUrl,
+        sizeOz: p.sizeOz,
+        leadTimeDays: p.leadTimeDays,
         deliveryDate: deliveryOptions?.[0]?.date
       });
     }
@@ -232,6 +238,11 @@ export default function Shop() {
     window.dispatchEvent(new CustomEvent("cartUpdated"));
     
     setNotice(`${p.name} added to cart`);
+  }
+
+  function handleShowCartConfirmation(product: Product) {
+    setLastAddedProduct(product);
+    setShowCartConfirmation(true);
   }
 
   function formatDeliveryDate(dateString: string) {
@@ -502,7 +513,12 @@ export default function Shop() {
                       ease: "easeOut"
                     }}
                   >
-                    <ProductCard p={p} onAdd={addToCart} availability={availability} />
+                    <ProductCard 
+                      p={p} 
+                      onAdd={addToCart} 
+                      availability={availability}
+                      onShowCartConfirmation={handleShowCartConfirmation}
+                    />
                   </motion.div>
                 );
               })}
@@ -976,6 +992,29 @@ export default function Shop() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Cart Confirmation Modal */}
+      <CartConfirmationModal
+        open={showCartConfirmation}
+        onClose={() => setShowCartConfirmation(false)}
+        cartItems={lastAddedProduct ? [{
+          productId: lastAddedProduct._id,
+          name: lastAddedProduct.name,
+          priceCents: lastAddedProduct.priceCents,
+          qty: 1,
+          photoUrl: lastAddedProduct.photoUrl,
+          sizeOz: lastAddedProduct.sizeOz,
+          leadTimeDays: lastAddedProduct.leadTimeDays
+        }] : []}
+        onViewCart={() => {
+          setShowCartConfirmation(false);
+          setCartOpen(true);
+        }}
+        onCheckout={() => {
+          setShowCartConfirmation(false);
+          window.location.href = '/cart';
+        }}
+      />
     </>
   );
 }

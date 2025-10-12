@@ -21,12 +21,19 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
+import MultiDeliveryOption from "@/components/MultiDeliveryOption";
+import DeliveryDateSelector from "@/components/DeliveryDateSelector";
+import CartConfirmationModal from "@/components/CartConfirmationModal";
+import { hasMixedLeadTimes } from "@/lib/delivery-scheduler";
 
 interface CartItem {
   productId: string;
   name: string;
   priceCents: number;
   qty: number;
+  photoUrl?: string;
+  sizeOz?: number;
+  leadTimeDays?: number;
 }
 
 export default function CartPage() {
@@ -44,6 +51,8 @@ export default function CartPage() {
   });
   const [isSubscription, setIsSubscription] = useState(false);
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<string>("");
+  const [deliveryMode, setDeliveryMode] = useState<'single' | 'split'>('single');
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [deliveryOptions, setDeliveryOptions] = useState<{ date: string; message: string }[]>([]);
 
   useEffect(() => {
@@ -214,7 +223,7 @@ export default function CartPage() {
           </Stack>
         </Box>
 
-        {/* Delivery Date Selection */}
+        {/* Smart Delivery System */}
         <Typography 
           variant="h4" 
           sx={{ 
@@ -224,7 +233,7 @@ export default function CartPage() {
             textAlign: 'center'
           }}
         >
-          Delivery Options
+          Smart Delivery Options
         </Typography>
         
         <Box sx={{ 
@@ -234,63 +243,32 @@ export default function CartPage() {
           mb: 4,
           border: '1px solid rgba(0,0,0,0.05)'
         }}>
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-            Choose Your Delivery Date
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Select when you'd like your fresh microgreens delivered. Order anytime - no cutoff times!
-          </Typography>
+          {/* Multi-Delivery Option (if mixed lead times) */}
+          <MultiDeliveryOption
+            cartItems={cart}
+            deliveryMode={deliveryMode}
+            onModeChange={setDeliveryMode}
+          />
           
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-            gap: 2,
-            mb: 3
-          }}>
-            {deliveryOptions.map((option) => (
-              <Card 
-                key={option.date}
-                sx={{ 
-                  cursor: 'pointer',
-                  border: selectedDeliveryDate === option.date ? 2 : 1,
-                  borderColor: selectedDeliveryDate === option.date ? 'primary.main' : 'divider',
-                  opacity: option.available ? 1 : 0.6
-                }}
-                onClick={() => option.available && setSelectedDeliveryDate(option.date)}
-              >
-                <CardContent sx={{ p: 2 }}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    {new Date(option.date).toLocaleDateString('en-US', { 
-                      weekday: 'short', 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {option.deliveryWindow}
-                  </Typography>
-                  <Typography variant="caption" display="block" color="text.secondary">
-                    Order anytime
-                  </Typography>
-                  <Box sx={{ mt: 1 }}>
-                    <Chip 
-                      label={option.available ? "Available" : "Full"} 
-                      color={option.available ? "success" : "error"}
-                      size="small"
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
+          {/* Delivery Date Selector */}
+          <DeliveryDateSelector
+            cartItems={cart}
+            deliveryMode={deliveryMode}
+            selectedDate={selectedDeliveryDate}
+            onDateChange={setSelectedDeliveryDate}
+          />
           
           {selectedDeliveryDate && (
-            <Alert severity="info">
-              Selected delivery: {new Date(selectedDeliveryDate).toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
+            <Alert severity="success" sx={{ mt: 2 }}>
+              <Typography variant="body2">
+                <strong>Delivery scheduled!</strong> Your fresh microgreens will arrive on{' '}
+                {new Date(selectedDeliveryDate).toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+                {deliveryMode === 'split' && ' (split deliveries as items are ready)'}
+              </Typography>
             </Alert>
           )}
         </Box>
@@ -438,7 +416,7 @@ export default function CartPage() {
           <Button 
             variant="contained" 
             size="large" 
-            onClick={checkout}
+            onClick={() => setShowConfirmation(true)}
             disabled={!customer.name || !customer.email || !customer.address1 || !customer.city || !customer.state || !customer.zip || !selectedDeliveryDate}
             sx={{
               backgroundColor: 'primary.main',
@@ -457,11 +435,21 @@ export default function CartPage() {
               }
             }}
           >
-            Proceed to Payment
+            Review & Checkout
           </Button>
           </Stack>
         </Box>
       </Container>
+
+      {/* Cart Confirmation Modal */}
+      <CartConfirmationModal
+        open={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        cartItems={cart}
+        deliveryMode={deliveryMode}
+        onViewCart={() => setShowConfirmation(false)}
+        onCheckout={checkout}
+      />
     </>
   );
 }
