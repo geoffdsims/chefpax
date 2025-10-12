@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongo";
-import { getStandardWeeklyProduction, calculateWeeklyInventory } from "@/lib/inventory";
+// import { getStandardWeeklyProduction, calculateWeeklyInventory } from "@/lib/inventory";
 
 interface OrderItem {
   productId: string;
@@ -14,10 +14,10 @@ interface Order {
 export async function GET() {
   try {
     // Get current week's production plan
-    const production = getStandardWeeklyProduction();
+    // const production = getStandardWeeklyProduction();
     
     // Calculate current inventory
-    const inventory = calculateWeeklyInventory(production);
+    // const inventory = calculateWeeklyInventory(production);
     
     // Get current orders for this week's delivery to calculate remaining availability
     const db = await getDb();

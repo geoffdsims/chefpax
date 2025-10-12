@@ -1,4 +1,4 @@
-import { getDb } from './mongoClient';
+import { getDb } from './mongo';
 
 export interface ProductionTask {
   orderId?: string;
