@@ -100,6 +100,7 @@ export default function MobileFriendlyTooltip({
         disableHoverListener={isMobile}
         disableFocusListener={false}
         disableTouchListener={true} // We handle touch events manually
+        disableInteractive={false} // IMPORTANT: Allow hovering over tooltip content
         PopperProps={{
           disablePortal: false,
           modifiers: [
