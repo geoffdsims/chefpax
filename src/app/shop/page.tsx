@@ -53,6 +53,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import ProductCard from "@/components/ProductCard";
 import CartDrawer from "@/components/CartDrawer";
 import CartConfirmationModal from "@/components/CartConfirmationModal";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import PushNotificationManager from "@/components/PushNotificationManager";
 
 interface Product {
@@ -1014,6 +1015,14 @@ export default function Shop() {
           setShowCartConfirmation(false);
           window.location.href = '/cart';
         }}
+      />
+
+      {/* Breadcrumb Schema for SEO */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", item: "https://www.chefpax.com/", position: 1 },
+          { name: "Shop", item: "https://www.chefpax.com/shop", position: 2 }
+        ]}
       />
     </>
   );

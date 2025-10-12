@@ -3,10 +3,17 @@ import { CssBaseline } from "@mui/material";
 import "./globals.css";
 import ThemeProvider from "@/components/ThemeProvider";
 import SessionProvider from "@/components/SessionProvider";
+import Schema from "./_components/Schema";
 
 export const metadata: Metadata = { 
-  title: "ChefPax — Fresh Hydroponic Microgreens", 
-  description: "Order anytime, choose your delivery. Fresh microgreens delivered to Austin.",
+  title: "ChefPax | Microgreens Delivered in Austin (Delivery or Uber Direct)", 
+  description: "Fresh, automated microgreens grown locally and delivered—choose standard delivery or Uber Direct. No storefront.",
+  alternates: { canonical: "https://www.chefpax.com/" },
+  openGraph: {
+    title: "ChefPax | Microgreens Delivered in Austin",
+    url: "https://www.chefpax.com/",
+    images: [{ url: "https://www.chefpax.com/og.jpg", width: 1200, height: 630 }]
+  },
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
@@ -45,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider>
             <CssBaseline />
             {children}
+            <Schema />
           </ThemeProvider>
         </SessionProvider>
       </body>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, Suspense } from "react";
+import FAQSchema from "@/components/FAQSchema";
 import {
   Box,
   Container,
@@ -407,6 +408,9 @@ export default function HowItWorksPage() {
           </Box>
         </motion.div>
       </Container>
+
+      {/* FAQ Schema for SEO */}
+      <FAQSchema />
     </Box>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardContent, CardActions, Typography, Button, Box, Tooltip } from "@mui/material";
 import { AddShoppingCart, Info } from "@mui/icons-material";
+import ProductSchema from "./ProductSchema";
 
 interface ProductStage {
   type: string;
@@ -94,7 +95,17 @@ function GrowCardTooltip({ product }: { product: Product }) {
 
 export default function ProductCard({ p, onAdd, availability, onShowCartConfirmation }: ProductCardProps) {
   return (
-    <Tooltip
+    <>
+      {/* Product Schema for SEO */}
+      <ProductSchema
+        name={p.name}
+        image={getProductImage(p.sku)}
+        description={p.description || `${p.name} - Fresh microgreens grown hydroponically with AI-assisted scheduling and CV quality checks.`}
+        price={(p.priceCents / 100).toFixed(2)}
+        availability={availability?.status === 'sold_out' ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"}
+      />
+      
+      <Tooltip
       title={<GrowCardTooltip product={p} />}
       arrow
       placement="top"
@@ -322,5 +333,6 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
       </Box>
     </Card>
     </Tooltip>
+    </>
   );
 }
