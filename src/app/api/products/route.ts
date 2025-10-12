@@ -9,22 +9,28 @@ export async function GET() {
     const db = await getDb();
     
     if (!db) {
-      console.warn("Database not available, using hardcoded catalog");
+      console.error("❌ Database not available, using hardcoded catalog");
       return NextResponse.json(getProductsWithInventory());
     }
+    
+    console.log("✅ MongoDB connected, fetching products...");
     
     // Get products from MongoDB
     const products = await db.collection("products").find({ active: true }).sort({ sort: 1 }).toArray();
     
+    console.log(`✅ Found ${products.length} products in MongoDB`);
+    
     if (!products || products.length === 0) {
-      console.warn("No products in database, using hardcoded catalog");
+      console.warn("⚠️ No products in database, using hardcoded catalog");
       return NextResponse.json(getProductsWithInventory());
     }
     
+    console.log(`✅ Returning ${products.length} products from MongoDB`);
     // Return products as-is from MongoDB (they already have currentWeekAvailable set)
     return NextResponse.json(products);
   } catch (error) {
-    console.error("Error getting products:", error);
+    console.error("❌ Error getting products:", error);
+    console.error("Using hardcoded fallback products from inventory.ts");
     // Fallback to hardcoded if database fails or times out
     return NextResponse.json(getProductsWithInventory());
   }
