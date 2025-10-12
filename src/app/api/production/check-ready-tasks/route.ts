@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/mongoClient';
+import { getDb } from '@/lib/mongo';
 import { SlackService } from '@/lib/slack-notifications';
 import { getUpcomingTasks } from '@/lib/production-scheduler';
 

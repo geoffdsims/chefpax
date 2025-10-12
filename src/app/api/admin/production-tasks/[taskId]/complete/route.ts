@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/mongoClient';
+import { getDb } from '@/lib/mongo';
 import { ObjectId } from 'mongodb';
 import { SlackService } from '@/lib/slack-notifications';
 
