@@ -9,6 +9,7 @@ import {
   Grid,
   Chip
 } from "@mui/material";
+import Navbar from "@/components/Navbar";
 import { RecipeCard, type Recipe } from "@/components/RecipeCard";
 import { HealthBenefit, type Benefit } from "@/components/HealthBenefit";
 import data from "@/data/recipes.json";
@@ -27,7 +28,10 @@ export default function RecipesPage() {
     : data.benefits.filter((b: Benefit) => b.crop === selectedCrop);
 
   return (
-    <Box sx={{ bgcolor: "#FFFFFF", minHeight: "100vh" }}>
+    <>
+      <Navbar />
+      
+      <Box sx={{ bgcolor: "#FFFFFF", minHeight: "100vh" }}>
       {/* Hero Section */}
       <Box
         sx={{
@@ -41,10 +45,10 @@ export default function RecipesPage() {
             variant="h1"
             component="h1"
             sx={{
-              fontFamily: "Poppins, sans-serif",
+              fontFamily: "Playfair Display, serif",
               fontSize: { xs: "2.5rem", md: "3rem" },
               fontWeight: 700,
-              color: "#111214",
+              color: "#2D5016",
               mb: 2,
               lineHeight: 1.15
             }}
@@ -54,7 +58,7 @@ export default function RecipesPage() {
           <Typography
             variant="body1"
             sx={{
-              color: "#5B616A",
+              color: "text.secondary",
               fontSize: "1.125rem",
               maxWidth: "600px",
               lineHeight: 1.6
@@ -109,10 +113,10 @@ export default function RecipesPage() {
                 variant="h2"
                 component="h2"
                 sx={{
-                  fontFamily: "Poppins, sans-serif",
+                  fontFamily: "Playfair Display, serif",
                   fontSize: "1.75rem",
                   fontWeight: 600,
-                  color: "#111214"
+                  color: "#2D5016"
                 }}
               >
                 Quick Recipes
@@ -145,10 +149,10 @@ export default function RecipesPage() {
                 variant="h2"
                 component="h2"
                 sx={{
-                  fontFamily: "Poppins, sans-serif",
+                  fontFamily: "Playfair Display, serif",
                   fontSize: "1.75rem",
                   fontWeight: 600,
-                  color: "#111214"
+                  color: "#2D5016"
                 }}
               >
                 Health Benefits
@@ -192,5 +196,6 @@ export default function RecipesPage() {
         )}
       </Container>
     </Box>
+    </>
   );
 }

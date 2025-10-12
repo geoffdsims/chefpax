@@ -59,9 +59,9 @@ export function HealthBenefit({ b }: HealthBenefitProps) {
               <Typography
                 variant="h6"
                 sx={{
-                  fontFamily: "Poppins, sans-serif",
+                  fontFamily: "Playfair Display, serif",
                   fontWeight: 600,
-                  color: "#111214",
+                  color: "#2D5016",
                   fontSize: "1.125rem"
                 }}
               >

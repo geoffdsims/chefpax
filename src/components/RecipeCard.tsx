@@ -68,9 +68,9 @@ export function RecipeCard({ r }: RecipeCardProps) {
             variant="h6"
             component="h3"
             sx={{
-              fontFamily: "Poppins, sans-serif",
+              fontFamily: "Playfair Display, serif",
               fontWeight: 600,
-              color: "#111214",
+              color: "#2D5016",
               mb: 2,
               lineHeight: 1.3
             }}
