@@ -32,7 +32,7 @@ export default function FAQSchema() {
         "name": "What areas do you deliver to?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "We deliver throughout Austin and Travis County. Our service area extends approximately 40km from central Austin."
+          "text": "We deliver throughout Austin, Travis County, and Williamson County. Our service area extends approximately 40km from central Austin."
         }
       },
       {

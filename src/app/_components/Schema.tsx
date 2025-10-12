@@ -10,6 +10,11 @@ export default function Schema() {
       "knowsAbout": [
         "microgreens", "live trays", "local delivery",
         "LLM-based production scheduling", "computer vision crop monitoring"
+      ],
+      "areaServed": [
+        { "@type": "City", "name": "Austin" },
+        { "@type": "AdministrativeArea", "name": "Travis County" },
+        { "@type": "AdministrativeArea", "name": "Williamson County" }
       ]
     },
     {
@@ -30,9 +35,9 @@ export default function Schema() {
       },
       "areaServed": [
         { "@type": "City", "name": "Austin" },
-        { "@type": "AdministrativeArea", "name": "Travis County" }
+        { "@type": "AdministrativeArea", "name": "Travis County" },
+        { "@type": "AdministrativeArea", "name": "Williamson County" }
       ],
-      // Optional: define a delivery radius
       "serviceArea": {
         "@type": "GeoCircle",
         "geoMidpoint": { "@type": "GeoCoordinates", "latitude": 30.2672, "longitude": -97.7431 },
