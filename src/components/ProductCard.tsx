@@ -2,7 +2,6 @@
 import { Card, CardContent, CardActions, Typography, Button, Box, Tooltip } from "@mui/material";
 import { AddShoppingCart, Info } from "@mui/icons-material";
 import ProductSchema from "./ProductSchema";
-import MobileFriendlyTooltip from "./MobileFriendlyTooltip";
 
 interface ProductStage {
   type: string;
@@ -139,12 +138,13 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
         availability={availability?.status === 'sold_out' ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"}
       />
       
-      <MobileFriendlyTooltip
+      <Tooltip
         title={<GrowCardTooltip product={p} />}
         arrow
         placement="top"
         enterDelay={300}
         leaveDelay={200}
+        disableInteractive={false}
       >
         <Card
           component="article"
@@ -416,7 +416,7 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
         }} />
       </Box>
     </Card>
-    </MobileFriendlyTooltip>
+    </Tooltip>
     </>
   );
 }
