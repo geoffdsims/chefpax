@@ -47,3 +47,4 @@ next-env.d.ts
 
 # Keep ALL documentation private (business intelligence & competitive advantage)
 docs/
+.env.local
