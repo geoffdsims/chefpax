@@ -16,7 +16,7 @@ if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
   );
 }
 
-const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER || '+15005550006'; // Twilio test number
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER || '+18556875045'; // ChefPax verified toll-free
 
 export interface OrderConfirmationSMSData {
   customerPhone: string;
@@ -46,7 +46,7 @@ export class SMSService {
    */
   static async sendOrderConfirmation(data: OrderConfirmationSMSData): Promise<boolean> {
     try {
-      const message = `🍃 ChefPax: Order #${data.orderNumber} confirmed! Your fresh microgreens will be delivered ${new Date(data.deliveryDate).toLocaleDateString()}.${data.trackingUrl ? ` Track: ${data.trackingUrl}` : ''}`;
+      const message = `🌱 ChefPax: Order #${data.orderNumber} confirmed! Your fresh microgreens will be delivered ${new Date(data.deliveryDate).toLocaleDateString()}.${data.trackingUrl ? ` Track: ${data.trackingUrl}` : ''} Reply STOP to opt-out.`;
 
       return await this.sendSMS(data.customerPhone, message);
     } catch (error) {
@@ -186,6 +186,87 @@ export class SMSService {
     }
     
     return phone; // Return as-is if not standard US format
+  }
+
+  /**
+   * Send opt-in confirmation message
+   */
+  static async sendOptInConfirmation(customerPhone: string): Promise<boolean> {
+    try {
+      const message = `Welcome to ChefPax! 🌱 You'll now receive SMS updates for your orders and deliveries. Reply HELP for assistance or STOP to opt-out. Msg & data rates may apply. chefpax.com/sms-opt-in`;
+
+      return await this.sendSMS(customerPhone, message);
+    } catch (error) {
+      console.error('❌ Failed to send opt-in confirmation SMS:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Handle incoming SMS (for STOP, HELP, START keywords)
+   * This should be called from a Twilio webhook endpoint
+   */
+  static async handleIncomingSMS(from: string, body: string): Promise<string> {
+    const normalizedBody = body.trim().toUpperCase();
+
+    switch (normalizedBody) {
+      case 'STOP':
+      case 'UNSUBSCRIBE':
+      case 'CANCEL':
+        // TODO: Update user SMS preferences in database
+        return 'You have been unsubscribed from ChefPax SMS notifications. Reply START to re-subscribe.';
+
+      case 'START':
+      case 'SUBSCRIBE':
+      case 'YES':
+      case 'JOIN':
+        // TODO: Update user SMS preferences in database
+        return 'Welcome back to ChefPax SMS notifications! 🌱 Reply STOP to opt-out.';
+
+      case 'HELP':
+      case 'INFO':
+        return 'ChefPax Help: We send order confirmations, delivery updates, and subscription reminders. Visit chefpax.com/sms-opt-in for details. Reply STOP to opt-out or contact alerts@chefpax.com for support.';
+
+      default:
+        return 'Thanks for your message! For order support, visit chefpax.com/account or email alerts@chefpax.com. Reply HELP for options or STOP to opt-out.';
+    }
+  }
+
+  /**
+   * Check Twilio number capabilities (voice, SMS, MMS)
+   */
+  static async checkNumberCapabilities(): Promise<{
+    voice: boolean;
+    sms: boolean;
+    mms: boolean;
+    phoneNumber: string;
+  } | null> {
+    if (!twilioClient) {
+      console.log('⚠️  Twilio not configured');
+      return null;
+    }
+
+    try {
+      const numbers = await twilioClient.incomingPhoneNumbers.list({ 
+        phoneNumber: twilioPhoneNumber 
+      });
+
+      if (numbers.length === 0) {
+        console.log('⚠️  Phone number not found in Twilio account');
+        return null;
+      }
+
+      const number = numbers[0];
+      return {
+        voice: number.capabilities?.voice || false,
+        sms: number.capabilities?.sms || false,
+        mms: number.capabilities?.mms || false,
+        phoneNumber: number.phoneNumber
+      };
+    } catch (error: any) {
+      console.error('❌ Failed to check number capabilities:', error.message);
+      return null;
+    }
   }
 }
 
