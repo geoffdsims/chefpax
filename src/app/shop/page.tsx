@@ -57,6 +57,7 @@ import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import PushNotificationManager from "@/components/PushNotificationManager";
 
 interface Product {
+  leadTimeDays: any;
   _id: string;
   sku: string;
   name: string;

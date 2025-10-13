@@ -68,12 +68,19 @@ export default function MobileFriendlyTooltip({
   const handleMouseEnter = () => {
     if (!isMobile) {
       setOpen(true);
+      // Clear any existing close timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     }
   };
 
   const handleMouseLeave = () => {
+    // Don't close immediately - give user time to move to tooltip
     if (!isMobile) {
-      setOpen(false);
+      timeoutRef.current = setTimeout(() => {
+        setOpen(false);
+      }, 200); // 200ms delay before closing
     }
   };
 
