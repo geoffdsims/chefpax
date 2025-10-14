@@ -7,9 +7,19 @@ import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { EmailService } from "@/lib/email-service";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
+    // Rate limiting: 5 requests per minute per IP
+    const rateLimitResult = rateLimit(5, 60000)(req as any);
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { cart, customer, marketingOptIn = false, createAccount = false } = body as {
       cart: { productId: string; qty: number }[];

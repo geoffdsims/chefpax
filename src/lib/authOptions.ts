@@ -44,7 +44,12 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         const adminEmail = process.env.ADMIN_EMAIL || 'geoff@chefpax.com';
-        const adminPassword = process.env.ADMIN_PASSWORD || 'chefpax2024';
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        
+        if (!adminPassword) {
+          console.error('ADMIN_PASSWORD environment variable not set');
+          return null;
+        }
 
         // Verify BOTH email and password match
         if (
