@@ -16,6 +16,14 @@ try {
   console.warn("MongoDB not configured, NextAuth will work without database adapter");
 }
 
+// Debug: Log environment variables
+console.log('🔍 Auth Options Debug:', {
+  hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
+  hasGoogleSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+  clientIdLength: process.env.GOOGLE_CLIENT_ID?.length,
+  nodeEnv: process.env.NODE_ENV,
+});
+
 export const authOptions: NextAuthOptions = {
   // Only use MongoDB adapter if available
   ...(clientPromise && { adapter: MongoDBAdapter(clientPromise) }),
