@@ -20,6 +20,13 @@ export const authOptions: NextAuthOptions = {
   // Only use MongoDB adapter if available
   ...(clientPromise && { adapter: MongoDBAdapter(clientPromise) }),
   providers: [
+    // Google OAuth provider for admin and customer login
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [
+      GoogleProvider({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      })
+    ] : []),
     // Admin credentials provider with password check
     CredentialsProvider({
       name: "credentials",
@@ -47,13 +54,6 @@ export const authOptions: NextAuthOptions = {
         return null;
       }
     }),
-    // Only add Google provider if credentials are available
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [
-      GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      })
-    ] : []),
     // Only add Apple provider if credentials are available
     ...(process.env.APPLE_ID && process.env.APPLE_SECRET ? [
       AppleProvider({
