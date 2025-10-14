@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { EmailService } from "@/lib/email-service";
 import { rateLimit } from "@/lib/rate-limit";
+import { captureApiError } from "@/lib/sentry-api";
 
 export async function POST(req: Request) {
   try {
@@ -148,6 +149,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Checkout API error:", error);
+    captureApiError(error, { 
+      endpoint: 'checkout',
+      cart: cart?.length || 0,
+      customerEmail: customer?.email 
+    });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
