@@ -96,13 +96,16 @@ export default function AdminDashboard() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" sx={{ fontFamily: 'Playfair Display', mb: 1 }}>
-          Admin Dashboard
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Welcome back, {session?.user?.name || 'Admin'}
-        </Typography>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box component="img" src="/logo.png" alt="ChefPax" sx={{ height: 50 }} />
+        <Box>
+          <Typography variant="h3" sx={{ fontFamily: 'Playfair Display' }}>
+            Admin Dashboard
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Welcome back, {session?.user?.name || 'Admin'}
+          </Typography>
+        </Box>
       </Box>
 
       <Grid container spacing={3}>

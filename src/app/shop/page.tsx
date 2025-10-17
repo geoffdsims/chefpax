@@ -327,22 +327,23 @@ export default function Shop() {
       >
         <Container maxWidth="lg">
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Typography 
-              variant="h5" 
-              component={Link} 
-              href="/" 
-              sx={{ 
-                fontWeight: 600,
+            <Box
+              component={Link}
+              href="/"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
                 textDecoration: 'none',
-                color: 'white',
-                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                '&:hover': {
-                  opacity: 0.8
-                }
+                '&:hover': { opacity: 0.9 }
               }}
             >
-              ChefPax
-            </Typography>
+              <Box
+                component="img"
+                src="/logo.png"
+                alt="ChefPax"
+                sx={{ height: 40 }}
+              />
+            </Box>
             
             {/* Navigation buttons */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

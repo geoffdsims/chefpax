@@ -92,16 +92,15 @@ export default function HeroLoop() {
         }}
       >
         <Stack spacing={2} alignItems="center">
-          <Typography
-            variant="h2"
+          <Box
+            component="img"
+            src="/logo.png"
+            alt="ChefPax"
             sx={{
-              fontWeight: 800,
-              letterSpacing: "0.02em",
-              textShadow: "0 2px 18px rgba(0,0,0,0.45)",
+              height: { xs: 70, md: 100 },
+              filter: 'drop-shadow(0 4px 24px rgba(0,0,0,0.5))'
             }}
-          >
-            ChefPax
-          </Typography>
+          />
 
           <Typography
             variant="h6"

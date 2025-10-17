@@ -139,6 +139,7 @@ export default function CartPage() {
           <IconButton component={Link} href="/shop">
             <ArrowBack />
           </IconButton>
+          <Box component="img" src="/logo.png" alt="ChefPax" sx={{ height: 32 }} />
           <Typography variant="h4" sx={{ fontFamily: 'Playfair Display' }}>
             Your Cart
           </Typography>

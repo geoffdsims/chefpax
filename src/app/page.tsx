@@ -220,6 +220,16 @@ export default function Home() {
           <Box sx={{ textAlign: "center", mb: 4 }}>
             {/* Logo and Header */}
             <Box sx={{ textAlign: "center", mb: 3 }}>
+              <Box
+                component="img"
+                src="/logo.png"
+                alt="ChefPax"
+                sx={{
+                  height: { xs: 50, md: 70 },
+                  mb: 2,
+                  filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.3))'
+                }}
+              />
               <Typography
                 variant="h1"
                 component="h1"
