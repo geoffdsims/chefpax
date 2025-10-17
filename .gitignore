@@ -50,4 +50,4 @@ next-env.d.ts
 .env.local.oauth
 
 # Temporary - exclude docs folder until commit is ready
-# /docs/
+/docs/

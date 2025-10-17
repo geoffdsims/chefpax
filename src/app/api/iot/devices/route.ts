@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongo";
-import { getDeviceStatus, IOT_DEVICE_CONFIGS } from "@/lib/iot-monitoring";
+import { getDeviceStatus } from "@/lib/iot-monitoring";
+import { IOT_DEVICE_CONFIGS } from "@/lib/iot-hardware";
 import type { IoTDeviceStatus } from "@/lib/iot-monitoring";
 
 /**

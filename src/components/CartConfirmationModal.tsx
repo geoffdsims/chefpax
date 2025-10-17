@@ -155,17 +155,12 @@ export default function CartConfirmationModal({
       aria-describedby="cart-confirmation-description"
       disableEscapeKeyDown={false}
       PaperProps={{
-        sx={{
+        sx: {
           borderRadius: { xs: 0, sm: 2 },
           maxHeight: '90vh',
           margin: { xs: 0, sm: 2 },
           width: { xs: '100%', sm: 'auto' },
-          maxWidth: { xs: '100%', sm: 'md' },
-          '@media (max-width: 600px)': {
-            margin: 0,
-            borderRadius: 0,
-            maxHeight: '100vh',
-          }
+          maxWidth: { xs: '100%', sm: 'md' }
         }
       }}
     >
