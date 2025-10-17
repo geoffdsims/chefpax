@@ -3,15 +3,25 @@ export type Product = {
   sku: string;                  // e.g. "SUNFLOWER_2OZ"
   name: string;                 // "Sunflower Microgreens – 2 oz"
   priceCents: number;           // 500
-  unit: "clamshell" | "tray";
+  unit: "clamshell" | "tray" | "bundle";
   active: boolean;
   sort: number;
   photoUrl?: string;
-  category: "mix" | "single" | "live_tray";
-  variety?: "pea" | "sunflower" | "radish" | "amaranth" | "mixed";
+  category: "mix" | "single" | "live_tray" | "bundle" | "premium" | "specialty";
+  variety?: "pea" | "sunflower" | "radish" | "amaranth" | "mixed" | "broccoli" | "kohlrabi" | "mustard" | "basil" | "herb";
   sizeOz?: number;              // 2, 4, or 10x20 for trays
   weeklyCapacity?: number;      // Max units available per week
   currentWeekAvailable?: number; // Available this week (calculated)
+  description?: string;         // Product description
+  leadTimeDays?: number;        // Days from seed to harvest
+  isSubscriptionEligible?: boolean;
+  stages?: Array<{
+    type: string;
+    offsetDays: number;
+    durationDays?: number;
+    notes: string;
+  }>;
+  stripePriceId?: string;
   // Subscription settings
   subscriptionEnabled: boolean; // Whether this product can be subscribed to
   subscriptionPriceCents?: number; // Special subscription price (if different from regular price)

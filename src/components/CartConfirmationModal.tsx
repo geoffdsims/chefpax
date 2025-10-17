@@ -111,18 +111,24 @@ export default function CartConfirmationModal({
 }: CartConfirmationModalProps) {
   const [addedUpsells, setAddedUpsells] = useState<Set<string>>(new Set());
   const [upsellProducts, setUpsellProducts] = useState<UpsellProduct[]>([]);
+  const [currentCart, setCurrentCart] = useState<CartItem[]>(cartItems);
+  const [popularityCount] = useState(Math.floor(Math.random() * 20) + 5);
+
+  // Update cart when it changes
+  useEffect(() => {
+    setCurrentCart(cartItems);
+  }, [cartItems]);
 
   // Smart upsell logic: exclude products already in cart
   useEffect(() => {
-    const cartProductIds = new Set(cartItems.map(item => item.productId));
+    const cartProductIds = new Set(currentCart.map(item => item.productId));
     const available = ALL_UPSELL_PRODUCTS.filter(
       product => !cartProductIds.has(product.productId) && !addedUpsells.has(product.productId)
     );
-    // Show max 3 upsells
     setUpsellProducts(available.slice(0, 3));
-  }, [cartItems, addedUpsells]);
+  }, [currentCart, addedUpsells]);
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.priceCents * item.qty), 0);
+  const subtotal = currentCart.reduce((sum, item) => sum + (item.priceCents * item.qty), 0);
   const deliveryFee = 500; // $5.00
   const total = subtotal + deliveryFee;
 
@@ -138,6 +144,14 @@ export default function CartConfirmationModal({
   const handleAddUpsell = (product: UpsellProduct) => {
     if (onAddUpsell) {
       onAddUpsell(product);
+      // Add to current cart state immediately
+      setCurrentCart(prev => [...prev, {
+        productId: product.productId,
+        name: product.name,
+        priceCents: product.price,
+        qty: 1,
+        photoUrl: product.photoUrl
+      }]);
       setAddedUpsells(prev => new Set([...prev, product.productId]));
     }
   };
@@ -188,213 +202,156 @@ export default function CartConfirmationModal({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
-        <Stack spacing={3}>
-          {/* Main Product Display */}
-          <Box sx={{ display: 'flex', gap: 2 }}>
+      <DialogContent sx={{ p: 2, maxHeight: '75vh', overflowY: 'auto' }}>
+        <Stack spacing={2}>
+          {/* Main Product Display - Compact */}
+          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
             <Avatar
-              src={cartItems[0]?.photoUrl || '/images/microgeens/chefPax_mix.png'}
+              src={currentCart[0]?.photoUrl || '/images/microgeens/chefPax_mix.png'}
               variant="rounded"
-              sx={{ width: 80, height: 80 }}
+              sx={{ width: 60, height: 60 }}
             />
-            <Box sx={{ flexGrow: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <Chip 
-                  label={`IN ${Math.floor(Math.random() * 20) + 5} CARTS`}
-                  color="primary"
-                  size="small"
-                  variant="outlined"
-                />
-              </Box>
-              
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
-                {cartItems[0]?.name}
+            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.25, lineHeight: 1.2 }}>
+                {currentCart[0]?.name}
               </Typography>
-              
-              <Typography variant="body2" color="text.secondary">
-                {cartItems[0]?.sizeOz && cartItems[0].sizeOz < 50 ? '5×5 Premium Tray' : '10×20 Live Tray'}
-                {cartItems.length > 1 && ` + ${cartItems.length - 1} more item${cartItems.length > 2 ? 's' : ''}`}
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                {currentCart[0]?.sizeOz && currentCart[0].sizeOz < 50 ? '5×5 Tray' : '10×20 Tray'}
+                {currentCart.length > 1 && ` +${currentCart.length - 1} more`}
               </Typography>
             </Box>
+            <Chip 
+              label={`${popularityCount} carts`}
+              size="small"
+              sx={{ height: 20, fontSize: '0.7rem' }}
+            />
           </Box>
 
-          {/* Order Summary */}
+          {/* Order Summary - Compact */}
           <Box sx={{ 
             backgroundColor: 'grey.50', 
             borderRadius: 1, 
-            p: 2,
+            p: 1.5,
             border: '1px solid',
             borderColor: 'grey.200'
           }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-              Order Summary
-            </Typography>
-            
             <Stack spacing={0.5}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body2">Items:</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                <Typography variant="caption">Items:</Typography>
+                <Typography variant="caption" sx={{ fontWeight: 600 }}>
                   {formatPrice(subtotal)}
                 </Typography>
               </Box>
-              
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body2">Delivery:</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                <Typography variant="caption">Delivery:</Typography>
+                <Typography variant="caption" sx={{ fontWeight: 600 }}>
                   {formatPrice(deliveryFee)}
                 </Typography>
               </Box>
-              
-              <Divider sx={{ my: 0.5 }} />
-              
+              <Divider sx={{ my: 0.25 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>Subtotal:</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>Total:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
                   {formatPrice(total)}
                 </Typography>
               </Box>
             </Stack>
           </Box>
 
-          {/* Delivery Information */}
-          {deliveryMode === 'split' && deliveryGroups.length > 1 && (
-            <Alert severity="info" icon={<LocalShipping />}>
-              <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                Smart Split Delivery
-              </Typography>
-              <Typography variant="body2">
-                Your items will be delivered in {deliveryGroups.length} separate deliveries 
-                so you get fresh microgreens as soon as they're ready!
-              </Typography>
-            </Alert>
-          )}
-
-          {/* Login/Rewards Prompt (only if not logged in) */}
+          {/* Login/Rewards Prompt - Compact */}
           {!isLoggedIn && (
             <Alert 
               severity="success" 
-              sx={{ 
-                backgroundColor: 'success.light',
-                '& .MuiAlert-icon': { color: 'success.dark' }
-              }}
+              icon={false}
+              sx={{ py: 1, px: 1.5 }}
             >
-              <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                🎁 Earn Rewards & Save!
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                Sign up or log in to earn points on every purchase, get exclusive discounts, and track your orders.
-              </Typography>
-              <Button 
-                size="small" 
-                variant="contained" 
-                sx={{ 
-                  backgroundColor: 'success.dark',
-                  '&:hover': { backgroundColor: 'success.main' }
-                }}
-                href="/api/auth/signin"
-              >
-                Sign Up / Log In
-              </Button>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="caption" sx={{ fontWeight: 600, flex: 1 }}>
+                  🎁 Sign up for rewards & exclusive discounts
+                </Typography>
+                <Button 
+                  size="small" 
+                  variant="contained" 
+                  sx={{ fontSize: '0.7rem', py: 0.5, px: 1.5 }}
+                  href="/api/auth/signin"
+                >
+                  Join
+                </Button>
+              </Box>
             </Alert>
           )}
 
-          {/* Upsell Products - Smart Suggestions */}
+          {/* Upsell Products - Compact Grid */}
           {upsellProducts.length > 0 && (
             <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-                🌱 Complete Your Order
+              <Typography variant="caption" sx={{ fontWeight: 600, mb: 0.5, display: 'block' }}>
+                🌱 Add more:
               </Typography>
               
-              <List dense>
-                {upsellProducts.map((product) => (
-                  <ListItem key={product.productId} sx={{ px: 0, py: 1 }}>
-                    <ListItemAvatar>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                {upsellProducts.slice(0, 2).map((product) => (
+                  <Box 
+                    key={product.productId} 
+                    sx={{ 
+                      flex: '1 1 calc(50% - 4px)',
+                      minWidth: 140,
+                      border: '1px solid',
+                      borderColor: 'grey.300',
+                      borderRadius: 1,
+                      p: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 0.5
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
                       <Avatar 
                         src={product.photoUrl} 
                         variant="rounded"
-                        sx={{ width: 48, height: 48 }}
+                        sx={{ width: 32, height: 32 }}
                       />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={product.name}
-                      secondary={`${product.description} • ${formatPrice(product.price)}`}
-                      primaryTypographyProps={{ variant: 'body2', fontWeight: 500 }}
-                      secondaryTypographyProps={{ variant: 'caption' }}
-                    />
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 600, lineHeight: 1.2, display: 'block' }}>
+                          {product.name.split('—')[0].trim()}
+                        </Typography>
+                        <Typography variant="caption" sx={{ fontSize: '0.65rem', color: 'text.secondary' }}>
+                          {formatPrice(product.price)}
+                        </Typography>
+                      </Box>
+                    </Box>
                     <Button 
                       size="small" 
                       variant="outlined"
-                      startIcon={<AddIcon />}
+                      fullWidth
                       onClick={() => handleAddUpsell(product)}
-                      sx={{ minWidth: 80 }}
+                      sx={{ py: 0.25, fontSize: '0.7rem' }}
                     >
                       Add
                     </Button>
-                  </ListItem>
+                  </Box>
                 ))}
-              </List>
+              </Box>
             </Box>
           )}
 
-          {/* Action Buttons */}
-          <Stack 
-            direction={{ xs: 'column', sm: 'row' }} 
-            spacing={{ xs: 1.5, sm: 2 }} 
-            sx={{ pt: 1 }}
-          >
+          {/* Action Buttons - Compact */}
+          <Stack direction="row" spacing={1}>
             <Button
               variant="outlined"
               onClick={onViewCart}
               startIcon={<ShoppingCart />}
-              sx={{ 
-                flex: 1,
-                minHeight: { xs: 48, sm: 36 },
-                fontSize: { xs: '1rem', sm: '0.875rem' }
-              }}
+              sx={{ flex: 1, py: 1, fontSize: '0.875rem' }}
             >
-              See in cart
+              Cart
             </Button>
             <Button
               variant="contained"
               onClick={onCheckout}
-              sx={{ 
-                flex: 1,
-                minHeight: { xs: 48, sm: 36 },
-                fontSize: { xs: '1rem', sm: '0.875rem' },
-                backgroundColor: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'primary.dark'
-                }
-              }}
+              sx={{ flex: 1, py: 1, fontSize: '0.875rem' }}
             >
-              Checkout {cartItems.length} item{cartItems.length > 1 ? 's' : ''}
+              Checkout ({currentCart.length})
             </Button>
           </Stack>
-
-          {/* Trust Signals */}
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            gap: 2,
-            pt: 2,
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            flexWrap: 'wrap'
-          }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <TrendingUp sx={{ fontSize: 16, color: 'success.main' }} />
-              <Typography variant="caption" color="text.secondary">
-                Fresh daily • Local Austin
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <CheckCircle sx={{ fontSize: 16, color: 'success.main' }} />
-              <Typography variant="caption" color="text.secondary">
-                Free delivery • No commitment
-              </Typography>
-            </Box>
-          </Box>
         </Stack>
       </DialogContent>
     </Dialog>

@@ -2,6 +2,7 @@
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
+import EmailProvider from "next-auth/providers/email";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
 
@@ -28,45 +29,27 @@ export const authOptions: NextAuthOptions = {
   // Only use MongoDB adapter if available
   ...(clientPromise && { adapter: MongoDBAdapter(clientPromise) }),
   providers: [
-    // Google OAuth provider for admin and customer login
+    // Google OAuth - Primary customer login
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       })
     ] : []),
-    // Admin credentials provider with password check
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials) {
-        const adminEmail = process.env.ADMIN_EMAIL || 'geoff@chefpax.com';
-        const adminPassword = process.env.ADMIN_PASSWORD;
-        
-        if (!adminPassword) {
-          console.error('ADMIN_PASSWORD environment variable not set');
-          return null;
-        }
-
-        // Verify BOTH email and password match
-        if (
-          credentials?.email === adminEmail && 
-          credentials?.password === adminPassword
-        ) {
-          return {
-            id: "admin-1",
-            email: adminEmail,
-            name: "ChefPax Admin",
-          };
-        }
-        
-        // Invalid credentials
-        return null;
-      }
-    }),
+    // Email Magic Link - Customer signup/login
+    ...(process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL && clientPromise ? [
+      EmailProvider({
+        server: {
+          host: 'smtp.sendgrid.net',
+          port: 587,
+          auth: {
+            user: 'apikey',
+            pass: process.env.SENDGRID_API_KEY
+          }
+        },
+        from: process.env.SENDGRID_FROM_EMAIL
+      })
+    ] : []),
     // Only add Apple provider if credentials are available
     ...(process.env.APPLE_ID && process.env.APPLE_SECRET ? [
       AppleProvider({
