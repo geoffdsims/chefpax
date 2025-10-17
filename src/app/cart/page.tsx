@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { trackCheckout, trackSubscription } from "@/lib/analytics";
 import { 
   Container, 
@@ -8,8 +9,6 @@ import {
   Stack, 
   Button, 
   Divider,
-  AppBar,
-  Toolbar,
   IconButton,
   Box,
   Card,
@@ -17,15 +16,16 @@ import {
   FormControlLabel,
   Checkbox,
   Alert,
-  Chip
+  Chip,
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText
 } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Delete, ShoppingCart } from "@mui/icons-material";
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
-import MultiDeliveryOption from "@/components/MultiDeliveryOption";
-import DeliveryDateSelector from "@/components/DeliveryDateSelector";
-import CartConfirmationModal from "@/components/CartConfirmationModal";
-import { hasMixedLeadTimes } from "@/lib/delivery-scheduler";
 
 interface CartItem {
   productId: string;
@@ -41,75 +41,49 @@ export default function CartPage() {
   const { data: session } = useSession();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customer, setCustomer] = useState({
-    name: "",
-    email: "",
+    name: session?.user?.name || "",
+    email: session?.user?.email || "",
     phone: "",
     address1: "",
-    address2: "",
     city: "Austin",
     state: "TX",
     zip: ""
   });
   const [isSubscription, setIsSubscription] = useState(false);
-  const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<string>("");
-  const [deliveryMode, setDeliveryMode] = useState<'single' | 'split'>('single');
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [deliveryOptions, setDeliveryOptions] = useState<{ date: string; message: string }[]>([]);
 
   useEffect(() => {
-    const loadCart = () => {
-      setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
-    };
-
-    // Load cart on mount
-    loadCart();
-
-    // Listen for cart updates
-    const handleCartUpdate = () => {
-      loadCart();
-    };
-
-    window.addEventListener("cartUpdated", handleCartUpdate);
-
-    // Load delivery options
-    fetch("/api/delivery-options")
-      .then(res => res.json())
-      .then(data => {
-        setDeliveryOptions(data);
-        if (data.length > 0) {
-          setSelectedDeliveryDate(data[0].date);
-        }
-      })
-      .catch(err => console.error("Failed to load delivery options:", err));
-
-    return () => {
-      window.removeEventListener("cartUpdated", handleCartUpdate);
-    };
+    setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
   }, []);
 
+  useEffect(() => {
+    if (session?.user) {
+      setCustomer(prev => ({
+        ...prev,
+        name: session.user.name || prev.name,
+        email: session.user.email || prev.email
+      }));
+    }
+  }, [session]);
+
   const subtotal = cart.reduce((a, c) => a + c.priceCents * c.qty, 0);
-  const discount = isSubscription ? subtotal * 0.1 : 0; // 10% discount for subscriptions
-  const delivery = 500; // $5.00
+  const discount = isSubscription ? subtotal * 0.1 : 0;
+  const delivery = 500;
   const total = subtotal - discount + delivery;
 
-  const handleSubscriptionChange = (checked: boolean) => {
-    if (checked && !session) {
-      // If user wants to subscribe but isn't signed in, prompt for authentication
-      signIn();
-      return;
-    }
-    setIsSubscription(checked);
+  const removeItem = (productId: string) => {
+    const updated = cart.filter(item => item.productId !== productId);
+    setCart(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
 
   async function checkout() {
-    // If user selected subscription but isn't signed in, prompt for sign in
     if (isSubscription && !session) {
       signIn();
       return;
     }
 
-    // Track checkout initiation
-    const totalCents = cart.reduce((sum, item) => sum + (item.priceCents * item.qty), 0);
+    const totalCents = total;
     trackCheckout({
       step: 'initiated',
       total_cents: totalCents,
@@ -122,392 +96,207 @@ export default function CartPage() {
       body: JSON.stringify({ 
         cart, 
         customer, 
-        deliveryDate: selectedDeliveryDate,
-        isSubscription: isSubscription && !!session // Only pass true if user is signed in
+        isSubscription: isSubscription && !!session
       })
     });
 
-    // Check if response is ok
     if (!res.ok) {
-      const errorText = await res.text();
-      console.error("Checkout API error:", res.status, errorText);
-      
-      // Track checkout failure
-      trackCheckout({
-        step: 'failed',
-        total_cents: totalCents,
-        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
-      });
-      
-      alert(`Checkout failed: ${res.status} ${errorText}`);
+      trackCheckout({ step: 'failed', total_cents: totalCents, item_count: cart.length });
+      alert("Checkout failed");
       return;
     }
 
-    // Check if response has content
-    const responseText = await res.text();
-    if (!responseText) {
-      console.error("Empty response from checkout API");
-      
-      // Track checkout failure
-      trackCheckout({
-        step: 'failed',
-        total_cents: totalCents,
-        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
-      });
-      
-      alert("Checkout failed: Empty response from server");
-      return;
-    }
-
-    let responseData;
-    try {
-      responseData = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error("Failed to parse JSON response:", responseText);
-      
-      // Track checkout failure
-      trackCheckout({
-        step: 'failed',
-        total_cents: totalCents,
-        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
-      });
-      
-      alert("Checkout failed: Invalid response from server");
-      return;
-    }
-
-    const { url, error } = responseData;
-    if (url) {
-      // Track checkout payment step
-      trackCheckout({
-        step: 'payment',
-        total_cents: totalCents,
-        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
-        payment_method: 'stripe',
-      });
-      
-      // Track subscription if applicable
+    const data = await res.json();
+    if (data.url) {
+      trackCheckout({ step: 'payment', total_cents: totalCents, item_count: cart.length, payment_method: 'stripe' });
       if (isSubscription) {
-        trackSubscription({
-          type: 'started',
-          plan: 'weekly',
-          frequency: 'weekly',
-          discount_percentage: 10,
-        });
+        trackSubscription({ type: 'started', plan: 'weekly', frequency: 'weekly', discount_percentage: 10 });
       }
-      
-      window.location.href = url;
-    } else {
-      // Track checkout failure
-      trackCheckout({
-        step: 'failed',
-        total_cents: totalCents,
-        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
-      });
-      
-      alert(error || "Checkout failed");
+      window.location.href = data.url;
     }
   }
 
+  if (cart.length === 0) {
+    return (
+      <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
+          <ShoppingCart sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
+          <Typography variant="h4" sx={{ fontFamily: 'Playfair Display', mb: 2 }}>
+            Your cart is empty
+          </Typography>
+          <Button component={Link} href="/shop" variant="contained" size="large">
+            Continue Shopping
+          </Button>
+        </Container>
+      </Box>
+    );
+  }
+
   return (
-    <>
-      <AppBar position="static" sx={{ backgroundColor: "primary.main" }}>
-        <Toolbar>
-          <IconButton component={Link} href="/shop" color="inherit">
+    <Box sx={{ bgcolor: 'grey.50', minHeight: '100vh', py: 4 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <IconButton component={Link} href="/shop">
             <ArrowBack />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h4" sx={{ fontFamily: 'Playfair Display' }}>
             Your Cart
           </Typography>
-        </Toolbar>
-      </AppBar>
-
-      <Container sx={{ py: 8, maxWidth: 800 }}>
-        <Typography 
-          variant="h3" 
-          sx={{ 
-            fontFamily: 'Playfair Display, serif',
-            color: 'primary.main',
-            mb: 4,
-            textAlign: 'center'
-          }}
-        >
-          Your Order
-        </Typography>
-        
-        {/* Order Items */}
-        <Box sx={{ 
-          backgroundColor: 'background.paper',
-          borderRadius: 2,
-          p: 3,
-          mb: 4,
-          border: '1px solid rgba(0,0,0,0.05)'
-        }}>
-          {cart.map((c, i) => (
-            <Stack direction="row" key={`${c.productId}-${i}`} justifyContent="space-between" mb={2}>
-              <Typography variant="body1" fontWeight={500}>{c.name} × {c.qty}</Typography>
-              <Typography variant="body1" fontWeight={600} color="primary.main">
-                ${(c.priceCents * c.qty / 100).toFixed(2)}
-              </Typography>
-            </Stack>
-          ))}
-          
-          <Divider sx={{ my: 2 }} />
-          
-          <Stack direction="row" justifyContent="space-between" mb={1}>
-            <Typography variant="body1">Subtotal:</Typography>
-            <Typography variant="body1">${(subtotal / 100).toFixed(2)}</Typography>
-          </Stack>
-          
-          {isSubscription && (
-            <Stack direction="row" justifyContent="space-between" mb={1}>
-              <Typography variant="body1" color="success.main">Subscription Discount (10%):</Typography>
-              <Typography variant="body1" color="success.main">-${(discount / 100).toFixed(2)}</Typography>
-            </Stack>
-          )}
-          
-          <Stack direction="row" justifyContent="space-between" mb={1}>
-            <Typography variant="body1">Delivery:</Typography>
-            <Typography variant="body1">${(delivery / 100).toFixed(2)}</Typography>
-          </Stack>
-          
-          <Divider sx={{ my: 2 }} />
-          
-          <Stack direction="row" justifyContent="space-between">
-            <Typography variant="h6" fontWeight={700} color="primary.main">Total:</Typography>
-            <Typography variant="h6" fontWeight={700} color="primary.main">
-              ${(total / 100).toFixed(2)}
-            </Typography>
-          </Stack>
         </Box>
 
-        {/* Smart Delivery System */}
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            fontFamily: 'Playfair Display, serif',
-            color: 'primary.main',
-            mb: 3,
-            textAlign: 'center'
-          }}
-        >
-          Smart Delivery Options
-        </Typography>
-        
-        <Box sx={{ 
-          backgroundColor: 'background.paper',
-          borderRadius: 2,
-          p: 4,
-          mb: 4,
-          border: '1px solid rgba(0,0,0,0.05)'
-        }}>
-          {/* Multi-Delivery Option (if mixed lead times) */}
-          <MultiDeliveryOption
-            cartItems={cart}
-            deliveryMode={deliveryMode}
-            onModeChange={setDeliveryMode}
-          />
-          
-          {/* Delivery Date Selector */}
-          <DeliveryDateSelector
-            cartItems={cart}
-            deliveryMode={deliveryMode}
-            selectedDate={selectedDeliveryDate}
-            onDateChange={setSelectedDeliveryDate}
-          />
-          
-          {selectedDeliveryDate && (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              <Typography variant="body2">
-                <strong>Delivery scheduled!</strong> Your fresh microgreens will arrive on{' '}
-                {new Date(selectedDeliveryDate).toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-                {deliveryMode === 'split' && ' (split deliveries as items are ready)'}
-              </Typography>
-            </Alert>
-          )}
-        </Box>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
+          {/* Cart Items */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <Card>
+              <CardContent>
+                <List>
+                  {cart.map((item, idx) => (
+                    <ListItem key={item.productId} divider={idx < cart.length - 1} sx={{ py: 2 }}>
+                      <ListItemAvatar>
+                        <Avatar src={item.photoUrl} variant="rounded" sx={{ width: 60, height: 60 }} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={item.name}
+                        secondary={`Qty: ${item.qty} • ${(item.priceCents / 100).toFixed(2)} each`}
+                      />
+                      <Typography variant="h6" sx={{ mr: 2 }}>
+                        ${((item.priceCents * item.qty) / 100).toFixed(2)}
+                      </Typography>
+                      <IconButton size="small" onClick={() => removeItem(item.productId)}>
+                        <Delete />
+                      </IconButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        {/* Subscription Option */}
-        <Box sx={{ 
-          backgroundColor: 'background.paper',
-          borderRadius: 2,
-          p: 4,
-          mb: 4,
-          border: '1px solid rgba(0,0,0,0.05)'
-        }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={isSubscription}
-                onChange={(e) => handleSubscriptionChange(e.target.checked)}
-                color="primary"
-                disabled={!session && !isSubscription}
-              />
-            }
-            label={
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Subscribe & Save 10%
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Get this order delivered weekly and save 10% on every delivery. 
-                  You can pause, skip, or cancel anytime.
-                </Typography>
-                {!session && (
-                  <Typography variant="body2" color="primary.main" sx={{ mt: 1, fontWeight: 500 }}>
-                    Sign in required to create subscription
-                  </Typography>
-                )}
-              </Box>
-            }
-          />
-          
-          {isSubscription && session && (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              <Typography variant="body2">
-                <strong>Great choice, {session.user?.name || 'there'}!</strong> You'll save ${(discount / 100).toFixed(2)} on this order 
-                and 10% on all future deliveries. Manage your subscription in your account.
-              </Typography>
-            </Alert>
-          )}
-          
-          {!session && (
-            <Alert severity="info" sx={{ mt: 2 }}>
-              <Typography variant="body2" sx={{ mb: 2 }}>
-                <strong>Want to subscribe?</strong> Sign in to create your subscription and save 10% on all orders. 
-                You'll also get access to your order history and subscription management.
-              </Typography>
-              <Button 
-                variant="contained" 
-                onClick={() => signIn()}
-                size="small"
-                sx={{ mr: 2 }}
+          {/* Order Summary */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <Stack spacing={2}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" sx={{ mb: 2 }}>Order Summary</Typography>
+                  <Stack spacing={1}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography>Subtotal:</Typography>
+                      <Typography>${(subtotal / 100).toFixed(2)}</Typography>
+                    </Box>
+                    {isSubscription && (
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', color: 'success.main' }}>
+                        <Typography>Subscription (10%):</Typography>
+                        <Typography>-${(discount / 100).toFixed(2)}</Typography>
+                      </Box>
+                    )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography>Delivery:</Typography>
+                      <Typography>${(delivery / 100).toFixed(2)}</Typography>
+                    </Box>
+                    <Divider />
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography variant="h6">Total:</Typography>
+                      <Typography variant="h6">${(total / 100).toFixed(2)}</Typography>
+                    </Box>
+                  </Stack>
+
+                  {!session && (
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                      <FormControlLabel
+                        control={<Checkbox checked={isSubscription} onChange={(e) => setIsSubscription(e.target.checked)} />}
+                        label="Subscribe & Save 10%"
+                      />
+                      <Typography variant="caption" display="block">Sign in required for subscriptions</Typography>
+                    </Alert>
+                  )}
+
+                  {session && (
+                    <FormControlLabel
+                      control={<Checkbox checked={isSubscription} onChange={(e) => setIsSubscription(e.target.checked)} />}
+                      label="Subscribe weekly & save 10%"
+                      sx={{ mt: 2 }}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" sx={{ mb: 2 }}>Delivery Info</Typography>
+                  <Stack spacing={1.5}>
+                    <TextField
+                      label="Full Name"
+                      value={customer.name}
+                      onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                      size="small"
+                      fullWidth
+                      required
+                    />
+                    <TextField
+                      label="Email"
+                      type="email"
+                      value={customer.email}
+                      onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                      size="small"
+                      fullWidth
+                      required
+                    />
+                    <TextField
+                      label="Phone"
+                      value={customer.phone}
+                      onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      label="Address"
+                      value={customer.address1}
+                      onChange={(e) => setCustomer({ ...customer, address1: e.target.value })}
+                      size="small"
+                      fullWidth
+                      required
+                    />
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 1 }}>
+                      <TextField
+                        label="City"
+                        value={customer.city}
+                        onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
+                        size="small"
+                        required
+                      />
+                      <TextField
+                        label="State"
+                        value={customer.state}
+                        onChange={(e) => setCustomer({ ...customer, state: e.target.value })}
+                        size="small"
+                        required
+                      />
+                      <TextField
+                        label="ZIP"
+                        value={customer.zip}
+                        onChange={(e) => setCustomer({ ...customer, zip: e.target.value })}
+                        size="small"
+                        required
+                      />
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={checkout}
+                disabled={!customer.name || !customer.email || !customer.address1 || !customer.zip}
+                sx={{ py: 1.5, fontSize: '1rem' }}
               >
-                Sign In
+                Proceed to Payment
               </Button>
-              <Button 
-                variant="outlined" 
-                onClick={() => setIsSubscription(false)}
-                size="small"
-              >
-                Continue as Guest
-              </Button>
-            </Alert>
-          )}
-        </Box>
-
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            fontFamily: 'Playfair Display, serif',
-            color: 'primary.main',
-            mb: 3,
-            textAlign: 'center'
-          }}
-        >
-          Delivery Information
-        </Typography>
-        
-        <Box sx={{ 
-          backgroundColor: 'background.paper',
-          borderRadius: 2,
-          p: 4,
-          border: '1px solid rgba(0,0,0,0.05)'
-        }}>
-          <Stack spacing={3}>
-          <TextField 
-            label="Full Name" 
-            value={customer.name} 
-            onChange={e => setCustomer({...customer, name: e.target.value})}
-            required
-          />
-          <TextField 
-            label="Email" 
-            type="email"
-            value={customer.email} 
-            onChange={e => setCustomer({...customer, email: e.target.value})}
-            required
-          />
-          <TextField 
-            label="Phone" 
-            value={customer.phone} 
-            onChange={e => setCustomer({...customer, phone: e.target.value})}
-          />
-          <TextField 
-            label="Address 1" 
-            value={customer.address1} 
-            onChange={e => setCustomer({...customer, address1: e.target.value})}
-            required
-          />
-          <TextField 
-            label="Address 2" 
-            value={customer.address2} 
-            onChange={e => setCustomer({...customer, address2: e.target.value})}
-          />
-          <Stack direction="row" spacing={2}>
-            <TextField 
-              label="City" 
-              value={customer.city} 
-              onChange={e => setCustomer({...customer, city: e.target.value})} 
-              sx={{ flex: 1 }}
-              required
-            />
-            <TextField 
-              label="State" 
-              value={customer.state} 
-              onChange={e => setCustomer({...customer, state: e.target.value})} 
-              sx={{ width: 120 }}
-              required
-            />
-            <TextField 
-              label="ZIP" 
-              value={customer.zip} 
-              onChange={e => setCustomer({...customer, zip: e.target.value})} 
-              sx={{ width: 160 }}
-              required
-            />
-          </Stack>
-          <Button 
-            variant="contained" 
-            size="large" 
-            onClick={() => setShowConfirmation(true)}
-            disabled={!customer.name || !customer.email || !customer.address1 || !customer.city || !customer.state || !customer.zip || !selectedDeliveryDate}
-            sx={{
-              backgroundColor: 'primary.main',
-              color: 'white',
-              fontWeight: 600,
-              py: 2,
-              fontSize: '1.1rem',
-              '&:hover': {
-                backgroundColor: 'primary.dark',
-                transform: 'translateY(-1px)',
-                boxShadow: '0 6px 20px rgba(45, 80, 22, 0.3)'
-              },
-              '&:disabled': {
-                backgroundColor: 'rgba(0,0,0,0.12)',
-                color: 'rgba(0,0,0,0.26)'
-              }
-            }}
-          >
-            Review & Checkout
-          </Button>
-          </Stack>
+            </Stack>
+          </motion.div>
         </Box>
       </Container>
-
-      {/* Cart Confirmation Modal */}
-      <CartConfirmationModal
-        open={showConfirmation}
-        onClose={() => setShowConfirmation(false)}
-        cartItems={cart}
-        deliveryMode={deliveryMode}
-        onViewCart={() => setShowConfirmation(false)}
-        onCheckout={checkout}
-      />
-    </>
+    </Box>
   );
 }

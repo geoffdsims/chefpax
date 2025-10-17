@@ -825,9 +825,9 @@ export default function Shop() {
             {accountTab === 0 && (
               <Box>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                  Profile Information
+                  Profile
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                   <Avatar 
                     src={session?.user?.image || undefined}
                     sx={{ width: 64, height: 64, bgcolor: '#4CAF50' }}
@@ -841,9 +841,18 @@ export default function Shop() {
                     </Typography>
                   </Box>
                 </Box>
-                <Typography variant="body2" color="text.secondary">
-                  Manage your personal information, delivery preferences, and account settings.
-                </Typography>
+                
+                <Stack spacing={1.5} sx={{ mt: 2 }}>
+                  <Button size="small" variant="outlined" fullWidth onClick={() => setAccountTab(1)}>
+                    View Orders
+                  </Button>
+                  <Button size="small" variant="outlined" fullWidth onClick={() => setAccountTab(2)}>
+                    Manage Subscriptions
+                  </Button>
+                  <Button size="small" variant="outlined" fullWidth component={Link} href="/account">
+                    Delivery Preferences
+                  </Button>
+                </Stack>
               </Box>
             )}
 
@@ -904,37 +913,25 @@ export default function Shop() {
                       </Box>
                     </Box>
 
-                    {/* Subscription Info */}
-                    <Box sx={{ 
-                      p: 3,
-                      backgroundColor: '#f1f8e9',
-                      borderRadius: 2,
-                      border: '1px solid #4CAF50'
-                    }}>
-                      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: '#2D5016' }}>
-                        Weekly Subscription Plans
-                      </Typography>
-                      <Typography variant="body2" color="#2E7D32" sx={{ mb: 2 }}>
-                        Get live microgreen trays delivered weekly with our subscription service. 
-                        Save 10% on all orders and never run out of your favorites.
-                      </Typography>
-                      
+                    {/* How to Subscribe */}
+                    <Alert severity="info" sx={{ mt: 2 }}>
                       <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                        Subscription Benefits:
+                        How to Subscribe & Save 10%
                       </Typography>
-                      <Typography component="div" variant="body2" color="text.secondary">
-                        • 10% discount on all orders<br/>
-                        • Automatic delivery scheduling<br/>
-                        • Pause, resume, or cancel anytime<br/>
-                        • Priority customer support
+                      <Typography variant="body2">
+                        1. Add products to your cart<br/>
+                        2. At checkout, check "Subscribe weekly & save 10%"<br/>
+                        3. Your subscription will be created after first payment
                       </Typography>
-                      
-                      <Alert severity="success" sx={{ mt: 2 }}>
-                        <Typography sx={{ fontSize: '0.875rem' }}>
-                          Welcome back, {session.user?.name}! Your subscription management panel is ready.
-                        </Typography>
-                      </Alert>
-                    </Box>
+                      <Button 
+                        size="small" 
+                        variant="contained" 
+                        sx={{ mt: 1 }}
+                        onClick={() => { handleAccountModalClose(); setSelectedTab(0); }}
+                      >
+                        Browse Products
+                      </Button>
+                    </Alert>
                   </Box>
                 ) : (
                   <Box sx={{ 
@@ -972,35 +969,64 @@ export default function Shop() {
             {accountTab === 3 && (
               <Box>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                  Loyalty Points
+                  Loyalty Rewards
                 </Typography>
-                <Box sx={{ 
-                  textAlign: 'center', 
-                  py: 6,
-                  backgroundColor: '#fafafa',
-                  borderRadius: 2,
-                  border: '2px dashed #e0e0e0'
-                }}>
-                  <Loyalty sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    0 Loyalty Points
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Earn points with every purchase and redeem them for discounts.
-                  </Typography>
-                  <Button 
-                    variant="contained" 
-                    onClick={() => { setSelectedTab(0); handleAccountModalClose(); }}
-                    sx={{
-                      background: 'linear-gradient(135deg, #2D5016 0%, #4CAF50 100%)',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #1e3a0f 0%, #388e3c 100%)',
-                      },
-                    }}
-                  >
-                    Start Earning Points
-                  </Button>
-                </Box>
+                
+                {session ? (
+                  <Box>
+                    <Card sx={{ mb: 2, background: 'linear-gradient(135deg, #D4AF37 0%, #F4E5C3 100%)' }}>
+                      <CardContent sx={{ textAlign: 'center' }}>
+                        <Typography variant="h3" sx={{ fontWeight: 700, color: '#2D5016' }}>
+                          100
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#2D5016' }}>
+                          Points Available • $10 Value
+                        </Typography>
+                      </CardContent>
+                    </Card>
+
+                    <Alert severity="success" sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                        How Rewards Work:
+                      </Typography>
+                      <Typography variant="body2">
+                        • Earn 1 point per $1 spent<br/>
+                        • Redeem 100 points = $10 off<br/>
+                        • Points never expire
+                      </Typography>
+                    </Alert>
+
+                    <Stack spacing={1}>
+                      <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                        <Typography variant="caption" color="text.secondary">Lifetime Earned</Typography>
+                        <Typography variant="h6">100 points</Typography>
+                      </Box>
+                      <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                        <Typography variant="caption" color="text.secondary">Tier</Typography>
+                        <Typography variant="h6">🌱 Seed (Starter)</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Button 
+                      variant="contained" 
+                      fullWidth
+                      sx={{ mt: 2 }}
+                      onClick={() => { handleAccountModalClose(); setSelectedTab(0); }}
+                    >
+                      Shop & Earn Points
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Loyalty sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Sign in to view your loyalty rewards
+                    </Typography>
+                    <Button variant="contained" onClick={() => signIn()}>
+                      Sign In
+                    </Button>
+                  </Box>
+                )}
               </Box>
             )}
           </Box>
