@@ -114,6 +114,7 @@ export default function Shop() {
   const [cartCount, setCartCount] = useState(0);
   const [showCartConfirmation, setShowCartConfirmation] = useState(false);
   const [lastAddedProduct, setLastAddedProduct] = useState<Product | null>(null);
+  const [currentCartItems, setCurrentCartItems] = useState<any[]>([]);
   const { data: session } = useSession();
 
   // Set mounted state to prevent hydration issues
@@ -264,6 +265,9 @@ export default function Shop() {
 
   function handleShowCartConfirmation(product: Product) {
     setLastAddedProduct(product);
+    // Load current cart from localStorage
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCurrentCartItems(cart);
     setShowCartConfirmation(true);
   }
 
@@ -1033,15 +1037,7 @@ export default function Shop() {
       <CartConfirmationModal
         open={showCartConfirmation}
         onClose={() => setShowCartConfirmation(false)}
-        cartItems={lastAddedProduct ? [{
-          productId: lastAddedProduct._id,
-          name: lastAddedProduct.name,
-          priceCents: lastAddedProduct.priceCents,
-          qty: 1,
-          photoUrl: lastAddedProduct.photoUrl,
-          sizeOz: lastAddedProduct.sizeOz,
-          leadTimeDays: lastAddedProduct.leadTimeDays
-        }] : []}
+        cartItems={currentCartItems}
         onViewCart={() => {
           setShowCartConfirmation(false);
           setCartOpen(true);
@@ -1061,6 +1057,9 @@ export default function Shop() {
             photoUrl: product.photoUrl
           });
           localStorage.setItem("cart", JSON.stringify(cart));
+          
+          // Update current cart items for modal
+          setCurrentCartItems(cart);
           
           // Update cart count
           const totalQty = cart.reduce((sum: number, item: any) => sum + (item.qty || 1), 0);

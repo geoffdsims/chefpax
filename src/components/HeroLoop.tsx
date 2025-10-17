@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { keyframes, styled } from "@mui/material/styles";
 import Link from "next/link";
@@ -11,11 +12,22 @@ const panZoom = keyframes`
   100% { transform: scale(1.05) translate3d(0, 0, 0); }
 `;
 
+const heroImages = [
+  '/images/heros/thumbnail_IMG_8894-1.jpg',
+  '/images/heros/thumbnail_IMG_8913.jpg',
+  '/images/heros/thumbnail_IMG_8999.jpg',
+  '/images/heros/thumbnail_IMG_9029.jpg',
+  '/images/heros/thumbnail_5D717A23-C898-4B5B-A217-726EAE945301.jpg',
+  '/images/heros/thumbnail_IMG_BBAD2ACB-5B63-4729-A62E-EE9509A71E79.jpg',
+  '/images/heros/thumbnail_IMG_CFCFE8C3-B697-4A91-A0CE-A79192CF18A9.jpg',
+  '/images/heros/thumbnail_IMG_CFF37E9A-0923-4499-BC17-25C833B5203D.jpg',
+];
+
 // Background layer with animation
-const AnimatedBg = styled("div")(() => ({
+const AnimatedBg = styled("div")<{ image: string }>(({ image }) => ({
   position: "absolute",
   inset: 0,
-  backgroundImage: "url('/images/austinChefPack.png')",
+  backgroundImage: `url('${image}')`,
   backgroundSize: "cover",
   backgroundPosition: "center",
   filter: "saturate(1.05) contrast(1.05)",
@@ -29,6 +41,15 @@ const AnimatedBg = styled("div")(() => ({
 }));
 
 export default function HeroLoop() {
+  const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 8000); // Change image every 8 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   function handleSubscribe() {
     // Redirect to shop page where users can select subscription option
     window.location.href = "/shop";
@@ -46,7 +67,7 @@ export default function HeroLoop() {
       }}
       aria-label="ChefPax microgreens hero"
     >
-      <AnimatedBg aria-hidden />
+      <AnimatedBg image={heroImages[currentImageIndex]} aria-hidden />
 
       {/* soft vignette for luxe look */}
       <Box
