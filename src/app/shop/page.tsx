@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { trackCart, trackPremiumPricing } from "@/lib/analytics";
 import { 
   Container, 
   Box, 
@@ -232,6 +233,25 @@ export default function Shop() {
     }
     
     localStorage.setItem("cart", JSON.stringify(cart));
+    
+    // Track cart addition
+    trackCart({
+      action: 'add',
+      product: p.name,
+      quantity: 1,
+      price_cents: p.priceCents,
+    });
+    
+    // Track premium pricing acceptance (products > $30)
+    if (p.priceCents > 3000) {
+      trackPremiumPricing({
+        product: p.name,
+        price_cents: p.priceCents,
+        competitor_price_cents: Math.round(p.priceCents / 1.4), // Estimate 40% premium
+        premium_percentage: 40,
+        accepted: true,
+      });
+    }
     // Calculate total quantity of all items, not just unique items
     const totalQuantity = cart.reduce((sum: number, item: any) => sum + (item.qty || 1), 0);
     setCartCount(totalQuantity);

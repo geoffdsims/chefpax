@@ -46,6 +46,12 @@ export class SMSService {
    */
   static async sendOrderConfirmation(data: OrderConfirmationSMSData): Promise<boolean> {
     try {
+      // Check if user has opted out
+      if (await this.hasOptedOut(data.customerPhone)) {
+        console.log(`⏭️ Skipping SMS to ${data.customerPhone} - user has opted out`);
+        return false;
+      }
+
       const message = `🌱 ChefPax: Order #${data.orderNumber} confirmed! Your fresh microgreens will be delivered ${new Date(data.deliveryDate).toLocaleDateString()}.${data.trackingUrl ? ` Track: ${data.trackingUrl}` : ''} Reply STOP to opt-out.`;
 
       return await this.sendSMS(data.customerPhone, message);
@@ -60,6 +66,12 @@ export class SMSService {
    */
   static async sendDeliveryUpdate(data: DeliveryUpdateSMSData): Promise<boolean> {
     try {
+      // Check if user has opted out
+      if (await this.hasOptedOut(data.customerPhone)) {
+        console.log(`⏭️ Skipping SMS to ${data.customerPhone} - user has opted out`);
+        return false;
+      }
+
       let message = '';
       
       switch (data.status) {
@@ -213,14 +225,14 @@ export class SMSService {
       case 'STOP':
       case 'UNSUBSCRIBE':
       case 'CANCEL':
-        // TODO: Update user SMS preferences in database
+        await this.updateSMSPreference(from, false);
         return 'You have been unsubscribed from ChefPax SMS notifications. Reply START to re-subscribe.';
 
       case 'START':
       case 'SUBSCRIBE':
       case 'YES':
       case 'JOIN':
-        // TODO: Update user SMS preferences in database
+        await this.updateSMSPreference(from, true);
         return 'Welcome back to ChefPax SMS notifications! 🌱 Reply STOP to opt-out.';
 
       case 'HELP':
@@ -229,6 +241,97 @@ export class SMSService {
 
       default:
         return 'Thanks for your message! For order support, visit chefpax.com/account or email alerts@chefpax.com. Reply HELP for options or STOP to opt-out.';
+    }
+  }
+
+  /**
+   * Update SMS preference in database
+   */
+  private static async updateSMSPreference(phone: string, optIn: boolean): Promise<void> {
+    try {
+      const { getDb } = await import('./mongo');
+      const db = await getDb();
+
+      if (!db) {
+        console.warn('⚠️ Database not available, SMS preference not persisted');
+        return;
+      }
+
+      // Normalize phone number (remove +1, spaces, dashes)
+      const normalizedPhone = phone.replace(/[\s\-\+]/g, '').replace(/^1/, '');
+
+      const updateData = {
+        'communicationPreferences.smsOptIn': optIn,
+        [`communicationPreferences.${optIn ? 'smsOptInDate' : 'smsOptOutDate'}`]: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      // Try to update by phone number
+      const result = await db.collection('userProfiles').updateOne(
+        { phone: { $regex: normalizedPhone } },
+        { $set: updateData }
+      );
+
+      if (result.matchedCount > 0) {
+        console.log(`✅ SMS preference updated for ${phone}: optIn=${optIn}`);
+      } else {
+        // If no user profile found, create a guest SMS preference record
+        await db.collection('sms_preferences').updateOne(
+          { phone: normalizedPhone },
+          {
+            $set: {
+              phone: normalizedPhone,
+              smsOptIn: optIn,
+              lastUpdated: new Date().toISOString(),
+              ...(optIn ? { smsOptInDate: new Date().toISOString() } : { smsOptOutDate: new Date().toISOString() })
+            }
+          },
+          { upsert: true }
+        );
+        console.log(`✅ Guest SMS preference created for ${phone}: optIn=${optIn}`);
+      }
+    } catch (error) {
+      console.error('❌ Failed to update SMS preference:', error);
+      // Don't throw error - SMS should still work even if DB update fails
+    }
+  }
+
+  /**
+   * Check if a phone number has opted out of SMS
+   */
+  static async hasOptedOut(phone: string): Promise<boolean> {
+    try {
+      const { getDb } = await import('./mongo');
+      const db = await getDb();
+
+      if (!db) {
+        return false; // Default to opted in if DB unavailable
+      }
+
+      const normalizedPhone = phone.replace(/[\s\-\+]/g, '').replace(/^1/, '');
+
+      // Check user profile first
+      const userProfile = await db.collection('userProfiles').findOne(
+        { phone: { $regex: normalizedPhone } }
+      );
+
+      if (userProfile?.communicationPreferences?.smsOptIn === false) {
+        return true; // User has opted out
+      }
+
+      // Check guest preferences
+      const guestPref = await db.collection('sms_preferences').findOne(
+        { phone: normalizedPhone }
+      );
+
+      if (guestPref?.smsOptIn === false) {
+        return true; // Guest has opted out
+      }
+
+      return false; // Default to opted in
+    } catch (error) {
+      console.error('❌ Failed to check SMS opt-out status:', error);
+      return false; // Default to opted in on error
     }
   }
 

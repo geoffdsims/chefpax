@@ -5,6 +5,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import SessionProvider from "@/components/SessionProvider";
 import AxeProvider from "@/components/AxeProvider";
 import Schema from "./_components/Schema";
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = { 
   title: "ChefPax | Microgreens Delivered in Austin (Delivery or Uber Direct)", 
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </ThemeProvider>
           </SessionProvider>
         </AxeProvider>
+        <Analytics />
       </body>
     </html>
   );

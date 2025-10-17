@@ -166,6 +166,12 @@ export type UserProfile = {
     deliveryInstructions?: string;
     autoRenew: boolean;
   };
+  communicationPreferences?: {
+    smsOptIn: boolean;        // User opted in to SMS notifications
+    emailOptIn: boolean;      // User opted in to email marketing
+    smsOptInDate?: string;    // When user opted in to SMS
+    smsOptOutDate?: string;   // When user opted out of SMS
+  };
   subscriptionDiscount: number; // Percentage discount for subscribers
   createdAt: string;
   updatedAt: string;

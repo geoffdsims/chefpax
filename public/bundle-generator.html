@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChefPax Bundle Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .instructions {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffc107;
+        }
+        .instructions h1 {
+            margin-top: 0;
+            color: #856404;
+            font-size: 24px;
+        }
+        .instructions h2 {
+            color: #856404;
+            font-size: 18px;
+        }
+        .bundle-container {
+            background: white;
+            padding: 40px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .bundle-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2D5016;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .prompt-box {
+            background: #f9f9f9;
+            border: 2px solid #2D5016;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .copy-btn {
+            background: #2D5016;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: #3d6b1f;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+            display: none;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header class="instructions">
+            <h1>🎨 ChefPax Bundle Image Generator - LLM Prompts</h1>
+            <p>Copy each prompt below and paste into your favorite AI image generator (DALL-E, Midjourney, Stable Diffusion, etc.)</p>
+        </header>
+
+        <section class="instructions">
+            <h2>📸 Image Generation Guidelines</h2>
+            <ol>
+                <li>Use consistent lighting and white background for all bundles</li>
+                <li>Show living microgreen trays with vibrant colors</li>
+                <li>Ensure professional product photography style</li>
+                <li>Save generated images to <code>public/images/</code></li>
+            </ol>
+        </section>
+
+        <!-- BUNDLE 1: CORE 4-PACK -->
+        <article class="bundle-container">
+            <h2 class="bundle-title">Bundle #1: Core 4-Pack (10×20)</h2>
+            <p><strong>Filename:</strong> bundle_core.png</p>
+            <p><strong>Contains:</strong> Sunflower, Pea Shoots, Rambo Radish, Broccoli</p>
+            
+            <div class="prompt-box" id="prompt1">Professional product photography of four living microgreen trays arranged in a 2x2 grid on a clean white background. Top-down view with soft natural lighting. 
+
+Top left: Black oil sunflower microgreens with thick white stems and green leaves
+Top right: Dun pea shoots with tender curly tendrils and bright green leaves
+Bottom left: Rambo radish microgreens with vibrant purple-pink stems and green leaves
+Bottom right: Broccoli microgreens with delicate green stems and tiny leaves
+
+Each tray is 10x20 inches, black plastic growing tray, filled with dense living microgreens growing in coconut coir. Professional studio lighting, sharp focus, photorealistic, 4K quality, e-commerce product photo style.</div>
+            <button class="copy-btn" onclick="copyPrompt('prompt1', this)">📋 Copy Prompt</button>
+            <span class="success">✅ Copied!</span>
+        </article>
+
+        <!-- BUNDLE 2: BRASSICA TRIO -->
+        <article class="bundle-container">
+            <h2 class="bundle-title">Bundle #2: Brassica Builder Trio (10×20)</h2>
+            <p><strong>Filename:</strong> bundle_brassica.png</p>
+            <p><strong>Contains:</strong> Broccoli, Kohlrabi, Wasabi Mustard</p>
+            
+            <div class="prompt-box" id="prompt2">Professional product photography of three living microgreen trays arranged in a horizontal row on a clean white background. Top-down view with soft natural lighting.
+
+Left tray: Broccoli microgreens with delicate green stems and tiny leaves
+Center tray: Kohlrabi microgreens with purple stems and green round leaves
+Right tray: Wasabi mustard microgreens with spicy-looking green serrated leaves
+
+Each tray is 10x20 inches, black plastic growing tray, filled with dense living microgreens growing in coconut coir. Professional studio lighting, sharp focus, photorealistic, 4K quality, e-commerce product photo style.</div>
+            <button class="copy-btn" onclick="copyPrompt('prompt2', this)">📋 Copy Prompt</button>
+            <span class="success">✅ Copied!</span>
+        </article>
+
+        <!-- BUNDLE 3: SUPERFOOD DUO -->
+        <article class="bundle-container">
+            <h2 class="bundle-title">Bundle #3: Superfood Duo (10×20)</h2>
+            <p><strong>Filename:</strong> bundle_superfood.png</p>
+            <p><strong>Contains:</strong> Superfood Mix, Rambo Radish</p>
+            
+            <div class="prompt-box" id="prompt3">Professional product photography of two living microgreen trays arranged side-by-side on a clean white background. Top-down view with soft natural lighting.
+
+Left tray: Superfood mix microgreens with varied colors - purple, green, and red stems mixed together creating a colorful pattern
+Right tray: Rambo radish microgreens with vibrant purple-pink stems and green leaves
+
+Each tray is 10x20 inches, black plastic growing tray, filled with dense living microgreens growing in coconut coir. Professional studio lighting, sharp focus, photorealistic, 4K quality, e-commerce product photo style.</div>
+            <button class="copy-btn" onclick="copyPrompt('prompt3', this)">📋 Copy Prompt</button>
+            <span class="success">✅ Copied!</span>
+        </article>
+
+        <!-- BUNDLE 4: CHEF'S PREMIUM 4×5×5 -->
+        <article class="bundle-container">
+            <h2 class="bundle-title">Bundle #4: Chef's Premium 4×5×5</h2>
+            <p><strong>Filename:</strong> bundle_premium.png</p>
+            <p><strong>Contains:</strong> Shiso, Dark Opal Basil, Lemon Basil, Thai Basil</p>
+            
+            <div class="prompt-box" id="prompt4">Professional product photography of four small living microgreen trays arranged in a 2x2 grid on a clean white background. Top-down view with soft natural lighting.
+
+Top left: Shiso (Korean perilla) with large serrated aromatic leaves, green with purple undersides
+Top right: Dark opal basil microgreens with deep purple-black leaves and stems
+Bottom left: Lemon basil microgreens with bright green pointed leaves
+Bottom right: Thai basil microgreens with green leaves and purple stems
+
+Each tray is 5x5 inches, small black plastic growing trays, filled with living microgreens growing in coconut coir. Professional studio lighting, sharp focus, photorealistic, 4K quality, e-commerce product photo style.</div>
+            <button class="copy-btn" onclick="copyPrompt('prompt4', this)">📋 Copy Prompt</button>
+            <span class="success">✅ Copied!</span>
+        </article>
+
+        <!-- BUNDLE 5: COLOR POP 4×5×5 -->
+        <article class="bundle-container">
+            <h2 class="bundle-title">Bundle #5: Color Pop 4×5×5</h2>
+            <p><strong>Filename:</strong> bundle_colorpop.png</p>
+            <p><strong>Contains:</strong> Red Amaranth, Dark Opal Basil, Lemon Basil, Thai Basil</p>
+            
+            <div class="prompt-box" id="prompt5">Professional product photography of four small living microgreen trays arranged in a 2x2 grid on a clean white background. Top-down view with soft natural lighting.
+
+Top left: Red garnet amaranth microgreens with stunning magenta-red leaves and pink stems
+Top right: Dark opal basil microgreens with deep purple-black leaves and stems
+Bottom left: Lemon basil microgreens with bright green pointed leaves
+Bottom right: Thai basil microgreens with green leaves and purple stems
+
+Each tray is 5x5 inches, small black plastic growing trays, filled with living microgreens growing in coconut coir. Professional studio lighting, sharp focus, photorealistic, 4K quality, e-commerce product photo style.</div>
+            <button class="copy-btn" onclick="copyPrompt('prompt5', this)">📋 Copy Prompt</button>
+            <span class="success">✅ Copied!</span>
+        </article>
+
+        <footer class="instructions">
+            <h2>✅ Next Steps After Generation</h2>
+            <ol>
+                <li>Generate each image using the prompts above</li>
+                <li>Download and save with the correct filenames:
+                    <ul>
+                        <li>bundle_core.png</li>
+                        <li>bundle_brassica.png</li>
+                        <li>bundle_superfood.png</li>
+                        <li>bundle_premium.png</li>
+                        <li>bundle_colorpop.png</li>
+                    </ul>
+                </li>
+                <li>Move files to <code>public/images/</code></li>
+                <li>Verify on shop page: <code>http://localhost:3000/shop</code></li>
+                <li>Deploy to production!</li>
+            </ol>
+        </footer>
+    </main>
+
+    <script>
+        function copyPrompt(promptId, button) {
+            const promptText = document.getElementById(promptId).textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const successMsg = button.nextElementSibling;
+                successMsg.style.display = 'inline';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

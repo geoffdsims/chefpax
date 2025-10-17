@@ -63,6 +63,21 @@ async function createIndexes() {
     await db.collection('users').createIndex({ createdAt: -1 });
     console.log('✅ Users indexes created');
     
+    // User Profiles collection
+    console.log('\n👥 Creating indexes for userProfiles collection...');
+    await db.collection('userProfiles').createIndex({ userId: 1 }, { unique: true });
+    await db.collection('userProfiles').createIndex({ email: 1 });
+    await db.collection('userProfiles').createIndex({ phone: 1 }); // For SMS opt-in/out lookup
+    await db.collection('userProfiles').createIndex({ 'communicationPreferences.smsOptIn': 1 });
+    console.log('✅ User profiles indexes created');
+    
+    // SMS Preferences collection (for guest users)
+    console.log('\n📱 Creating indexes for sms_preferences collection...');
+    await db.collection('sms_preferences').createIndex({ phone: 1 }, { unique: true });
+    await db.collection('sms_preferences').createIndex({ smsOptIn: 1 });
+    await db.collection('sms_preferences').createIndex({ lastUpdated: -1 });
+    console.log('✅ SMS preferences indexes created');
+    
     // Sessions collection (NextAuth)
     console.log('\n🔐 Creating indexes for sessions collection...');
     await db.collection('sessions').createIndex({ sessionToken: 1 }, { unique: true });
@@ -82,16 +97,33 @@ async function createIndexes() {
     await db.collection('inventoryReservations').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // TTL index
     console.log('✅ Inventory reservations indexes created');
     
-    // IoT Sensor Readings collection (future)
-    console.log('\n🌡️ Creating indexes for sensorReadings collection...');
-    await db.collection('sensorReadings').createIndex({ timestamp: -1 });
-    await db.collection('sensorReadings').createIndex({ sensorType: 1, timestamp: -1 });
-    await db.collection('sensorReadings').createIndex({ timestamp: 1 }, { expireAfterSeconds: 7776000 }); // Expire after 90 days
+    // IoT Sensor Readings collection
+    console.log('\n🌡️ Creating indexes for sensor_readings collection...');
+    await db.collection('sensor_readings').createIndex({ timestamp: -1 });
+    await db.collection('sensor_readings').createIndex({ deviceId: 1, timestamp: -1 });
+    await db.collection('sensor_readings').createIndex({ sensorType: 1, timestamp: -1 });
+    await db.collection('sensor_readings').createIndex({ deviceId: 1, sensorType: 1, timestamp: -1 });
+    await db.collection('sensor_readings').createIndex({ timestamp: 1 }, { expireAfterSeconds: 7776000 }); // Expire after 90 days
     console.log('✅ Sensor readings indexes created');
+    
+    // Environmental Alerts collection
+    console.log('\n⚠️ Creating indexes for environmental_alerts collection...');
+    await db.collection('environmental_alerts').createIndex({ timestamp: -1 });
+    await db.collection('environmental_alerts').createIndex({ deviceId: 1, timestamp: -1 });
+    await db.collection('environmental_alerts').createIndex({ alertType: 1, timestamp: -1 });
+    await db.collection('environmental_alerts').createIndex({ acknowledged: 1, resolved: 1 });
+    await db.collection('environmental_alerts').createIndex({ timestamp: 1 }, { expireAfterSeconds: 2592000 }); // Expire after 30 days
+    console.log('✅ Environmental alerts indexes created');
+    
+    // Device Status collection
+    console.log('\n📱 Creating indexes for device_status collection...');
+    await db.collection('device_status').createIndex({ deviceId: 1 }, { unique: true });
+    await db.collection('device_status').createIndex({ lastUpdated: -1 });
+    console.log('✅ Device status indexes created');
     
     // List all indexes
     console.log('\n📋 Summary of all indexes:');
-    const collections = ['products', 'orders', 'productionTasks', 'subscriptions', 'users', 'sessions', 'accounts', 'inventoryReservations', 'sensorReadings'];
+    const collections = ['products', 'orders', 'productionTasks', 'subscriptions', 'users', 'userProfiles', 'sms_preferences', 'sessions', 'accounts', 'inventoryReservations', 'sensor_readings', 'environmental_alerts', 'device_status'];
     
     for (const collectionName of collections) {
       const indexes = await db.collection(collectionName).indexes();

@@ -31,7 +31,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-# .env*
+.env*
 
 # vercel
 .vercel
@@ -45,7 +45,9 @@ next-env.d.ts
 .env.local.backup
 .env.local.template
 
-# Keep ALL documentation private (business intelligence & competitive advantage)
-docs/
+# Keep environment files private
 .env.local
 .env.local.oauth
+
+# Temporary - exclude docs folder until commit is ready
+/docs/

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { trackCheckout, trackSubscription } from "@/lib/analytics";
 import { 
   Container, 
   TextField, 
@@ -107,6 +108,14 @@ export default function CartPage() {
       return;
     }
 
+    // Track checkout initiation
+    const totalCents = cart.reduce((sum, item) => sum + (item.priceCents * item.qty), 0);
+    trackCheckout({
+      step: 'initiated',
+      total_cents: totalCents,
+      item_count: cart.reduce((sum, item) => sum + item.qty, 0),
+    });
+
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -122,6 +131,14 @@ export default function CartPage() {
     if (!res.ok) {
       const errorText = await res.text();
       console.error("Checkout API error:", res.status, errorText);
+      
+      // Track checkout failure
+      trackCheckout({
+        step: 'failed',
+        total_cents: totalCents,
+        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
+      });
+      
       alert(`Checkout failed: ${res.status} ${errorText}`);
       return;
     }
@@ -130,6 +147,14 @@ export default function CartPage() {
     const responseText = await res.text();
     if (!responseText) {
       console.error("Empty response from checkout API");
+      
+      // Track checkout failure
+      trackCheckout({
+        step: 'failed',
+        total_cents: totalCents,
+        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
+      });
+      
       alert("Checkout failed: Empty response from server");
       return;
     }
@@ -139,14 +164,47 @@ export default function CartPage() {
       responseData = JSON.parse(responseText);
     } catch (parseError) {
       console.error("Failed to parse JSON response:", responseText);
+      
+      // Track checkout failure
+      trackCheckout({
+        step: 'failed',
+        total_cents: totalCents,
+        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
+      });
+      
       alert("Checkout failed: Invalid response from server");
       return;
     }
 
     const { url, error } = responseData;
     if (url) {
+      // Track checkout payment step
+      trackCheckout({
+        step: 'payment',
+        total_cents: totalCents,
+        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
+        payment_method: 'stripe',
+      });
+      
+      // Track subscription if applicable
+      if (isSubscription) {
+        trackSubscription({
+          type: 'started',
+          plan: 'weekly',
+          frequency: 'weekly',
+          discount_percentage: 10,
+        });
+      }
+      
       window.location.href = url;
     } else {
+      // Track checkout failure
+      trackCheckout({
+        step: 'failed',
+        total_cents: totalCents,
+        item_count: cart.reduce((sum, item) => sum + item.qty, 0),
+      });
+      
       alert(error || "Checkout failed");
     }
   }

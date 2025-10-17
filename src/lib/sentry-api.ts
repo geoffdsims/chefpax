@@ -25,3 +25,5 @@ export function captureApiWarning(message: string, context?: Record<string, any>
 export function setApiContext(context: Record<string, any>) {
   Sentry.setContext('api', context);
 }
+
+
