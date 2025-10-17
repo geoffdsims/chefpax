@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -23,7 +23,8 @@ import {
   ShoppingCart,
   CheckCircle,
   LocalShipping,
-  TrendingUp
+  TrendingUp,
+  Add as AddIcon
 } from '@mui/icons-material';
 
 interface CartItem {
@@ -36,12 +37,21 @@ interface CartItem {
   leadTimeDays?: number;
 }
 
+interface UpsellProduct {
+  productId: string;
+  name: string;
+  price: number;
+  photoUrl: string;
+  description: string;
+}
+
 interface CartConfirmationModalProps {
   open: boolean;
   onClose: () => void;
   cartItems: CartItem[];
   onViewCart: () => void;
   onCheckout: () => void;
+  onAddUpsell?: (product: UpsellProduct) => void;
   deliveryMode?: 'single' | 'split';
   deliveryGroups?: Array<{
     leadTimeDays: number;
@@ -50,15 +60,68 @@ interface CartConfirmationModalProps {
   }>;
 }
 
+// Smart upsell products - complements what's in cart
+const ALL_UPSELL_PRODUCTS: UpsellProduct[] = [
+  {
+    productId: 'pea-shoots-live-tray',
+    name: 'Dun Pea Shoots — Live Tray',
+    price: 3000,
+    photoUrl: '/images/microgeens/peas_10x20.png',
+    description: 'Perfect companion • Sweet & crunchy'
+  },
+  {
+    productId: 'radish-live-tray',
+    name: 'Rambo Purple Radish — Live Tray',
+    price: 3000,
+    photoUrl: '/images/microgeens/radish_rambo_10x20.png',
+    description: 'Spicy kick • Colorful garnish'
+  },
+  {
+    productId: 'amaranth-live-tray',
+    name: 'Red Garnet Amaranth — 5×5',
+    price: 1400,
+    photoUrl: '/images/microgeens/amaranth_red_5x5.png',
+    description: 'Chef favorite • Nutrient-dense'
+  },
+  {
+    productId: 'broccoli-live-tray',
+    name: 'Broccoli — Live Tray',
+    price: 3000,
+    photoUrl: '/images/microgeens/brocolli_10x20.png',
+    description: 'Mild & versatile • Health boost'
+  },
+  {
+    productId: 'super-mix-live-tray',
+    name: 'ChefPax Superfood Mix — Live Tray',
+    price: 3500,
+    photoUrl: '/images/microgeens/super_mix_.png',
+    description: 'Best seller • Complete variety'
+  }
+];
+
 export default function CartConfirmationModal({
   open,
   onClose,
   cartItems,
   onViewCart,
   onCheckout,
+  onAddUpsell,
   deliveryMode = 'single',
   deliveryGroups = []
 }: CartConfirmationModalProps) {
+  const [addedUpsells, setAddedUpsells] = useState<Set<string>>(new Set());
+  const [upsellProducts, setUpsellProducts] = useState<UpsellProduct[]>([]);
+
+  // Smart upsell logic: exclude products already in cart
+  useEffect(() => {
+    const cartProductIds = new Set(cartItems.map(item => item.productId));
+    const available = ALL_UPSELL_PRODUCTS.filter(
+      product => !cartProductIds.has(product.productId) && !addedUpsells.has(product.productId)
+    );
+    // Show max 3 upsells
+    setUpsellProducts(available.slice(0, 3));
+  }, [cartItems, addedUpsells]);
+
   const subtotal = cartItems.reduce((sum, item) => sum + (item.priceCents * item.qty), 0);
   const deliveryFee = 500; // $5.00
   const total = subtotal + deliveryFee;
@@ -72,6 +135,15 @@ export default function CartConfirmationModal({
     });
   };
 
+  const handleAddUpsell = (product: UpsellProduct) => {
+    if (onAddUpsell) {
+      onAddUpsell(product);
+      setAddedUpsells(prev => new Set([...prev, product.productId]));
+    }
+  };
+
+  const isLoggedIn = typeof window !== 'undefined' && localStorage.getItem('session') !== null;
+
   return (
     <Dialog 
       open={open} 
@@ -81,17 +153,14 @@ export default function CartConfirmationModal({
       fullScreen={false}
       aria-labelledby="cart-confirmation-title"
       aria-describedby="cart-confirmation-description"
-      // Mobile-friendly dialog behavior
       disableEscapeKeyDown={false}
-      disableBackdropClick={false}
       PaperProps={{
-        sx: {
+        sx={{
           borderRadius: { xs: 0, sm: 2 },
           maxHeight: '90vh',
           margin: { xs: 0, sm: 2 },
           width: { xs: '100%', sm: 'auto' },
           maxWidth: { xs: '100%', sm: 'md' },
-          // Mobile-specific styling
           '@media (max-width: 600px)': {
             margin: 0,
             borderRadius: 0,
@@ -129,7 +198,7 @@ export default function CartConfirmationModal({
           {/* Main Product Display */}
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Avatar
-              src={cartItems[0]?.photoUrl || '/images/chefPax_logo.png'}
+              src={cartItems[0]?.photoUrl || '/images/microgeens/chefPax_mix.png'}
               variant="rounded"
               sx={{ width: 80, height: 80 }}
             />
@@ -205,67 +274,74 @@ export default function CartConfirmationModal({
             </Alert>
           )}
 
-          {/* Related Products */}
-          <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-              🌱 Complete Your Order
-            </Typography>
-            
-            <List dense>
-              <ListItem sx={{ px: 0 }}>
-                <ListItemAvatar>
-                  <Avatar 
-                    src="/images/pea_shoots.png" 
-                    variant="rounded"
-                    sx={{ width: 40, height: 40 }}
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Pea Shoots — Live Tray"
-                  secondary="Perfect companion • $30.00"
-                />
-                <Button size="small" variant="outlined">
-                  Add
-                </Button>
-              </ListItem>
-              
-              <ListItem sx={{ px: 0 }}>
-                <ListItemAvatar>
-                  <Avatar 
-                    src="/images/radish_saxa2.png" 
-                    variant="rounded"
-                    sx={{ width: 40, height: 40 }}
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Rambo Purple Radish — Live Tray"
-                  secondary="Spicy kick • $30.00"
-                />
-                <Button size="small" variant="outlined">
-                  Add
-                </Button>
-              </ListItem>
-              
-              <ListItem sx={{ px: 0 }}>
-                <ListItemAvatar>
-                  <Avatar 
-                    src="/images/amaranth_dreads.png" 
-                    variant="rounded"
-                    sx={{ width: 40, height: 40 }}
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Red Garnet Amaranth — 5×5"
-                  secondary="Chef favorite • $14.00"
-                />
-                <Button size="small" variant="outlined">
-                  Add
-                </Button>
-              </ListItem>
-            </List>
-          </Box>
+          {/* Login/Rewards Prompt (only if not logged in) */}
+          {!isLoggedIn && (
+            <Alert 
+              severity="success" 
+              sx={{ 
+                backgroundColor: 'success.light',
+                '& .MuiAlert-icon': { color: 'success.dark' }
+              }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                🎁 Earn Rewards & Save!
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Sign up or log in to earn points on every purchase, get exclusive discounts, and track your orders.
+              </Typography>
+              <Button 
+                size="small" 
+                variant="contained" 
+                sx={{ 
+                  backgroundColor: 'success.dark',
+                  '&:hover': { backgroundColor: 'success.main' }
+                }}
+                href="/api/auth/signin"
+              >
+                Sign Up / Log In
+              </Button>
+            </Alert>
+          )}
 
-          {/* Action Buttons - Mobile-friendly */}
+          {/* Upsell Products - Smart Suggestions */}
+          {upsellProducts.length > 0 && (
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+                🌱 Complete Your Order
+              </Typography>
+              
+              <List dense>
+                {upsellProducts.map((product) => (
+                  <ListItem key={product.productId} sx={{ px: 0, py: 1 }}>
+                    <ListItemAvatar>
+                      <Avatar 
+                        src={product.photoUrl} 
+                        variant="rounded"
+                        sx={{ width: 48, height: 48 }}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={product.name}
+                      secondary={`${product.description} • ${formatPrice(product.price)}`}
+                      primaryTypographyProps={{ variant: 'body2', fontWeight: 500 }}
+                      secondaryTypographyProps={{ variant: 'caption' }}
+                    />
+                    <Button 
+                      size="small" 
+                      variant="outlined"
+                      startIcon={<AddIcon />}
+                      onClick={() => handleAddUpsell(product)}
+                      sx={{ minWidth: 80 }}
+                    >
+                      Add
+                    </Button>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          )}
+
+          {/* Action Buttons */}
           <Stack 
             direction={{ xs: 'column', sm: 'row' }} 
             spacing={{ xs: 1.5, sm: 2 }} 
@@ -277,7 +353,7 @@ export default function CartConfirmationModal({
               startIcon={<ShoppingCart />}
               sx={{ 
                 flex: 1,
-                minHeight: { xs: 48, sm: 36 }, // Larger touch target on mobile
+                minHeight: { xs: 48, sm: 36 },
                 fontSize: { xs: '1rem', sm: '0.875rem' }
               }}
             >
@@ -288,7 +364,7 @@ export default function CartConfirmationModal({
               onClick={onCheckout}
               sx={{ 
                 flex: 1,
-                minHeight: { xs: 48, sm: 36 }, // Larger touch target on mobile
+                minHeight: { xs: 48, sm: 36 },
                 fontSize: { xs: '1rem', sm: '0.875rem' },
                 backgroundColor: 'primary.main',
                 '&:hover': {
@@ -308,7 +384,8 @@ export default function CartConfirmationModal({
             gap: 2,
             pt: 2,
             borderTop: '1px solid',
-            borderColor: 'divider'
+            borderColor: 'divider',
+            flexWrap: 'wrap'
           }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <TrendingUp sx={{ fontSize: 16, color: 'success.main' }} />

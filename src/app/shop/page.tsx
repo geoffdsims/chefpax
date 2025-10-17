@@ -277,20 +277,34 @@ export default function Shop() {
   }
 
   function getAvailabilityStatus(product: Product): { status: "sold_out" | "low_stock" | "in_stock"; message: string } | null {
-    if (!inventoryForecast) return null;
+    // First try to use product's own currentWeekAvailable
+    const available = product.currentWeekAvailable ?? product.weeklyCapacity ?? 0;
     
-    const sku = product.sku;
-    const forecast = inventoryForecast.available[sku];
-    
-    if (!forecast) return null;
-    
-    if (forecast.available === 0) {
+    if (available === 0) {
       return { status: "sold_out", message: "Sold out for this delivery" };
-    } else if (forecast.available <= 3) {
-      return { status: "low_stock", message: `Only ${forecast.available} left` };
+    } else if (available <= 3) {
+      return { status: "low_stock", message: `Only ${available} left` };
     } else {
-      return { status: "in_stock", message: `${forecast.available} available` };
+      return { status: "in_stock", message: `${available} available` };
     }
+    
+    // Fallback to inventory forecast if available
+    if (inventoryForecast) {
+      const sku = product.sku;
+      const forecast = inventoryForecast.available[sku];
+      
+      if (forecast) {
+        if (forecast.available === 0) {
+          return { status: "sold_out", message: "Sold out for this delivery" };
+        } else if (forecast.available <= 3) {
+          return { status: "low_stock", message: `Only ${forecast.available} left` };
+        } else {
+          return { status: "in_stock", message: `${forecast.available} available` };
+        }
+      }
+    }
+    
+    return { status: "in_stock", message: "In stock" };
   }
 
   return (
@@ -1035,6 +1049,25 @@ export default function Shop() {
         onCheckout={() => {
           setShowCartConfirmation(false);
           window.location.href = '/cart';
+        }}
+        onAddUpsell={(product) => {
+          // Add upsell product to cart
+          const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+          cart.push({
+            productId: product.productId,
+            name: product.name,
+            priceCents: product.price,
+            qty: 1,
+            photoUrl: product.photoUrl
+          });
+          localStorage.setItem("cart", JSON.stringify(cart));
+          
+          // Update cart count
+          const totalQty = cart.reduce((sum: number, item: any) => sum + (item.qty || 1), 0);
+          setCartCount(totalQty);
+          
+          // Dispatch event for cart drawer
+          window.dispatchEvent(new CustomEvent('cartUpdated'));
         }}
       />
 

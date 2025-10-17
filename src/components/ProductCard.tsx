@@ -42,22 +42,30 @@ interface ProductCardProps {
 }
 
 // Get the appropriate image for each product
-const getProductImage = (sku: string) => {
+// Uses photoUrl from product if available, otherwise fallback to default
+const getProductImage = (product: Product) => {
+  // Use photoUrl from database if available
+  if (product.photoUrl) {
+    return product.photoUrl;
+  }
+  
+  // Fallback logic for backwards compatibility
+  const sku = product.sku;
   switch (sku) {
     case 'CHEFPAX_MIX_LIVE_TRAY':
     case 'CHEFPAX_PREMIUM_MIX_LIVE_TRAY':
       return '/images/microgeens/chefPax_mix.png';
     case 'PEA_LIVE_TRAY':
     case 'PEA_PREMIUM_LIVE_TRAY':
-      return '/images/pea_shoots.png';
+      return '/images/microgeens/peas_10x20.png';
     case 'RADISH_LIVE_TRAY':
     case 'RADISH_PREMIUM_LIVE_TRAY':
-      return '/images/radish_saxa2.png';
+      return '/images/microgeens/radish_rambo_10x20.png';
     case 'SUNFLOWER_LIVE_TRAY':
     case 'SUNFLOWER_PREMIUM_LIVE_TRAY':
-      return '/images/sunflower.png';
+      return '/images/microgeens/subflower_10x20.png';
     case 'AMARANTH_LIVE_TRAY':
-      return '/images/amaranth_dreads.png';
+      return '/images/microgeens/amaranth_red_5x5.png';
     default:
       return '/images/microgeens/chefPax_mix.png';
   }
@@ -142,7 +150,7 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
       {/* Product Schema for SEO */}
       <ProductSchema
         name={p.name}
-        image={getProductImage(p.sku)}
+        image={getProductImage(p)}
         description={p.description || `${p.name} - Fresh microgreens grown hydroponically with AI-assisted scheduling and CV quality checks.`}
         price={(p.priceCents / 100).toFixed(2)}
         availability={availability?.status === 'sold_out' ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"}
@@ -200,7 +208,7 @@ export default function ProductCard({ p, onAdd, availability, onShowCartConfirma
       >
         <Box
           component="img"
-          src={p.photoUrl || getProductImage(p.sku)}
+          src={getProductImage(p)}
           alt={`${p.name} microgreens tray - Fresh, locally grown microgreens`}
           loading="lazy"
           sx={{
