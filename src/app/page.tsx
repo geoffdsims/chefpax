@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { keyframes, styled } from "@mui/material/styles";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 
 // Ken Burns animation (subtle zoom + drift)
@@ -14,11 +14,22 @@ const panZoom = keyframes`
   100% { transform: scale(1.05) translate3d(0, 0, 0); }
 `;
 
+const heroImages = [
+  '/images/heros/thumbnail_IMG_8894-1.jpg',
+  '/images/heros/thumbnail_IMG_8913.jpg',
+  '/images/heros/thumbnail_IMG_8999.jpg',
+  '/images/heros/thumbnail_IMG_9029.jpg',
+  '/images/heros/thumbnail_5D717A23-C898-4B5B-A217-726EAE945301.jpg',
+  '/images/heros/thumbnail_IMG_BBAD2ACB-5B63-4729-A62E-EE9509A71E79.jpg',
+  '/images/heros/thumbnail_IMG_CFCFE8C3-B697-4A91-A0CE-A79192CF18A9.jpg',
+  '/images/heros/thumbnail_IMG_CFF37E9A-0923-4499-BC17-25C833B5203D.jpg',
+];
+
 // Background layer with animation
-const AnimatedBg = styled("div")(() => ({
+const AnimatedBg = styled("div")<{ image: string }>(({ image }) => ({
   position: "absolute",
   inset: 0,
-  backgroundImage: "url('/images/austinChefPack.png')",
+  backgroundImage: `url('${image}')`,
   backgroundSize: "cover",
   backgroundPosition: "center",
   filter: "saturate(1.05) contrast(1.05)",
@@ -66,6 +77,14 @@ const shopNowButtonStyle = {
 
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   const features = [
     {
@@ -182,20 +201,17 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* Default Background */}
+          {/* Default Background - Rotating Hero Images */}
           {activeFeature === null && (
             <motion.div
+              key={currentImageIndex}
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.3 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 1 }}
               style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
             >
-              <AnimatedFeatureBg
-                style={{
-                  backgroundImage: "url('https://images.unsplash.com/photo-1559181567-c3190ca9959b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')",
-                }}
-              />
+              <AnimatedBg image={heroImages[currentImageIndex]} />
             </motion.div>
           )}
         </Box>
