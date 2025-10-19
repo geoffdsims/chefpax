@@ -147,7 +147,7 @@ export const SENSOR_CALIBRATION = {
  * Optimal environmental ranges for microgreens
  */
 export const MICROGREEN_OPTIMAL_RANGES = {
-  temperature: { min: 18, max: 24, unit: '°C' }, // 64-75°F
+  temperature: { min: 64, max: 75, unit: '°F' }, // 64-75°F (18-24°C)
   humidity: { min: 50, max: 70, unit: '%' },
   light: { min: 2000, max: 8000, unit: 'lux' },
   ph: { min: 6.0, max: 6.8, unit: 'pH' },
@@ -189,7 +189,7 @@ function generateReadingForSensor(component: any, device: any, timestamp: Date):
   switch (component.id) {
     case 'dht22_temp_humidity':
       // Generate both temperature and humidity readings
-      const temp = 20 + Math.random() * 8; // 20-28°C (68-82°F)
+      const temp = 68 + Math.random() * 14; // 68-82°F (20-28°C)
       const humidity = 55 + Math.random() * 15; // 55-70%
       
       return {
@@ -198,9 +198,9 @@ function generateReadingForSensor(component: any, device: any, timestamp: Date):
         timestamp,
         sensorType: 'temperature',
         value: Math.round(temp * 10) / 10,
-        unit: '°C',
+        unit: '°F',
         location: device.location,
-        status: temp < 18 || temp > 24 ? 'warning' : 'normal',
+        status: temp < 64 || temp > 75 ? 'warning' : 'normal',
         rawValue: temp + (Math.random() - 0.5) * 0.5, // Add some noise
         calibratedValue: temp
       };

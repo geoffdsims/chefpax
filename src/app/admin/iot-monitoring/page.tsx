@@ -1,375 +1,581 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  Grid, 
-  Chip, 
-  Alert,
-  Button,
+import { useState, useEffect } from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Chip,
   CircularProgress,
+  Alert,
+  Paper,
+  Divider,
+  Button,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   IconButton,
-  Tooltip
+  Tooltip,
+  Badge,
+  LinearProgress,
+  Tabs,
+  Tab
 } from '@mui/material';
-import { 
-  Refresh as RefreshIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  CheckCircle as CheckCircleIcon,
-  DeviceThermostat as TempIcon,
-  Opacity as HumidityIcon,
-  Lightbulb as LightIcon,
-  Water as WaterIcon
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from 'recharts';
+import {
+  Thermostat,
+  WaterDrop,
+  Lightbulb,
+  Air,
+  Sensors,
+  Refresh,
+  TrendingUp,
+  TrendingDown,
+  TrendingFlat,
+  Warning,
+  CheckCircle,
+  Error,
+  Info
 } from '@mui/icons-material';
+import {
+  type SensorReading,
+  type EnvironmentalAlert,
+  type IoTDeviceStatus,
+  type EnvironmentalConditions
+} from '@/lib/iot-monitoring';
 
-interface SensorReading {
-  id: string;
-  deviceId: string;
-  timestamp: string;
-  sensorType: string;
-  value: number;
-  unit: string;
-  location: string;
-  status: 'normal' | 'warning' | 'critical';
-}
-
-interface DeviceStatus {
-  deviceId: string;
-  name: string;
-  location: string;
-  status: 'online' | 'offline' | 'error';
-  lastSeen: string;
-  activeAlerts?: number;
-}
-
-interface EnvironmentalAlert {
-  id: string;
-  deviceId: string;
-  sensorType: string;
-  alertType: 'warning' | 'critical';
-  message: string;
-  value: number;
-  threshold: number;
-  timestamp: string;
-  actionRequired: string;
-}
-
-export default function IoTMonitoringPage() {
-  const [devices, setDevices] = useState<DeviceStatus[]>([]);
-  const [readings, setReadings] = useState<SensorReading[]>([]);
+export default function IoTMonitoringDashboard() {
+  const [sensorData, setSensorData] = useState<SensorReading[]>([]);
+  const [deviceStatus, setDeviceStatus] = useState<IoTDeviceStatus[]>([]);
   const [alerts, setAlerts] = useState<EnvironmentalAlert[]>([]);
+  const [conditions, setConditions] = useState<EnvironmentalConditions | null>(null);
   const [loading, setLoading] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [activeTab, setActiveTab] = useState(0);
 
-  const fetchData = async () => {
+  const fetchSensorData = async () => {
     try {
       setLoading(true);
-      
-      // Fetch devices, readings, and alerts in parallel
-      const [devicesRes, readingsRes, alertsRes] = await Promise.all([
-        fetch('/api/iot/devices'),
-        fetch('/api/iot/sensors?analysis=true'),
-        fetch('/api/iot/alerts?status=active')
+      setError(null);
+
+      const [sensorsResponse, devicesResponse] = await Promise.all([
+        fetch('/api/iot/sensors'),
+        fetch('/api/iot/devices')
       ]);
 
-      if (devicesRes.ok) {
-        const devicesData = await devicesRes.json();
-        setDevices(devicesData.devices || []);
+      if (!sensorsResponse.ok || !devicesResponse.ok) {
+        throw new Error('Failed to fetch IoT data');
       }
 
-      if (readingsRes.ok) {
-        const readingsData = await readingsRes.json();
-        setReadings(readingsData.readings || []);
-      }
+      const [sensorsData, devicesData] = await Promise.all([
+        sensorsResponse.json(),
+        devicesResponse.json()
+      ]);
 
-      if (alertsRes.ok) {
-        const alertsData = await alertsRes.json();
-        setAlerts(alertsData.alerts || []);
-      }
-
-      setLastUpdate(new Date());
-    } catch (error) {
-      console.error('Error fetching IoT data:', error);
+      setSensorData(sensorsData.readings || []);
+      setDeviceStatus(devicesData.devices || []);
+      setAlerts(sensorsData.alerts || []);
+      setConditions(sensorsData.conditions || null);
+      setLastUpdated(new Date());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch data');
+      console.error('Error fetching sensor data:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchData, 30000);
+    fetchSensorData();
+    const interval = setInterval(fetchSensorData, 30000); // Update every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'online': return 'success';
-      case 'offline': return 'warning';
-      case 'error': return 'error';
-      default: return 'default';
+      case 'normal': return 'success';
+      case 'warning': return 'warning';
+      case 'critical': return 'error';
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'online': return <CheckCircleIcon />;
-      case 'offline': return <WarningIcon />;
-      case 'error': return <ErrorIcon />;
-      default: return <WarningIcon />;
+  const getTrendIcon = (trend: 'rising' | 'falling' | 'stable') => {
+    switch (trend) {
+      case 'rising': return <TrendingUp color="error" />;
+      case 'falling': return <TrendingDown color="success" />;
+      case 'stable': return <TrendingFlat color="info" />;
     }
   };
 
-  const getSensorIcon = (sensorType: string) => {
-    switch (sensorType) {
-      case 'temperature': return <TempIcon />;
-      case 'humidity': return <HumidityIcon />;
-      case 'light': return <LightIcon />;
-      case 'waterLevel': return <WaterIcon />;
-      default: return <TempIcon />;
-    }
+  // Process data for charts
+  const processChartData = () => {
+    const chartData: any[] = [];
+    const locations = [...new Set(sensorData.map(r => r.location))];
+    
+    locations.forEach(location => {
+      const locationReadings = sensorData.filter(r => r.location === location);
+      
+      chartData.push({
+        location: location.replace('_', ' ').toUpperCase(),
+        temperature: locationReadings.find(r => r.sensorType === 'temperature')?.value || 0,
+        humidity: locationReadings.find(r => r.sensorType === 'humidity')?.value || 0,
+        light: locationReadings.find(r => r.sensorType === 'light')?.value || 0,
+        waterLevel: locationReadings.find(r => r.sensorType === 'water_level')?.value || 0,
+      });
+    });
+    
+    return chartData;
   };
 
-  const criticalAlerts = alerts.filter(a => a.alertType === 'critical');
-  const warningAlerts = alerts.filter(a => a.alertType === 'warning');
+  const processTimeSeriesData = () => {
+    // Group readings by hour for time series
+    const hourlyData: { [key: string]: any } = {};
+    
+    sensorData.forEach(reading => {
+      const hour = new Date(reading.timestamp).getHours();
+      if (!hourlyData[hour]) {
+        hourlyData[hour] = { hour: `${hour}:00`, temperature: [], humidity: [], light: [] };
+      }
+      hourlyData[hour][reading.sensorType] = reading.value;
+    });
+    
+    return Object.values(hourlyData).sort((a, b) => a.hour.localeCompare(b.hour));
+  };
+
+  const getStatusDistribution = () => {
+    const statusCounts = sensorData.reduce((acc, reading) => {
+      acc[reading.status] = (acc[reading.status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return Object.entries(statusCounts).map(([status, count]) => ({
+      name: status.toUpperCase(),
+      value: count,
+      color: status === 'normal' ? '#4caf50' : status === 'warning' ? '#ff9800' : '#f44336'
+    }));
+  };
+
+  if (loading && sensorData.length === 0) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
+        <Typography variant="h6" sx={{ ml: 2 }}>Loading IoT sensor data...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
+        <Typography variant="h4" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Sensors color="primary" />
           IoT Monitoring Dashboard
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <Typography variant="body2" color="text.secondary">
-            Last updated: {lastUpdate.toLocaleTimeString()}
+            Last updated: {lastUpdated.toLocaleString()}
           </Typography>
-          <IconButton onClick={fetchData} disabled={loading}>
-            <RefreshIcon />
-          </IconButton>
+          <Tooltip title="Refresh Data">
+            <IconButton onClick={fetchSensorData} disabled={loading}>
+              <Refresh />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
 
-      {/* Critical Alerts */}
-      {criticalAlerts.length > 0 && (
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
+          <Tab label="Overview" />
+          <Tab label="Charts & Analytics" />
+          <Tab label="Real-time Data" />
+          <Tab label="Alerts & Status" />
+        </Tabs>
+      </Box>
+
+      {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-            {criticalAlerts.length} Critical Alert{criticalAlerts.length > 1 ? 's' : ''}
-          </Typography>
-          {criticalAlerts.map(alert => (
-            <Typography key={alert.id} variant="body2">
-              • {alert.message} - {alert.actionRequired}
-            </Typography>
-          ))}
+          {error}
         </Alert>
       )}
 
-      {/* Warning Alerts */}
-      {warningAlerts.length > 0 && (
-        <Alert severity="warning" sx={{ mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-            {warningAlerts.length} Warning Alert{warningAlerts.length > 1 ? 's' : ''}
-          </Typography>
-          {warningAlerts.slice(0, 3).map(alert => (
-            <Typography key={alert.id} variant="body2">
-              • {alert.message}
-            </Typography>
-          ))}
-          {warningAlerts.length > 3 && (
-            <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-              ...and {warningAlerts.length - 3} more
-            </Typography>
-          )}
-        </Alert>
+      {/* Tab Content */}
+      {activeTab === 0 && (
+        <OverviewTab 
+          conditions={conditions}
+          deviceStatus={deviceStatus}
+          alerts={alerts}
+        />
       )}
 
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-          <CircularProgress />
-        </Box>
+      {activeTab === 1 && (
+        <ChartsTab 
+          sensorData={sensorData}
+          processChartData={processChartData}
+          processTimeSeriesData={processTimeSeriesData}
+          getStatusDistribution={getStatusDistribution}
+        />
       )}
 
-      <Grid container spacing={3}>
-        {/* Device Status */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                Device Status ({devices.length} devices)
-              </Typography>
-              <TableContainer component={Paper} variant="outlined">
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Device</TableCell>
-                      <TableCell>Location</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell>Alerts</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {devices.map(device => (
-                      <TableRow key={device.deviceId}>
-                        <TableCell>
-                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {device.name}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2" color="text.secondary">
-                            {device.location}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            icon={getStatusIcon(device.status)}
-                            label={device.status}
-                            color={getStatusColor(device.status) as any}
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          {device.activeAlerts ? (
-                            <Chip
-                              label={device.activeAlerts}
-                              color="warning"
-                              size="small"
-                            />
-                          ) : (
-                            <Typography variant="body2" color="text.secondary">
-                              -
-                            </Typography>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </Card>
-        </Grid>
+      {activeTab === 2 && (
+        <RealTimeDataTab sensorData={sensorData} />
+      )}
 
-        {/* Current Sensor Readings */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                Current Sensor Readings
-              </Typography>
-              <Grid container spacing={2}>
-                {readings.map(reading => (
-                  <Grid item xs={12} sm={6} key={reading.id}>
-                    <Box sx={{ 
-                      p: 2, 
-                      border: 1, 
-                      borderColor: reading.status === 'critical' ? 'error.main' : 
-                                   reading.status === 'warning' ? 'warning.main' : 'success.main',
-                      borderRadius: 1,
-                      bgcolor: reading.status === 'critical' ? 'error.light' : 
-                               reading.status === 'warning' ? 'warning.light' : 'success.light',
-                      opacity: 0.1
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        {getSensorIcon(reading.sensorType)}
-                        <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'capitalize' }}>
-                          {reading.sensorType}
-                        </Typography>
-                      </Box>
-                      <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                        {reading.value.toFixed(1)}{reading.unit}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {reading.location}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+      {activeTab === 3 && (
+        <AlertsTab alerts={alerts} />
+      )}
 
-        {/* Recent Alerts */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                Recent Alerts ({alerts.length} total)
-              </Typography>
-              {alerts.length === 0 ? (
-                <Typography variant="body2" color="text.secondary">
-                  No active alerts
-                </Typography>
-              ) : (
-                <TableContainer component={Paper} variant="outlined">
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Time</TableCell>
-                        <TableCell>Device</TableCell>
-                        <TableCell>Sensor</TableCell>
-                        <TableCell>Alert</TableCell>
-                        <TableCell>Value</TableCell>
-                        <TableCell>Action Required</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {alerts.slice(0, 10).map(alert => (
-                        <TableRow key={alert.id}>
-                          <TableCell>
-                            <Typography variant="body2">
-                              {new Date(alert.timestamp).toLocaleString()}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2">
-                              {alert.deviceId}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
-                              {alert.sensorType}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              label={alert.alertType}
-                              color={alert.alertType === 'critical' ? 'error' : 'warning'}
-                              size="small"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2">
-                              {alert.value.toFixed(1)}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" color="text.secondary">
-                              {alert.actionRequired}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Divider sx={{ my: 3 }} />
+      
+      <Typography variant="body2" color="text.secondary" align="center">
+        Data updates every 30 seconds • Real-time monitoring system
+      </Typography>
     </Box>
   );
 }
 
+// Tab Components
+function OverviewTab({ conditions, deviceStatus, alerts }: any) {
+  return (
+    <Grid container spacing={3}>
+      {/* Device Status Cards */}
+      {deviceStatus.map((device: any) => (
+        <Grid item xs={12} md={4} key={device.deviceId}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6">{device.name}</Typography>
+                <Chip
+                  label={device.status}
+                  color={device.status === 'online' ? 'success' : 'error'}
+                  size="small"
+                />
+              </Box>
+              <Typography variant="body2" color="text.secondary">
+                Location: {device.location}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Last seen: {new Date(device.lastSeen).toLocaleString()}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
 
+      {/* Environmental Conditions */}
+      {conditions && (
+        <>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Thermostat color="primary" sx={{ fontSize: 40, mb: 1 }} />
+                <Typography variant="h6" gutterBottom>Temperature</Typography>
+                <Typography variant="h3" color="primary">
+                  {conditions.temperature?.current?.toFixed(1) || 'N/A'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {conditions.temperature?.unit || '°F'}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <WaterDrop color="primary" sx={{ fontSize: 40, mb: 1 }} />
+                <Typography variant="h6" gutterBottom>Humidity</Typography>
+                <Typography variant="h3" color="primary">
+                  {conditions.humidity?.current?.toFixed(1) || 'N/A'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {conditions.humidity?.unit || '%'}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Lightbulb color="primary" sx={{ fontSize: 40, mb: 1 }} />
+                <Typography variant="h6" gutterBottom>Light Level</Typography>
+                <Typography variant="h3" color="primary">
+                  {conditions.light?.current?.toFixed(0) || 'N/A'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {conditions.light?.unit || 'lux'}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Air color="primary" sx={{ fontSize: 40, mb: 1 }} />
+                <Typography variant="h6" gutterBottom>CO2 Level</Typography>
+                <Typography variant="h3" color="primary">
+                  {conditions.co2?.current?.toFixed(0) || 'N/A'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {conditions.co2?.unit || 'ppm'}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </>
+      )}
+    </Grid>
+  );
+}
+
+function ChartsTab({ sensorData, processChartData, processTimeSeriesData, getStatusDistribution }: any) {
+  const chartData = processChartData();
+  const timeSeriesData = processTimeSeriesData();
+  const statusData = getStatusDistribution();
+
+  return (
+    <Grid container spacing={3}>
+      {/* Temperature Comparison Chart */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Temperature by Location</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="location" />
+                <YAxis />
+                <RechartsTooltip />
+                <Bar dataKey="temperature" fill="#ff6b6b" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Humidity Comparison Chart */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Humidity by Location</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="location" />
+                <YAxis />
+                <RechartsTooltip />
+                <Bar dataKey="humidity" fill="#4ecdc4" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Light Levels Chart */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Light Levels by Location</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="location" />
+                <YAxis />
+                <RechartsTooltip />
+                <Area type="monotone" dataKey="light" stroke="#ffd93d" fill="#ffd93d" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Water Levels Chart */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Water Levels by Location</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="location" />
+                <YAxis />
+                <RechartsTooltip />
+                <Area type="monotone" dataKey="waterLevel" stroke="#6c5ce7" fill="#6c5ce7" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Status Distribution Pie Chart */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Sensor Status Distribution</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={statusData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {statusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Legend />
+                <RechartsTooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Time Series Chart */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Environmental Trends</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={timeSeriesData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="hour" />
+                <YAxis />
+                <RechartsTooltip />
+                <Line type="monotone" dataKey="temperature" stroke="#ff6b6b" strokeWidth={2} />
+                <Line type="monotone" dataKey="humidity" stroke="#4ecdc4" strokeWidth={2} />
+                <Line type="monotone" dataKey="light" stroke="#ffd93d" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
+  );
+}
+
+function RealTimeDataTab({ sensorData }: any) {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>Latest Sensor Readings</Typography>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Sensor</TableCell>
+                <TableCell>Location</TableCell>
+                <TableCell>Value</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Timestamp</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sensorData.slice(-20).map((reading: any) => (
+                <TableRow key={reading.id}>
+                  <TableCell>{reading.sensorType}</TableCell>
+                  <TableCell>{reading.location}</TableCell>
+                  <TableCell>
+                    {reading.value.toFixed(2)} {reading.unit}
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={reading.status}
+                      color={reading.status === 'normal' ? 'success' : reading.status === 'warning' ? 'warning' : 'error'}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {new Date(reading.timestamp).toLocaleTimeString()}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AlertsTab({ alerts }: any) {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Badge badgeContent={alerts.length} color="error">
+            <Warning color="warning" />
+          </Badge>
+          Environmental Alerts
+        </Typography>
+        {alerts.length === 0 ? (
+          <Alert severity="success">No active alerts - All systems operating normally!</Alert>
+        ) : (
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Sensor</TableCell>
+                  <TableCell>Alert</TableCell>
+                  <TableCell>Value</TableCell>
+                  <TableCell>Threshold</TableCell>
+                  <TableCell>Action Required</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {alerts.map((alert: any) => (
+                  <TableRow key={alert.id}>
+                    <TableCell>{alert.sensorType}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={alert.alertType}
+                        color={alert.alertType === 'critical' ? 'error' : 'warning'}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>{alert.value}</TableCell>
+                    <TableCell>{alert.threshold}</TableCell>
+                    <TableCell>{alert.actionRequired}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={alert.acknowledged ? 'Acknowledged' : 'New'}
+                        color={alert.acknowledged ? 'success' : 'default'}
+                        size="small"
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
