@@ -1,0 +1,21 @@
+[Unit]
+Description=ChefPax IoT Sensor Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/chefpax-iot
+ExecStart=/usr/bin/python3 /home/pi/chefpax-iot/comprehensive_sensor_monitor.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/pi/chefpax-iot/sensor_monitor.log
+StandardError=append:/home/pi/chefpax-iot/sensor_monitor_error.log
+
+# Environment variables (if needed)
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
+
