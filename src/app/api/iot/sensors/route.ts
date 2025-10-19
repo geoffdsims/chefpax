@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongo';
+import { getDb } from '@/lib/mongo';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Connect to MongoDB
-    const { db } = await connectToDatabase();
+    const db = await getDb();
     
     // Store sensor data in MongoDB
     const result = await db.collection('sensor_readings').insertOne({
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const { db } = await connectToDatabase();
+    const db = await getDb();
     
     // Get the latest sensor readings
     const latestReadings = await db.collection('sensor_readings')
@@ -55,12 +55,25 @@ export async function GET() {
 
     if (latestReadings.length === 0) {
       return NextResponse.json(
-        { message: 'No sensor data available' },
-        { status: 404 }
+        { 
+          readings: [],
+          alerts: [],
+          conditions: null
+        },
+        { status: 200 }
       );
     }
 
-    return NextResponse.json(latestReadings[0], { status: 200 });
+    const sensorDoc = latestReadings[0];
+    
+    // Return data in the format expected by the dashboard
+    return NextResponse.json({
+      readings: sensorDoc.readings || [],
+      alerts: sensorDoc.alerts || [],
+      conditions: sensorDoc.conditions || null,
+      timestamp: sensorDoc.timestamp,
+      source: sensorDoc.source
+    }, { status: 200 });
 
   } catch (error) {
     console.error('Error retrieving sensor data:', error);
