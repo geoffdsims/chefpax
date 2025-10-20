@@ -8,16 +8,16 @@ import { getToken } from 'next-auth/jwt';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect admin routes
-  if (pathname.startsWith('/admin')) {
+  // Protect admin routes (but allow access to login page)
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });
 
-    // If no session, redirect to login
+    // If no session, redirect to admin login page
     if (!token) {
-      const signInUrl = new URL('/api/auth/signin', request.url);
+      const signInUrl = new URL('/admin/login', request.url);
       signInUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(signInUrl);
     }

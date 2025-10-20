@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { 
   Container, 
   Typography, 
@@ -9,7 +9,10 @@ import {
   CardContent, 
   CardActionArea,
   Box,
-  Chip
+  Chip,
+  Avatar,
+  Button,
+  Paper
 } from '@mui/material';
 import {
   Dashboard,
@@ -19,7 +22,9 @@ import {
   Sensors,
   ShoppingCart,
   People,
-  Settings
+  Settings,
+  Logout,
+  AdminPanelSettings
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 
@@ -96,17 +101,58 @@ export default function AdminDashboard() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Box component="img" src="/logo.png" alt="ChefPax" sx={{ height: 50 }} />
-        <Box>
-          <Typography variant="h3" sx={{ fontFamily: 'Playfair Display' }}>
-            Admin Dashboard
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Welcome back, {session?.user?.name || 'Admin'}
-          </Typography>
+      {/* Header with User Info */}
+      <Paper
+        elevation={2}
+        sx={{
+          mb: 4,
+          p: 3,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white'
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box component="img" src="/logo.png" alt="ChefPax" sx={{ height: 60, borderRadius: 2, bgcolor: 'white', p: 0.5 }} />
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <AdminPanelSettings />
+                <Typography variant="h4" fontWeight="bold">
+                  Admin Dashboard
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Avatar
+                  src={session?.user?.image || undefined}
+                  alt={session?.user?.name || 'Admin'}
+                  sx={{ width: 24, height: 24 }}
+                />
+                <Typography variant="body1">
+                  Welcome back, {session?.user?.name || session?.user?.email?.split('@')[0] || 'Admin'}
+                </Typography>
+              </Box>
+              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                {session?.user?.email}
+              </Typography>
+            </Box>
+          </Box>
+          <Button
+            variant="outlined"
+            startIcon={<Logout />}
+            onClick={() => signOut({ callbackUrl: '/admin/login' })}
+            sx={{
+              borderColor: 'white',
+              color: 'white',
+              '&:hover': {
+                borderColor: 'white',
+                bgcolor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }}
+          >
+            Sign Out
+          </Button>
         </Box>
-      </Box>
+      </Paper>
 
       <Grid container spacing={3}>
         {adminTools.map((tool) => (

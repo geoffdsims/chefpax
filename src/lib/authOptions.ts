@@ -62,19 +62,45 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-development",
+  pages: {
+    signIn: '/admin/login',  // Custom admin login page
+    error: '/admin/login',   // Error page
+  },
   callbacks: {
-    // expose id on session.user.id
+    // expose id and role on session.user
     async jwt({ token, user }) {
       if (user) {
         token.id = (user as { id?: string; sub?: string }).id ?? (user as { id?: string; sub?: string }).sub ?? token.id;
       }
+      
+      // Check if user is admin
+      const adminEmails = process.env.ADMIN_EMAILS?.split(',') || [];
+      const isAdmin = token.email && (
+        adminEmails.includes(token.email as string) ||
+        (token.email as string).endsWith('@chefpax.com')
+      );
+      
+      token.role = isAdmin ? 'admin' : 'customer';
+      
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as { id?: string }).id = (token as { id?: string }).id;
+        (session.user as { id?: string; role?: string }).id = (token as { id?: string }).id;
+        (session.user as { id?: string; role?: string }).role = (token as { role?: string }).role;
       }
       return session;
+    },
+    async signIn({ user, account, profile }) {
+      // For admin routes, verify user is authorized
+      const adminEmails = process.env.ADMIN_EMAILS?.split(',') || [];
+      const isAdmin = user.email && (
+        adminEmails.includes(user.email) ||
+        user.email.endsWith('@chefpax.com')
+      );
+      
+      // Allow sign in (admin check happens in middleware)
+      return true;
     },
   },
 };
