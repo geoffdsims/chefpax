@@ -15,7 +15,7 @@ import {
   CircularProgress,
   Divider
 } from '@mui/material';
-import { Google, Apple, Email, AdminPanelSettings } from '@mui/icons-material';
+import { Google, Apple, Email, AdminPanelSettings, Facebook } from '@mui/icons-material';
 import Image from 'next/image';
 
 function SignInContent() {
@@ -39,6 +39,10 @@ function SignInContent() {
 
   const handleGoogleSignIn = async () => {
     await signIn('google', { callbackUrl });
+  };
+
+  const handleFacebookSignIn = async () => {
+    await signIn('facebook', { callbackUrl });
   };
 
   const handleAppleSignIn = async () => {
@@ -126,6 +130,23 @@ function SignInContent() {
                 }}
               >
                 Continue with Google
+              </Button>
+
+              <Button
+                variant="contained"
+                fullWidth
+                size="large"
+                onClick={handleFacebookSignIn}
+                startIcon={<Facebook />}
+                sx={{
+                  py: 1.5,
+                  background: '#1877f2',
+                  '&:hover': {
+                    background: '#166fe5',
+                  }
+                }}
+              >
+                Continue with Facebook
               </Button>
 
               <Button
