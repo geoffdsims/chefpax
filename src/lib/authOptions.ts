@@ -63,8 +63,8 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-development",
   pages: {
-    signIn: '/admin/login',  // Custom admin login page
-    error: '/admin/login',   // Error page
+    signIn: '/auth/signin',  // Customer sign-in page
+    error: '/auth/signin',   // Error page
   },
   callbacks: {
     // expose id and role on session.user

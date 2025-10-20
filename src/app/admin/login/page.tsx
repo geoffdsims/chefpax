@@ -138,10 +138,18 @@ function AdminLoginContent() {
               </Typography>
               <Button
                 variant="outlined"
+                onClick={() => router.push('/auth/signin')}
+                size="small"
+                sx={{ mr: 1 }}
+              >
+                Customer Sign In
+              </Button>
+              <Button
+                variant="outlined"
                 onClick={() => router.push('/shop')}
                 size="small"
               >
-                Go to Customer Shop
+                Browse Shop
               </Button>
             </Box>
           </CardContent>

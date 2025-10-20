@@ -8,7 +8,7 @@ import { getToken } from 'next-auth/jwt';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect admin routes (but allow access to login page)
+  // Protect admin routes (but allow access to admin login page)
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const token = await getToken({
       req: request,
@@ -34,6 +34,33 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect customer routes (like /account)
+  if (pathname.startsWith('/account')) {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    // If no session, redirect to customer sign-in page
+    if (!token) {
+      const signInUrl = new URL('/auth/signin', request.url);
+      signInUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    // Check if user is admin trying to access customer account
+    const adminEmails = process.env.ADMIN_EMAILS?.split(',') || [];
+    const isAdmin = token.email && (
+      adminEmails.includes(token.email as string) ||
+      (token.email as string).endsWith('@chefpax.com')
+    );
+
+    // If admin tries to access customer account, redirect to admin
+    if (isAdmin) {
+      return NextResponse.redirect(new URL('/admin', request.url));
+    }
+  }
+
   // Add security headers to all responses
   const response = NextResponse.next();
   
@@ -56,6 +83,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/admin/:path*',
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    '/account/:path*',
+    '/((?!_next/static|_next/image|favicon.ico|public|auth).*)',
   ],
 };
