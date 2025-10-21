@@ -91,20 +91,36 @@ export default function AddressValidator({
       return;
     }
 
-    // Check if Google Maps API is loaded
+    // Basic validation first
+    if (address.length < 10) {
+      setValidationStatus('invalid');
+      setValidationMessage('❌ Please enter a complete street address');
+      onValidation(false);
+      return;
+    }
+
+    // Check for obviously fake addresses
+    const fakeAddresses = ['lol', 'test', 'fake', '123', 'asdf', 'qwerty'];
+    if (fakeAddresses.some(fake => address.toLowerCase().includes(fake))) {
+      setValidationStatus('invalid');
+      setValidationMessage('❌ Please enter a real street address');
+      onValidation(false);
+      return;
+    }
+
+    // For now, accept any reasonable-looking address
+    // TODO: Re-enable Google Maps validation once API issues are resolved
+    setValidationStatus('warning');
+    setValidationMessage('⚠️ Address accepted - please verify it\'s correct');
+    onValidation(true);
+    return;
+
+    // Google Maps validation (disabled for now)
+    /*
     if (!window.google || !window.google.maps || !window.google.maps.Geocoder) {
-      // Fallback: Basic validation without Google Maps
-      if (address.length < 10) {
-        setValidationStatus('invalid');
-        setValidationMessage('❌ Please enter a complete street address');
-        onValidation(false);
-        return;
-      }
-      
-      // Basic validation passed
       setValidationStatus('warning');
       setValidationMessage('⚠️ Address validation service unavailable - please verify your address');
-      onValidation(true); // Allow checkout with warning
+      onValidation(true);
       return;
     }
 
@@ -112,7 +128,6 @@ export default function AddressValidator({
     setValidationStatus('idle');
 
     try {
-      // Use Google Places API to validate address
       const geocoder = new window.google.maps.Geocoder();
       
       geocoder.geocode({ address: address }, (results: GooglePlaceResult[], status: string) => {
@@ -122,7 +137,6 @@ export default function AddressValidator({
           const result = results[0];
           const addressComponents = result.address_components;
           
-          // Check if it's in Austin, TX
           const cityComponent = addressComponents.find(component => 
             component.types.includes('locality')
           );
@@ -157,6 +171,7 @@ export default function AddressValidator({
       setValidationMessage('❌ Address validation failed');
       onValidation(false);
     }
+    */
   };
 
   const handleAddressChange = (newAddress: string) => {
