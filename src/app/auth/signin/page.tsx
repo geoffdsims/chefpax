@@ -13,10 +13,13 @@ import {
   Container,
   Alert,
   CircularProgress,
-  Divider
+  Divider,
+  TextField,
+  IconButton
 } from '@mui/material';
-import { Google, Apple, Email, AdminPanelSettings, Facebook } from '@mui/icons-material';
+import { Google, Apple, Email, AdminPanelSettings, Facebook, ArrowBack } from '@mui/icons-material';
 import Image from 'next/image';
+import React from 'react';
 
 function SignInContent() {
   const { data: session, status } = useSession();
@@ -49,8 +52,18 @@ function SignInContent() {
     await signIn('apple', { callbackUrl });
   };
 
+  const [email, setEmail] = React.useState('');
+  const [isEmailMode, setIsEmailMode] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   const handleEmailSignIn = async () => {
-    await signIn('email', { callbackUrl });
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+    setIsSubmitting(true);
+    await signIn('email', { email, callbackUrl });
+    setIsSubmitting(false);
   };
 
   const handleAdminSignIn = () => {
@@ -166,16 +179,64 @@ function SignInContent() {
                 Continue with Apple
               </Button>
 
-              <Button
-                variant="outlined"
-                fullWidth
-                size="large"
-                onClick={handleEmailSignIn}
-                startIcon={<Email />}
-                sx={{ py: 1.5 }}
-              >
-                Sign in with Email
-              </Button>
+              {!isEmailMode ? (
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  size="large"
+                  onClick={() => setIsEmailMode(true)}
+                  startIcon={<Email />}
+                  sx={{ py: 1.5 }}
+                >
+                  Sign in with Email
+                </Button>
+              ) : (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <IconButton
+                      size="small"
+                      onClick={() => setIsEmailMode(false)}
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      <ArrowBack />
+                    </IconButton>
+                    <Typography variant="body2" color="text.secondary">
+                      Back to other options
+                    </Typography>
+                  </Box>
+                  <TextField
+                    fullWidth
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleEmailSignIn();
+                      }
+                    }}
+                    disabled={isSubmitting}
+                    sx={{ mb: 2 }}
+                  />
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    onClick={handleEmailSignIn}
+                    disabled={isSubmitting || !email}
+                    sx={{ py: 1.5 }}
+                  >
+                    {isSubmitting ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      'Send Magic Link'
+                    )}
+                  </Button>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, textAlign: 'center' }}>
+                    We'll send you a secure login link via email
+                  </Typography>
+                </Box>
+              )}
             </Box>
 
             <Divider sx={{ my: 3 }}>
