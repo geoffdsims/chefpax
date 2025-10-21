@@ -17,7 +17,7 @@ import {
   TextField,
   IconButton
 } from '@mui/material';
-import { Google, Apple, Email, AdminPanelSettings, Facebook, ArrowBack } from '@mui/icons-material';
+import { Google, Apple, Email, Facebook, ArrowBack } from '@mui/icons-material';
 import Image from 'next/image';
 import React from 'react';
 
@@ -66,10 +66,6 @@ function SignInContent() {
     setIsSubmitting(false);
   };
 
-  const handleAdminSignIn = () => {
-    router.push('/admin/login');
-  };
-
   if (status === 'loading') {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
@@ -82,7 +78,7 @@ function SignInContent() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -239,37 +235,14 @@ function SignInContent() {
               )}
             </Box>
 
-            <Divider sx={{ my: 3 }}>
-              <Typography variant="body2" color="text.secondary">
-                or
-              </Typography>
-            </Divider>
-
-            {/* Admin Access */}
-            <Button
-              variant="text"
-              fullWidth
-              onClick={handleAdminSignIn}
-              startIcon={<AdminPanelSettings />}
-              sx={{
-                py: 1,
-                color: 'text.secondary',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
-                }
-              }}
-            >
-              Admin Access
-            </Button>
-
             {/* Info Box */}
             <Box
               sx={{
                 mt: 3,
                 p: 2,
                 borderRadius: 1,
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                border: '1px solid rgba(102, 126, 234, 0.2)'
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                border: '1px solid rgba(76, 175, 80, 0.2)'
               }}
             >
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -279,7 +252,7 @@ function SignInContent() {
                 • Sign in with any method above to create an account<br />
                 • Access your order history and subscriptions<br />
                 • Track your microgreens delivery<br />
-                • Manage your preferences and loyalty points
+                • Manage your preferences
               </Typography>
             </Box>
           </CardContent>
