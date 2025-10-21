@@ -57,16 +57,19 @@ export default function AddressValidator({
   // Load Google Maps API
   useEffect(() => {
     const loadGoogleMaps = () => {
-      if (window.google && window.google.maps && window.google.maps.places) {
+      if (window.google && window.google.maps && window.google.maps.Geocoder) {
+        console.log('Google Maps API already loaded');
         return;
       }
 
       // Check if script already exists
       const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
       if (existingScript) {
+        console.log('Google Maps script already exists, waiting for load...');
         return;
       }
 
+      console.log('Loading Google Maps API...');
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
       script.async = true;
@@ -74,8 +77,8 @@ export default function AddressValidator({
       script.onload = () => {
         console.log('Google Maps API loaded successfully');
       };
-      script.onerror = () => {
-        console.error('Failed to load Google Maps API');
+      script.onerror = (error) => {
+        console.error('Failed to load Google Maps API:', error);
       };
       document.head.appendChild(script);
     };
@@ -108,70 +111,98 @@ export default function AddressValidator({
       return;
     }
 
-    // For now, accept any reasonable-looking address
-    // TODO: Re-enable Google Maps validation once API issues are resolved
-    setValidationStatus('warning');
-    setValidationMessage('⚠️ Address accepted - please verify it\'s correct');
-    onValidation(true);
-    return;
-
-    // Google Maps validation (disabled for now)
-    /*
-    if (!window.google || !window.google.maps || !window.google.maps.Geocoder) {
-      setValidationStatus('warning');
-      setValidationMessage('⚠️ Address validation service unavailable - please verify your address');
-      onValidation(true);
+    // Wait for Google Maps API to load
+    if (!window.google || !window.google.maps) {
+      setIsValidating(true);
+      setValidationStatus('idle');
+      setValidationMessage('⏳ Loading address validation...');
+      
+      // Wait for Google Maps to load
+      const checkGoogleMaps = () => {
+        if (window.google && window.google.maps && window.google.maps.Geocoder) {
+          validateWithGoogleMaps(address);
+        } else {
+          setTimeout(checkGoogleMaps, 100);
+        }
+      };
+      
+      checkGoogleMaps();
       return;
     }
 
+    validateWithGoogleMaps(address);
+  };
+
+  const validateWithGoogleMaps = (address: string) => {
     setIsValidating(true);
     setValidationStatus('idle');
 
     try {
       const geocoder = new window.google.maps.Geocoder();
       
-      geocoder.geocode({ address: address }, (results: GooglePlaceResult[], status: string) => {
+      geocoder.geocode({ 
+        address: address,
+        region: 'US' // Bias results to US addresses
+      }, (results: GooglePlaceResult[], status: string) => {
         setIsValidating(false);
         
-        if (status === 'OK' && results.length > 0) {
+        console.log('Google Geocoding result:', { status, results });
+        
+        if (status === 'OK' && results && results.length > 0) {
           const result = results[0];
           const addressComponents = result.address_components;
           
+          // Find city and state components
           const cityComponent = addressComponents.find(component => 
-            component.types.includes('locality')
+            component.types.includes('locality') || component.types.includes('administrative_area_level_2')
           );
           const stateComponent = addressComponents.find(component => 
             component.types.includes('administrative_area_level_1')
           );
           
-          const isInAustin = cityComponent?.long_name.toLowerCase().includes('austin');
-          const isInTexas = stateComponent?.short_name === 'TX';
+          const cityName = cityComponent?.long_name?.toLowerCase() || '';
+          const stateCode = stateComponent?.short_name || '';
+          
+          console.log('Address components:', { cityName, stateCode, addressComponents });
+          
+          const isInAustin = cityName.includes('austin');
+          const isInTexas = stateCode === 'TX';
           
           if (isInAustin && isInTexas) {
             setValidationStatus('valid');
             setValidationMessage('✅ Valid Austin address');
             setFormattedAddress(result.formatted_address);
             onValidation(true, result.formatted_address);
-          } else {
+          } else if (isInTexas) {
             setValidationStatus('warning');
             setValidationMessage('⚠️ Address outside Austin delivery area');
             setFormattedAddress(result.formatted_address);
             onValidation(false);
+          } else {
+            setValidationStatus('warning');
+            setValidationMessage('⚠️ Address outside Texas delivery area');
+            setFormattedAddress(result.formatted_address);
+            onValidation(false);
           }
+        } else if (status === 'ZERO_RESULTS') {
+          setValidationStatus('invalid');
+          setValidationMessage('❌ Address not found');
+          setFormattedAddress('');
+          onValidation(false);
         } else {
           setValidationStatus('invalid');
-          setValidationMessage('❌ Invalid address format');
+          setValidationMessage(`❌ Address validation failed: ${status}`);
           setFormattedAddress('');
           onValidation(false);
         }
       });
     } catch (error) {
+      console.error('Geocoding error:', error);
       setIsValidating(false);
       setValidationStatus('invalid');
       setValidationMessage('❌ Address validation failed');
       onValidation(false);
     }
-    */
   };
 
   const handleAddressChange = (newAddress: string) => {
