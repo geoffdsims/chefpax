@@ -46,7 +46,7 @@ function AdminLoginContent() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -103,9 +103,9 @@ function AdminLoginContent() {
               sx={{
                 py: 1.5,
                 mb: 2,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #5568d3 0%, #663a8f 100%)',
+                  background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
                 }
               }}
             >
@@ -117,8 +117,8 @@ function AdminLoginContent() {
               sx={{
                 p: 2,
                 borderRadius: 1,
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                border: '1px solid rgba(102, 126, 234, 0.2)'
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                border: '1px solid rgba(76, 175, 80, 0.2)'
               }}
             >
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -131,27 +131,6 @@ function AdminLoginContent() {
               </Typography>
             </Box>
 
-            {/* Customer Portal Link */}
-            <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Not an admin?
-              </Typography>
-              <Button
-                variant="outlined"
-                onClick={() => router.push('/auth/signin')}
-                size="small"
-                sx={{ mr: 1 }}
-              >
-                Customer Sign In
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => router.push('/shop')}
-                size="small"
-              >
-                Browse Shop
-              </Button>
-            </Box>
           </CardContent>
         </Card>
 
