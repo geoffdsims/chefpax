@@ -246,6 +246,9 @@ APPLE_SECRET=<generated_jwt>
 
 # Admin Access
 ADMIN_EMAILS=geoff@chefpax.com
+
+# Google Maps API (for address validation)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=<your_google_maps_api_key>
 ```
 
 ---

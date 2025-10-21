@@ -27,6 +27,7 @@ import { ArrowBack, Delete, ShoppingCart } from "@mui/icons-material";
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 import ApplePayButton from "@/components/ApplePayButton";
+import AddressValidator from "@/components/AddressValidator";
 
 interface CartItem {
   productId: string;
@@ -51,6 +52,7 @@ export default function CartPage() {
     zip: ""
   });
   const [isSubscription, setIsSubscription] = useState(false);
+  const [isAddressValid, setIsAddressValid] = useState(false);
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
@@ -80,7 +82,7 @@ export default function CartPage() {
 
   async function checkout() {
     if (isSubscription && !session) {
-      signIn();
+      signIn(undefined, { callbackUrl: '/cart' });
       return;
     }
 
@@ -250,13 +252,17 @@ export default function CartPage() {
                       size="small"
                       fullWidth
                     />
-                    <TextField
-                      label="Address"
+                    <AddressValidator
                       value={customer.address1}
-                      onChange={(e) => setCustomer({ ...customer, address1: e.target.value })}
-                      size="small"
-                      fullWidth
-                      required
+                      onChange={(address) => setCustomer({ ...customer, address1: address })}
+                      onValidation={(isValid, formattedAddress) => {
+                        setIsAddressValid(isValid);
+                        if (formattedAddress) {
+                          setCustomer(prev => ({ ...prev, address1: formattedAddress }));
+                        }
+                      }}
+                      label="Street Address"
+                      required={true}
                     />
                     <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 1 }}>
                       <TextField
@@ -307,7 +313,7 @@ export default function CartPage() {
                 size="large"
                 fullWidth
                 onClick={checkout}
-                disabled={!customer.name || !customer.email || !customer.address1 || !customer.zip}
+                disabled={!customer.name || !customer.email || !customer.address1 || !customer.zip || !isAddressValid}
                 sx={{ py: 1.5, fontSize: '1rem' }}
               >
                 Proceed to Payment
