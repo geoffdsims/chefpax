@@ -61,10 +61,22 @@ export default function AddressValidator({
         return;
       }
 
+      // Check if script already exists
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (existingScript) {
+        return;
+      }
+
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
       script.async = true;
       script.defer = true;
+      script.onload = () => {
+        console.log('Google Maps API loaded successfully');
+      };
+      script.onerror = () => {
+        console.error('Failed to load Google Maps API');
+      };
       document.head.appendChild(script);
     };
 
@@ -76,6 +88,23 @@ export default function AddressValidator({
       setValidationStatus('idle');
       setValidationMessage('');
       onValidation(false);
+      return;
+    }
+
+    // Check if Google Maps API is loaded
+    if (!window.google || !window.google.maps || !window.google.maps.Geocoder) {
+      // Fallback: Basic validation without Google Maps
+      if (address.length < 10) {
+        setValidationStatus('invalid');
+        setValidationMessage('❌ Please enter a complete street address');
+        onValidation(false);
+        return;
+      }
+      
+      // Basic validation passed
+      setValidationStatus('warning');
+      setValidationMessage('⚠️ Address validation service unavailable - please verify your address');
+      onValidation(true); // Allow checkout with warning
       return;
     }
 
