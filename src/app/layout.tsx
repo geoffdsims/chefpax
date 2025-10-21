@@ -17,9 +17,13 @@ export const metadata: Metadata = {
     images: [{ url: "https://www.chefpax.com/og.jpg", width: 1200, height: 630 }]
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' }
+    ],
     shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   }
 };
 
@@ -40,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" 
           rel="stylesheet" 
         />
+        <link rel="manifest" href="/site.webmanifest" />
         {process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID && (
           <>
             <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID}`} />
