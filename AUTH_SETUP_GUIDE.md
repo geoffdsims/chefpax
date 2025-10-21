@@ -225,7 +225,7 @@ MONGODB_URI=mongodb+srv://chefpax-user:...
 MONGODB_DB=chefpax
 
 # NextAuth
-NEXTAUTH_SECRET=uXju1SQ0gO1zoUregoBCwB802fv2BSqEKffK5isVROY=
+NEXTAUTH_SECRET=<configured_in_env>
 NEXTAUTH_URL=https://www.chefpax.com
 
 # Google OAuth (already configured)
@@ -233,8 +233,8 @@ GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 
 # Facebook OAuth (needs to be added to Vercel)
-FACEBOOK_CLIENT_ID=2016785712471735
-FACEBOOK_CLIENT_SECRET=a9df8984e3468bf01dd27c34c8ed648c
+FACEBOOK_CLIENT_ID=<configured_in_env>
+FACEBOOK_CLIENT_SECRET=<configured_in_env>
 
 # SendGrid Email (already configured)
 SENDGRID_API_KEY=<your_sendgrid_api_key>

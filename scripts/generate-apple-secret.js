@@ -2,11 +2,11 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 
-// ⚠️ YOUR ACTUAL VALUES
-const TEAM_ID = '3CLQRZLT74';        // Your Team ID
-const KEY_ID = '2GD23A24QR';          // Your Key ID
+// ⚠️ YOUR ACTUAL VALUES - Replace these with your actual values
+const TEAM_ID = 'YOUR_TEAM_ID';        // Your Team ID
+const KEY_ID = 'YOUR_KEY_ID';          // Your Key ID
 const CLIENT_ID = 'com.chefpax.webapp.signin';  // Your Services ID
-const PRIVATE_KEY_PATH = path.join(process.env.HOME, 'chefpax-apple-keys/AuthKey_2GD23A24QR.p8');
+const PRIVATE_KEY_PATH = path.join(process.env.HOME, 'chefpax-apple-keys/AuthKey_YOUR_KEY_ID.p8');
 
 console.log('🍎 Generating Apple Sign In Client Secret...\n');
 

@@ -141,8 +141,8 @@ Apple Pay works through Stripe's Payment Request API. Let me create the componen
 
 Already configured! You're using:
 ```env
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_51S9g3D3kcvYyat13VnUI...
-STRIPE_SECRET_KEY=sk_live_51S9g3D3kcvYyat134bUnNL...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<configured_in_env>
+STRIPE_SECRET_KEY=<configured_in_env>
 ```
 
 ---

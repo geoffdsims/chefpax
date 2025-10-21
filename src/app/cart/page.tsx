@@ -26,6 +26,7 @@ import {
 import { ArrowBack, Delete, ShoppingCart } from "@mui/icons-material";
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
+import ApplePayButton from "@/components/ApplePayButton";
 
 interface CartItem {
   productId: string;
@@ -283,6 +284,23 @@ export default function CartPage() {
                   </Stack>
                 </CardContent>
               </Card>
+
+              {/* Apple Pay Button */}
+              <ApplePayButton
+                cart={cart}
+                customer={customer}
+                total={total}
+                isSubscription={isSubscription}
+                onSuccess={() => {
+                  // Clear cart on success
+                  localStorage.setItem("cart", "[]");
+                  setCart([]);
+                  window.dispatchEvent(new CustomEvent("cartUpdated"));
+                }}
+                onError={(error) => {
+                  console.error("Apple Pay error:", error);
+                }}
+              />
 
               <Button
                 variant="contained"

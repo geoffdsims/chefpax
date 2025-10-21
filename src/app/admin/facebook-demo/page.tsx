@@ -23,7 +23,7 @@ export default function FacebookDemoPage() {
       
       // Mock pages data
       const mockPages = [
-        { id: '861932703661799', name: 'ChefPax Microgreens', fan_count: 245 },
+        { id: '<configured_in_env>', name: 'ChefPax Microgreens', fan_count: 245 },
         { id: 'mock_personal_123', name: 'Personal Page', fan_count: 150 },
         { id: 'mock_business_456', name: 'Business Page 2', fan_count: 89 }
       ];
