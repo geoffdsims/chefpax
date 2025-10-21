@@ -82,7 +82,7 @@ export default function CartPage() {
 
   async function checkout() {
     if (isSubscription && !session) {
-      signIn(undefined, { callbackUrl: '/cart' });
+      signIn('google', { callbackUrl: '/cart' });
       return;
     }
 
