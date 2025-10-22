@@ -286,6 +286,9 @@ export default function CartPage() {
                       size="small"
                       fullWidth
                       required
+                      type="tel"
+                      inputProps={{ pattern: "[0-9]{10,11}" }}
+                      helperText="Enter 10-digit phone number"
                     />
                     <AddressValidator
                       value={customer.address1}
@@ -338,7 +341,7 @@ export default function CartPage() {
                 size="large"
                 fullWidth
                 onClick={checkout}
-                disabled={!customer.name || !customer.email || !customer.phone || !customer.address1 || (customer.address1 && !isAddressValid)}
+                disabled={!customer.name || !customer.email || !customer.phone || customer.phone.length < 10 || !customer.address1 || (customer.address1 && !isAddressValid)}
                 sx={{ py: 1.5, fontSize: '1rem' }}
               >
                 Proceed to Payment

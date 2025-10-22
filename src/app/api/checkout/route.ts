@@ -44,6 +44,7 @@ export async function POST(req: Request) {
   // Try to convert IDs to ObjectId, but handle invalid IDs
   let products: Product[] = [];
   try {
+    // First try to find products by ObjectId
     const objectIds = ids.map(id => {
       try {
         return new ObjectId(id);
@@ -53,13 +54,23 @@ export async function POST(req: Request) {
       }
     }).filter(id => id !== null) as ObjectId[];
 
-    if (objectIds.length === 0) {
-      return NextResponse.json({ error: "No valid product IDs in cart" }, { status: 400 });
+    if (objectIds.length > 0) {
+      products = await db.collection("products").find({ 
+        _id: { $in: objectIds } 
+      }).toArray() as unknown as Product[];
     }
 
-    products = await db.collection("products").find({ 
-      _id: { $in: objectIds } 
-    }).toArray() as unknown as Product[];
+    // If no products found by ObjectId, try by string ID
+    if (products.length === 0) {
+      console.log("No products found by ObjectId, trying string ID search...");
+      products = await db.collection("products").find({ 
+        $or: [
+          { _id: { $in: ids } },
+          { id: { $in: ids } },
+          { slug: { $in: ids } }
+        ]
+      }).toArray() as unknown as Product[];
+    }
 
     console.log("Found products:", products.map(p => ({ id: p._id?.toString(), name: p.name })));
   } catch (error) {
