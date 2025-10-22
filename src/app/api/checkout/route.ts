@@ -24,13 +24,14 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { cart, customer, marketingOptIn = false, createAccount = false } = body as {
       cart: { productId: string; qty: number }[];
-      customer: { name: string; email: string; phone?: string; address1: string; address2?: string; city: string; state: string; zip: string; deliveryInstructions?: string };
+      customer: { name: string; email: string; phone?: string; address1: string; address2?: string; city?: string; state?: string; zip?: string; deliveryInstructions?: string };
       marketingOptIn?: boolean;
       createAccount?: boolean;
     };
 
     if (!cart?.length) return NextResponse.json({ error: "Empty cart" }, { status: 400 });
     if (!customer?.email || !customer?.name) return NextResponse.json({ error: "Missing customer information" }, { status: 400 });
+    if (!customer?.address1) return NextResponse.json({ error: "Missing delivery address" }, { status: 400 });
 
     console.log("Checkout request - Cart:", JSON.stringify(cart, null, 2));
     console.log("Checkout request - Customer:", JSON.stringify(customer, null, 2));
@@ -93,9 +94,9 @@ export async function POST(req: Request) {
     deliveryDate: deliveryDate.toISOString(),
     address1: customer.address1,
     address2: customer.address2 ?? "",
-    city: customer.city,
-    state: customer.state,
-    zip: customer.zip,
+    city: customer.city ?? "",
+    state: customer.state ?? "",
+    zip: customer.zip ?? "",
     name: customer.name,
     phone: customer.phone ?? "",
     deliveryInstructions: customer.deliveryInstructions ?? "",

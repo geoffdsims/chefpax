@@ -86,6 +86,16 @@ export default function CartPage() {
       return;
     }
 
+    // Ensure city, state, zip are populated (even if empty for now)
+    const customerData = {
+      ...customer,
+      city: customer.city || '',
+      state: customer.state || '',
+      zip: customer.zip || ''
+    };
+
+    console.log('Checkout customer data:', customerData);
+
     const totalCents = total;
     trackCheckout({
       step: 'initiated',
@@ -98,14 +108,16 @@ export default function CartPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         cart, 
-        customer, 
+        customer: customerData, 
         isSubscription: isSubscription && !!session
       })
     });
 
     if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      console.error('Checkout error:', errorData);
       trackCheckout({ step: 'failed', total_cents: totalCents, item_count: cart.length });
-      alert("Checkout failed");
+      alert(`Checkout failed: ${errorData.error || 'Unknown error'}`);
       return;
     }
 
