@@ -50,8 +50,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           async
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-          onLoad={() => console.log('Google Maps API loaded successfully')}
-          onError={() => console.error('Failed to load Google Maps API')}
+          onLoad={() => {
+            console.log('Google Maps API loaded successfully');
+            console.log('Google object:', window.google);
+          }}
+          onError={(e) => {
+            console.error('Failed to load Google Maps API:', e);
+            console.log('API Key being used:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? 'SET' : 'NOT_SET');
+          }}
         />
         
         {process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID && (
