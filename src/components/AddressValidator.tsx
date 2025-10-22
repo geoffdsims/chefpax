@@ -72,14 +72,8 @@ export default function AddressValidator({
       console.log('Initializing Google Places Autocomplete...');
 
       try {
-        // Create autocomplete instance with a separate input element
-        const autocompleteInput = document.createElement('input');
-        autocompleteInput.style.position = 'absolute';
-        autocompleteInput.style.left = '-9999px';
-        autocompleteInput.style.opacity = '0';
-        document.body.appendChild(autocompleteInput);
-        
-        const autocomplete = new window.google.maps.places.Autocomplete(autocompleteInput, {
+        // Create autocomplete instance
+        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
           types: ['address'],
           componentRestrictions: { country: 'us' },
           fields: ['formatted_address', 'address_components', 'geometry']
@@ -98,24 +92,12 @@ export default function AddressValidator({
 
           console.log('Place selected:', place);
           
-          // Update the visible address field
+          // Update the address field
           onChange(place.formatted_address);
           
           // Validate the selected address
           validateSelectedPlace(place);
         });
-
-        // Sync the hidden input with the visible input for autocomplete
-        const syncInputs = () => {
-          if (inputRef.current && autocompleteInput) {
-            autocompleteInput.value = inputRef.current.value;
-          }
-        };
-
-        // Listen to the visible input changes
-        if (inputRef.current) {
-          inputRef.current.addEventListener('input', syncInputs);
-        }
 
         console.log('Google Places Autocomplete initialized successfully');
       } catch (error) {
@@ -348,15 +330,12 @@ export default function AddressValidator({
   const handleAddressChange = (newAddress: string) => {
     onChange(newAddress);
     
-    // Clear any existing timeout
-    if (window.addressValidationTimeout) {
-      clearTimeout(window.addressValidationTimeout);
-    }
-    
-    // Debounce validation - only validate after user stops typing
-    window.addressValidationTimeout = setTimeout(() => {
+    // Debounce validation
+    const timeoutId = setTimeout(() => {
       validateAddress(newAddress);
-    }, 1000); // Increased to 1 second to avoid interference
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
   };
 
   const getStatusColor = () => {
@@ -401,35 +380,28 @@ export default function AddressValidator({
         </Box>
       )}
       
-      {validationStatus === 'valid' && (
-        <Alert severity="success" sx={{ mb: 1 }} icon={false}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CheckCircle sx={{ fontSize: 20 }} />
-            <Typography variant="body2">Valid delivery address</Typography>
-          </Box>
-        </Alert>
+      {validationMessage && (
+        <Box sx={{ mb: 1 }}>
+          <Chip
+            icon={getStatusIcon()}
+            label={validationMessage}
+            color={getStatusColor() as any}
+            size="small"
+            variant="outlined"
+          />
+        </Box>
       )}
       
       {validationStatus === 'warning' && (
-        <Alert severity="warning" sx={{ mb: 1 }} icon={false}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Warning sx={{ fontSize: 20 }} />
-            <Box>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>Address outside delivery area</Typography>
-              <Typography variant="caption">
-                We currently deliver within the Austin metro area (within 1 hour drive from Manor).
-              </Typography>
-            </Box>
-          </Box>
+        <Alert severity="warning" sx={{ mb: 1 }}>
+          We currently deliver within the Austin metro area (within 1 hour drive from Manor). 
+          Your address appears to be outside our delivery area.
         </Alert>
       )}
       
       {validationStatus === 'invalid' && (
-        <Alert severity="error" sx={{ mb: 1 }} icon={false}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Error sx={{ fontSize: 20 }} />
-            <Typography variant="body2">Please enter a valid street address for delivery.</Typography>
-          </Box>
+        <Alert severity="error" sx={{ mb: 1 }}>
+          Please enter a valid street address. We need a real address for delivery.
         </Alert>
       )}
     </Box>
