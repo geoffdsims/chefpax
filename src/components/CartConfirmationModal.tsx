@@ -60,42 +60,90 @@ interface CartConfirmationModalProps {
   }>;
 }
 
-// Smart upsell products - complements what's in cart
-const ALL_UPSELL_PRODUCTS: UpsellProduct[] = [
+// Flavor profiles for intelligent pairing
+interface ProductProfile {
+  productId: string;
+  name: string;
+  price: number;
+  photoUrl: string;
+  description: string;
+  flavorProfile: 'mild' | 'spicy' | 'sweet' | 'earthy' | 'mixed';
+  pairsWith: string[]; // IDs of products that pair well
+}
+
+// Smart upsell products with flavor pairing logic
+const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
   {
     productId: 'pea-shoots-live-tray',
     name: 'Dun Pea Shoots — Live Tray',
     price: 3000,
     photoUrl: '/images/microgeens/peas_10x20.png',
-    description: 'Perfect companion • Sweet & crunchy'
+    description: 'Sweet & crunchy • Pairs with spicy',
+    flavorProfile: 'sweet',
+    pairsWith: ['radish-live-tray', 'broccoli-live-tray', 'mustard-live-tray', 'wasabi-live-tray']
   },
   {
     productId: 'radish-live-tray',
     name: 'Rambo Purple Radish — Live Tray',
     price: 3000,
     photoUrl: '/images/microgeens/radish_rambo_10x20.png',
-    description: 'Spicy kick • Colorful garnish'
+    description: 'Spicy kick • Pairs with mild greens',
+    flavorProfile: 'spicy',
+    pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'broccoli-live-tray', 'amaranth-live-tray']
   },
   {
     productId: 'amaranth-live-tray',
     name: 'Red Garnet Amaranth — 5×5',
     price: 1400,
     photoUrl: '/images/microgeens/amaranth_red_5x5.png',
-    description: 'Chef favorite • Nutrient-dense'
+    description: 'Earthy & mild • Balances spicy',
+    flavorProfile: 'earthy',
+    pairsWith: ['radish-live-tray', 'mustard-live-tray', 'pea-shoots-live-tray']
   },
   {
     productId: 'broccoli-live-tray',
     name: 'Broccoli — Live Tray',
     price: 3000,
     photoUrl: '/images/microgeens/brocolli_10x20.png',
-    description: 'Mild & versatile • Health boost'
+    description: 'Mild & versatile • Pairs with anything',
+    flavorProfile: 'mild',
+    pairsWith: ['radish-live-tray', 'pea-shoots-live-tray', 'sunflower-live-tray', 'mustard-live-tray']
+  },
+  {
+    productId: 'sunflower-live-tray',
+    name: 'Sunflower — Live Tray',
+    price: 3000,
+    photoUrl: '/images/microgeens/sunflower_10x20.png',
+    description: 'Nutty & crunchy • Balances spicy',
+    flavorProfile: 'mild',
+    pairsWith: ['radish-live-tray', 'mustard-live-tray', 'wasabi-live-tray']
+  },
+  {
+    productId: 'mustard-live-tray',
+    name: 'Mustard — Live Tray',
+    price: 3000,
+    photoUrl: '/images/microgeens/mustard_10x20.png',
+    description: 'Bold & spicy • Pairs with mild',
+    flavorProfile: 'spicy',
+    pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'broccoli-live-tray']
+  },
+  {
+    productId: 'wasabi-live-tray',
+    name: 'Wasabi Arugula — Live Tray',
+    price: 3000,
+    photoUrl: '/images/microgeens/wasabi_10x20.png',
+    description: 'Extra spicy • Pairs with sweet',
+    flavorProfile: 'spicy',
+    pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'amaranth-live-tray']
   },
   {
     productId: 'super-mix-live-tray',
     name: 'ChefPax Superfood Mix — Live Tray',
     price: 3500,
     photoUrl: '/images/microgeens/super_mix_.png',
-    description: 'Best seller • Complete variety'
+    description: 'Best seller • Complete variety',
+    flavorProfile: 'mixed',
+    pairsWith: [] // Mix goes with everything, so don't specifically pair
   }
 ];
 
@@ -119,13 +167,36 @@ export default function CartConfirmationModal({
     setCurrentCart(cartItems);
   }, [cartItems]);
 
-  // Smart upsell logic: exclude products already in cart
+  // Smart upsell logic: suggest products that pair well with cart items
   useEffect(() => {
     const cartProductIds = new Set(currentCart.map(item => item.productId));
-    const available = ALL_UPSELL_PRODUCTS.filter(
-      product => !cartProductIds.has(product.productId) && !addedUpsells.has(product.productId)
+    
+    // Get pairing suggestions for items in cart
+    const pairingSuggestions = new Set<string>();
+    currentCart.forEach(item => {
+      const product = ALL_UPSELL_PRODUCTS.find(p => p.productId === item.productId);
+      if (product && product.pairsWith.length > 0) {
+        product.pairsWith.forEach(pairing => pairingSuggestions.add(pairing));
+      }
+    });
+    
+    // Filter out products already in cart or already added
+    const pairedProducts = ALL_UPSELL_PRODUCTS.filter(
+      product => pairingSuggestions.has(product.productId) && 
+                 !cartProductIds.has(product.productId) && 
+                 !addedUpsells.has(product.productId)
     );
-    setUpsellProducts(available.slice(0, 3));
+    
+    // If we have paired suggestions, use those; otherwise show general options
+    if (pairedProducts.length > 0) {
+      setUpsellProducts(pairedProducts.slice(0, 2));
+    } else {
+      // Fallback: show any products not in cart
+      const available = ALL_UPSELL_PRODUCTS.filter(
+        product => !cartProductIds.has(product.productId) && !addedUpsells.has(product.productId)
+      );
+      setUpsellProducts(available.slice(0, 2));
+    }
   }, [currentCart, addedUpsells]);
 
   const subtotal = currentCart.reduce((sum, item) => sum + (item.priceCents * item.qty), 0);
@@ -285,7 +356,7 @@ export default function CartConfirmationModal({
           {upsellProducts.length > 0 && (
             <Box>
               <Typography variant="caption" sx={{ fontWeight: 600, mb: 0.5, display: 'block' }}>
-                🌱 Add more:
+                🌱 Pairs well with:
               </Typography>
               
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
