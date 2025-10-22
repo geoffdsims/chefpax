@@ -81,10 +81,15 @@ export default function CartPage() {
   };
 
   async function checkout() {
+    console.log('Checkout initiated:', { isSubscription, hasSession: !!session });
+    
     if (isSubscription && !session) {
+      console.log('Redirecting to sign-in for subscription');
       signIn('google', { callbackUrl: '/cart' });
       return;
     }
+    
+    console.log('Proceeding with checkout');
 
     // Ensure city, state, zip are populated (even if empty for now)
     const customerData = {
