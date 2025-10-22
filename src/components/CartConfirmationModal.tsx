@@ -80,7 +80,7 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/peas_10x20.png',
     description: 'Sweet & crunchy • Pairs with spicy',
     flavorProfile: 'sweet',
-    pairsWith: ['radish-live-tray', 'broccoli-live-tray', 'mustard-live-tray', 'wasabi-live-tray']
+    pairsWith: ['radish-live-tray', 'broccoli-live-tray', 'wasabi-live-tray']
   },
   {
     productId: 'radish-live-tray',
@@ -98,7 +98,7 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/amaranth_red_5x5.png',
     description: 'Earthy & mild • Balances spicy',
     flavorProfile: 'earthy',
-    pairsWith: ['radish-live-tray', 'mustard-live-tray', 'pea-shoots-live-tray']
+    pairsWith: ['radish-live-tray', 'wasabi-live-tray', 'pea-shoots-live-tray']
   },
   {
     productId: 'broccoli-live-tray',
@@ -107,31 +107,22 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/brocolli_10x20.png',
     description: 'Mild & versatile • Pairs with anything',
     flavorProfile: 'mild',
-    pairsWith: ['radish-live-tray', 'pea-shoots-live-tray', 'sunflower-live-tray', 'mustard-live-tray']
+    pairsWith: ['radish-live-tray', 'pea-shoots-live-tray', 'sunflower-live-tray', 'wasabi-live-tray']
   },
   {
     productId: 'sunflower-live-tray',
     name: 'Sunflower — Live Tray',
     price: 3000,
-    photoUrl: '/images/microgeens/sunflower_10x20.png',
+    photoUrl: '/images/microgeens/subflower_10x20.png',
     description: 'Nutty & crunchy • Balances spicy',
     flavorProfile: 'mild',
-    pairsWith: ['radish-live-tray', 'mustard-live-tray', 'wasabi-live-tray']
-  },
-  {
-    productId: 'mustard-live-tray',
-    name: 'Mustard — Live Tray',
-    price: 3000,
-    photoUrl: '/images/microgeens/mustard_10x20.png',
-    description: 'Bold & spicy • Pairs with mild',
-    flavorProfile: 'spicy',
-    pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'broccoli-live-tray']
+    pairsWith: ['radish-live-tray', 'wasabi-live-tray']
   },
   {
     productId: 'wasabi-live-tray',
-    name: 'Wasabi Arugula — Live Tray',
+    name: 'Wasabi Mustard — Live Tray',
     price: 3000,
-    photoUrl: '/images/microgeens/wasabi_10x20.png',
+    photoUrl: '/images/microgeens/wasabi_mustard_10x20.png',
     description: 'Extra spicy • Pairs with sweet',
     flavorProfile: 'spicy',
     pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'amaranth-live-tray']
