@@ -22,12 +22,13 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { cart, customer, marketingOptIn = false, createAccount = false, deliveryDate } = body as {
+    const { cart, customer, marketingOptIn = false, createAccount = false, deliveryDate, isSubscription = false } = body as {
       cart: { productId: string; qty: number }[];
       customer: { name: string; email: string; phone?: string; address1: string; address2?: string; city?: string; state?: string; zip?: string; deliveryInstructions?: string };
       marketingOptIn?: boolean;
       createAccount?: boolean;
       deliveryDate?: string;
+      isSubscription?: boolean;
     };
 
     if (!cart?.length) return NextResponse.json({ error: "Empty cart" }, { status: 400 });
@@ -117,6 +118,25 @@ export async function POST(req: Request) {
     });
   }
 
+  // subscription discount (10% off subtotal)
+  if (isSubscription) {
+    const subtotal = line_items.reduce((sum, item) => {
+      return sum + (item.quantity * (item.price_data?.unit_amount || 0));
+    }, 0);
+    const discountAmount = Math.round(subtotal * 0.1); // 10% discount
+    
+    if (discountAmount > 0) {
+      line_items.push({
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          product_data: { name: "Subscription Discount (10%)" },
+          unit_amount: -discountAmount, // Negative amount for discount
+        },
+      });
+    }
+  }
+
   if (!stripe) {
     return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
   }
@@ -154,6 +174,13 @@ export async function POST(req: Request) {
     shipping_address_collection: {
       allowed_countries: ['US'],
     },
+    // Pre-fill billing address if we have it
+    ...(customer.address1 && {
+      customer_update: {
+        address: 'auto',
+        name: 'auto'
+      }
+    }),
     metadata,
   });
 

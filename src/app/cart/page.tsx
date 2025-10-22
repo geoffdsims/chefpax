@@ -73,10 +73,11 @@ export default function CartPage() {
         const response = await fetch('/api/delivery-options');
         if (response.ok) {
           const data = await response.json();
-          setDeliveryOptions(data.options || []);
+          // The API returns options directly, not wrapped in an options property
+          setDeliveryOptions(Array.isArray(data) ? data : []);
           // Set default to first available date
-          if (data.options && data.options.length > 0) {
-            setSelectedDeliveryDate(data.options[0].date);
+          if (Array.isArray(data) && data.length > 0) {
+            setSelectedDeliveryDate(data[0].date);
           }
         }
       } catch (error) {
