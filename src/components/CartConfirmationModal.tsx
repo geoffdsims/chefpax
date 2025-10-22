@@ -80,7 +80,7 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/peas_10x20.png',
     description: 'Sweet & crunchy • Pairs with spicy',
     flavorProfile: 'sweet',
-    pairsWith: ['radish-live-tray', 'broccoli-live-tray', 'wasabi-live-tray']
+    pairsWith: ['radish-live-tray', 'broccoli-live-tray', 'wasabi-live-tray', 'basil-dark-opal']
   },
   {
     productId: 'radish-live-tray',
@@ -89,7 +89,7 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/radish_rambo_10x20.png',
     description: 'Spicy kick • Pairs with mild greens',
     flavorProfile: 'spicy',
-    pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'broccoli-live-tray', 'amaranth-live-tray']
+    pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'broccoli-live-tray', 'amaranth-live-tray', 'basil-lemon']
   },
   {
     productId: 'amaranth-live-tray',
@@ -98,7 +98,7 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/amaranth_red_5x5.png',
     description: 'Earthy & mild • Balances spicy',
     flavorProfile: 'earthy',
-    pairsWith: ['radish-live-tray', 'wasabi-live-tray', 'pea-shoots-live-tray']
+    pairsWith: ['radish-live-tray', 'wasabi-live-tray', 'pea-shoots-live-tray', 'basil-thai']
   },
   {
     productId: 'broccoli-live-tray',
@@ -107,7 +107,7 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/brocolli_10x20.png',
     description: 'Mild & versatile • Pairs with anything',
     flavorProfile: 'mild',
-    pairsWith: ['radish-live-tray', 'pea-shoots-live-tray', 'sunflower-live-tray', 'wasabi-live-tray']
+    pairsWith: ['radish-live-tray', 'pea-shoots-live-tray', 'sunflower-live-tray', 'wasabi-live-tray', 'kohlrabi-purple']
   },
   {
     productId: 'sunflower-live-tray',
@@ -116,7 +116,7 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/subflower_10x20.png',
     description: 'Nutty & crunchy • Balances spicy',
     flavorProfile: 'mild',
-    pairsWith: ['radish-live-tray', 'wasabi-live-tray']
+    pairsWith: ['radish-live-tray', 'wasabi-live-tray', 'shiso-perilla']
   },
   {
     productId: 'wasabi-live-tray',
@@ -125,7 +125,53 @@ const ALL_UPSELL_PRODUCTS: ProductProfile[] = [
     photoUrl: '/images/microgeens/wasabi_mustard_10x20.png',
     description: 'Extra spicy • Pairs with sweet',
     flavorProfile: 'spicy',
-    pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'amaranth-live-tray']
+    pairsWith: ['pea-shoots-live-tray', 'sunflower-live-tray', 'amaranth-live-tray', 'basil-lemon']
+  },
+  // Premium Specialty Options
+  {
+    productId: 'basil-dark-opal',
+    name: 'Dark Opal Basil — 5×5 Premium',
+    price: 1800,
+    photoUrl: '/images/microgeens/basil_dark_opal_5x5.png',
+    description: 'Purple color • Sweet basil flavor',
+    flavorProfile: 'sweet',
+    pairsWith: ['radish-live-tray', 'amaranth-live-tray', 'pea-shoots-live-tray']
+  },
+  {
+    productId: 'basil-lemon',
+    name: 'Lemon Basil — 5×5 Premium',
+    price: 1800,
+    photoUrl: '/images/microgeens/basil_lemon_5x5.png',
+    description: 'Citrus notes • Bright & aromatic',
+    flavorProfile: 'sweet',
+    pairsWith: ['radish-live-tray', 'wasabi-live-tray', 'sunflower-live-tray']
+  },
+  {
+    productId: 'basil-thai',
+    name: 'Thai Basil — 5×5 Premium',
+    price: 1800,
+    photoUrl: '/images/microgeens/basil_thai_5x5.png',
+    description: 'Anise flavor • Exotic & bold',
+    flavorProfile: 'sweet',
+    pairsWith: ['radish-live-tray', 'amaranth-live-tray', 'broccoli-live-tray']
+  },
+  {
+    productId: 'kohlrabi-purple',
+    name: 'Purple Vienna Kohlrabi — 10×20',
+    price: 3500,
+    photoUrl: '/images/microgeens/kohlrabi_purple_vienna_10x20.png',
+    description: 'Vibrant purple • Mild & crunchy',
+    flavorProfile: 'mild',
+    pairsWith: ['radish-live-tray', 'wasabi-live-tray', 'amaranth-live-tray']
+  },
+  {
+    productId: 'shiso-perilla',
+    name: 'Shiso Perilla — Premium',
+    price: 2500,
+    photoUrl: '/images/microgeens/shiso_perilla.png',
+    description: 'Unique flavor • Asian cuisine',
+    flavorProfile: 'earthy',
+    pairsWith: ['sunflower-live-tray', 'pea-shoots-live-tray', 'radish-live-tray']
   },
   {
     productId: 'super-mix-live-tray',
