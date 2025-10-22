@@ -38,6 +38,7 @@ interface GooglePlaceResult {
 declare global {
   interface Window {
     google: any;
+    addressValidationTimeout?: NodeJS.Timeout;
   }
 }
 
@@ -211,31 +212,26 @@ export default function AddressValidator({
       return;
     }
 
-    // Simple Austin area validation (works without Google Maps)
-    const austinKeywords = ['austin', 'manor', 'pflugerville', 'round rock', 'cedar park', 'leander', 'georgetown', 'buda', 'kyle', 'bee cave', 'lakeway', 'dripping springs', 'west lake hills', 'rollingwood', 'sunset valley', 'del valle', 'elgin', 'hutto'];
-    const addressLower = address.toLowerCase();
-    const hasAustinKeyword = austinKeywords.some(keyword => addressLower.includes(keyword));
-    
-    // Also check for partial matches and common Austin area indicators
-    const hasPartialMatch = addressLower.includes('tx') || 
-                           addressLower.includes('texas') || 
-                           addressLower.includes('787') || // Austin zip codes
-                           addressLower.includes('786') || // Manor/Pflugerville zip codes
-                           addressLower.includes('dal') || // Common Austin street name
-                           addressLower.includes('dalliance'); // Your specific street
-    
-    if (hasAustinKeyword || hasPartialMatch) {
-      setValidationStatus('valid');
-      setValidationMessage('✅ Valid delivery address');
-      setFormattedAddress(address);
-      onValidation(true, address);
+    // Wait for Google Maps API to load
+    if (!window.google || !window.google.maps) {
+      setIsValidating(true);
+      setValidationStatus('idle');
+      setValidationMessage('⏳ Loading address validation...');
+      
+      // Wait for Google Maps to load
+      const checkGoogleMaps = () => {
+        if (window.google && window.google.maps && window.google.maps.Geocoder) {
+          validateWithGoogleMaps(address);
+        } else {
+          setTimeout(checkGoogleMaps, 100);
+        }
+      };
+      
+      checkGoogleMaps();
       return;
     }
 
-    // If no Austin keywords, show warning
-    setValidationStatus('warning');
-    setValidationMessage('⚠️ Address outside Austin metro delivery area');
-    onValidation(false);
+    validateWithGoogleMaps(address);
   };
 
   const validateWithGoogleMaps = (address: string) => {
@@ -335,12 +331,15 @@ export default function AddressValidator({
   const handleAddressChange = (newAddress: string) => {
     onChange(newAddress);
     
+    // Clear any existing timeout
+    if (window.addressValidationTimeout) {
+      clearTimeout(window.addressValidationTimeout);
+    }
+    
     // Debounce validation
-    const timeoutId = setTimeout(() => {
+    window.addressValidationTimeout = setTimeout(() => {
       validateAddress(newAddress);
     }, 500);
-
-    return () => clearTimeout(timeoutId);
   };
 
   const getStatusColor = () => {
