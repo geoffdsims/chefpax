@@ -211,26 +211,23 @@ export default function AddressValidator({
       return;
     }
 
-    // Wait for Google Maps API to load
-    if (!window.google || !window.google.maps) {
-      setIsValidating(true);
-      setValidationStatus('idle');
-      setValidationMessage('⏳ Loading address validation...');
-      
-      // Wait for Google Maps to load
-      const checkGoogleMaps = () => {
-        if (window.google && window.google.maps && window.google.maps.Geocoder) {
-          validateWithGoogleMaps(address);
-        } else {
-          setTimeout(checkGoogleMaps, 100);
-        }
-      };
-      
-      checkGoogleMaps();
+    // Simple Austin area validation (works without Google Maps)
+    const austinKeywords = ['austin', 'manor', 'pflugerville', 'round rock', 'cedar park', 'leander', 'georgetown', 'buda', 'kyle', 'bee cave', 'lakeway', 'dripping springs', 'west lake hills', 'rollingwood', 'sunset valley', 'del valle', 'elgin', 'hutto'];
+    const addressLower = address.toLowerCase();
+    const hasAustinKeyword = austinKeywords.some(keyword => addressLower.includes(keyword));
+    
+    if (hasAustinKeyword) {
+      setValidationStatus('valid');
+      setValidationMessage('✅ Valid delivery address');
+      setFormattedAddress(address);
+      onValidation(true, address);
       return;
     }
 
-    validateWithGoogleMaps(address);
+    // If no Austin keywords, show warning
+    setValidationStatus('warning');
+    setValidationMessage('⚠️ Address outside Austin metro delivery area');
+    onValidation(false);
   };
 
   const validateWithGoogleMaps = (address: string) => {
