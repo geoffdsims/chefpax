@@ -47,12 +47,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/site.webmanifest" />
         
         {/* Google Maps API for Address Validation */}
-        {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && (
-          <script
-            async
-            src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-          />
-        )}
+        <script
+          async
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+          onLoad={() => console.log('Google Maps API loaded successfully')}
+          onError={() => console.error('Failed to load Google Maps API')}
+        />
         
         {process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID && (
           <>

@@ -59,19 +59,31 @@ export default function AddressValidator({
 
   // Initialize Google Places Autocomplete
   useEffect(() => {
+    let attempts = 0;
+    const maxAttempts = 100; // 10 seconds max
+
     const initAutocomplete = () => {
-      console.log('Checking Google Maps API...', {
+      attempts++;
+      console.log(`Checking Google Maps API... (attempt ${attempts}/${maxAttempts})`, {
         google: !!window.google,
         maps: !!(window.google && window.google.maps),
         places: !!(window.google && window.google.maps && window.google.maps.places),
         inputRef: !!inputRef.current,
-        autocompleteRef: !!autocompleteRef.current
+        autocompleteRef: !!autocompleteRef.current,
+        apiKey: !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       });
 
       if (!window.google || !window.google.maps || !window.google.maps.places) {
-        console.log('Waiting for Google Maps API...');
-        setTimeout(initAutocomplete, 100);
-        return;
+        if (attempts < maxAttempts) {
+          console.log('Waiting for Google Maps API...');
+          setTimeout(initAutocomplete, 100);
+          return;
+        } else {
+          console.error('Google Maps API failed to load after 10 seconds');
+          setValidationStatus('invalid');
+          setValidationMessage('❌ Address validation unavailable - Google Maps API not loaded');
+          return;
+        }
       }
 
       if (!inputRef.current || autocompleteRef.current) {
@@ -114,18 +126,16 @@ export default function AddressValidator({
         console.log('Google Places Autocomplete initialized successfully');
       } catch (error) {
         console.error('Error initializing autocomplete:', error);
+        setValidationStatus('invalid');
+        setValidationMessage('❌ Address validation failed to initialize');
       }
     };
 
-    // Wait a bit for the input to be rendered
-    const timer = setTimeout(initAutocomplete, 500);
-    
-    // Also try immediately
+    // Start trying immediately
     initAutocomplete();
 
     // Cleanup
     return () => {
-      clearTimeout(timer);
       if (autocompleteRef.current) {
         window.google?.maps?.event?.clearInstanceListeners(autocompleteRef.current);
       }
