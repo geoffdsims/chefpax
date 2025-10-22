@@ -303,7 +303,7 @@ export default function CartPage() {
                 size="large"
                 fullWidth
                 onClick={checkout}
-                disabled={!customer.name || !customer.email || !customer.address1 || !customer.zip || !isAddressValid}
+                disabled={!customer.name || !customer.email || !customer.address1 || (customer.address1 && !isAddressValid)}
                 sx={{ py: 1.5, fontSize: '1rem' }}
               >
                 Proceed to Payment
