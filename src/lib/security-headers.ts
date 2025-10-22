@@ -19,11 +19,11 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
       'Content-Security-Policy',
       [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com",
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com https://maps.googleapis.com",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         "img-src 'self' data: https:",
-        "connect-src 'self' https://api.stripe.com https://vitals.vercel-insights.com",
+        "connect-src 'self' https://api.stripe.com https://vitals.vercel-insights.com https://maps.googleapis.com",
         "frame-src https://js.stripe.com",
         "object-src 'none'",
         "base-uri 'self'",
