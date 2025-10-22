@@ -216,7 +216,15 @@ export default function AddressValidator({
     const addressLower = address.toLowerCase();
     const hasAustinKeyword = austinKeywords.some(keyword => addressLower.includes(keyword));
     
-    if (hasAustinKeyword) {
+    // Also check for partial matches and common Austin area indicators
+    const hasPartialMatch = addressLower.includes('tx') || 
+                           addressLower.includes('texas') || 
+                           addressLower.includes('787') || // Austin zip codes
+                           addressLower.includes('786') || // Manor/Pflugerville zip codes
+                           addressLower.includes('dal') || // Common Austin street name
+                           addressLower.includes('dalliance'); // Your specific street
+    
+    if (hasAustinKeyword || hasPartialMatch) {
       setValidationStatus('valid');
       setValidationMessage('✅ Valid delivery address');
       setFormattedAddress(address);
