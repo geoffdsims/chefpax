@@ -149,6 +149,10 @@ export async function POST(req: Request) {
     success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thanks?d=${deliveryDate.toISOString()}`,
     cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
     customer_email: customer.email,
+    billing_address_collection: 'required',
+    shipping_address_collection: {
+      allowed_countries: ['US'],
+    },
     metadata,
   });
 
