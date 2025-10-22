@@ -258,35 +258,25 @@ export default function CartPage() {
                       onValidation={(isValid, formattedAddress) => {
                         setIsAddressValid(isValid);
                         if (formattedAddress) {
-                          setCustomer(prev => ({ ...prev, address1: formattedAddress }));
+                          // Parse the formatted address to extract city, state, zip
+                          const parts = formattedAddress.split(',').map(p => p.trim());
+                          const stateZip = parts[parts.length - 1]?.split(' ') || [];
+                          const state = stateZip[0] || '';
+                          const zip = stateZip[1] || '';
+                          const city = parts[parts.length - 2] || '';
+                          
+                          setCustomer(prev => ({ 
+                            ...prev, 
+                            address1: formattedAddress,
+                            city: city,
+                            state: state,
+                            zip: zip
+                          }));
                         }
                       }}
-                      label="Street Address"
+                      label="Address"
                       required={true}
                     />
-                    <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 1 }}>
-                      <TextField
-                        label="City"
-                        value={customer.city}
-                        onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
-                        size="small"
-                        required
-                      />
-                      <TextField
-                        label="State"
-                        value={customer.state}
-                        onChange={(e) => setCustomer({ ...customer, state: e.target.value })}
-                        size="small"
-                        required
-                      />
-                      <TextField
-                        label="ZIP"
-                        value={customer.zip}
-                        onChange={(e) => setCustomer({ ...customer, zip: e.target.value })}
-                        size="small"
-                        required
-                      />
-                    </Box>
                   </Stack>
                 </CardContent>
               </Card>
