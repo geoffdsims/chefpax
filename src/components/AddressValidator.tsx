@@ -38,7 +38,6 @@ interface GooglePlaceResult {
 declare global {
   interface Window {
     google: any;
-    addressValidationTimeout?: NodeJS.Timeout;
   }
 }
 
@@ -59,36 +58,14 @@ export default function AddressValidator({
 
   // Initialize Google Places Autocomplete
   useEffect(() => {
-    let attempts = 0;
-    const maxAttempts = 100; // 10 seconds max
-
     const initAutocomplete = () => {
-      attempts++;
-      console.log(`Checking Google Maps API... (attempt ${attempts}/${maxAttempts})`, {
-        google: !!window.google,
-        maps: !!(window.google && window.google.maps),
-        places: !!(window.google && window.google.maps && window.google.maps.places),
-        inputRef: !!inputRef.current,
-        autocompleteRef: !!autocompleteRef.current,
-        apiKey: !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-        apiKeyValue: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? 'SET' : 'NOT_SET'
-      });
-
       if (!window.google || !window.google.maps || !window.google.maps.places) {
-        if (attempts < maxAttempts) {
-          console.log('Waiting for Google Maps API...');
-          setTimeout(initAutocomplete, 100);
-          return;
-        } else {
-          console.error('Google Maps API failed to load after 10 seconds');
-          setValidationStatus('invalid');
-          setValidationMessage('❌ Address validation unavailable - Google Maps API not loaded');
-          return;
-        }
+        console.log('Waiting for Google Maps API...');
+        setTimeout(initAutocomplete, 100);
+        return;
       }
 
       if (!inputRef.current || autocompleteRef.current) {
-        console.log('Input ref not ready or autocomplete already exists');
         return;
       }
 
@@ -108,8 +85,6 @@ export default function AddressValidator({
         autocomplete.addListener('place_changed', () => {
           const place = autocomplete.getPlace();
           
-          console.log('Place changed event triggered:', place);
-          
           if (!place.geometry || !place.formatted_address) {
             console.log('No details available for input');
             return;
@@ -127,12 +102,9 @@ export default function AddressValidator({
         console.log('Google Places Autocomplete initialized successfully');
       } catch (error) {
         console.error('Error initializing autocomplete:', error);
-        setValidationStatus('invalid');
-        setValidationMessage('❌ Address validation failed to initialize');
       }
     };
 
-    // Start trying immediately
     initAutocomplete();
 
     // Cleanup
@@ -358,15 +330,12 @@ export default function AddressValidator({
   const handleAddressChange = (newAddress: string) => {
     onChange(newAddress);
     
-    // Clear any existing timeout
-    if (window.addressValidationTimeout) {
-      clearTimeout(window.addressValidationTimeout);
-    }
-    
     // Debounce validation
-    window.addressValidationTimeout = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       validateAddress(newAddress);
     }, 500);
+
+    return () => clearTimeout(timeoutId);
   };
 
   const getStatusColor = () => {
@@ -411,35 +380,28 @@ export default function AddressValidator({
         </Box>
       )}
       
-      {validationStatus === 'valid' && (
-        <Alert severity="success" sx={{ mb: 1 }} icon={false}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CheckCircle sx={{ fontSize: 20 }} />
-            <Typography variant="body2">Valid delivery address</Typography>
-          </Box>
-        </Alert>
+      {validationMessage && (
+        <Box sx={{ mb: 1 }}>
+          <Chip
+            icon={getStatusIcon()}
+            label={validationMessage}
+            color={getStatusColor() as any}
+            size="small"
+            variant="outlined"
+          />
+        </Box>
       )}
       
       {validationStatus === 'warning' && (
-        <Alert severity="warning" sx={{ mb: 1 }} icon={false}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Warning sx={{ fontSize: 20 }} />
-            <Box>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>Address outside delivery area</Typography>
-              <Typography variant="caption">
-                We currently deliver within the Austin metro area (within 1 hour drive from Manor).
-              </Typography>
-            </Box>
-          </Box>
+        <Alert severity="warning" sx={{ mb: 1 }}>
+          We currently deliver within the Austin metro area (within 1 hour drive from Manor). 
+          Your address appears to be outside our delivery area.
         </Alert>
       )}
       
       {validationStatus === 'invalid' && (
-        <Alert severity="error" sx={{ mb: 1 }} icon={false}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Error sx={{ fontSize: 20 }} />
-            <Typography variant="body2">Please enter a valid street address for delivery.</Typography>
-          </Box>
+        <Alert severity="error" sx={{ mb: 1 }}>
+          Please enter a valid street address. We need a real address for delivery.
         </Alert>
       )}
     </Box>
