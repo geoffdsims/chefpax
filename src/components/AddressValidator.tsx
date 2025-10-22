@@ -60,6 +60,14 @@ export default function AddressValidator({
   // Initialize Google Places Autocomplete
   useEffect(() => {
     const initAutocomplete = () => {
+      console.log('Checking Google Maps API...', {
+        google: !!window.google,
+        maps: !!(window.google && window.google.maps),
+        places: !!(window.google && window.google.maps && window.google.maps.places),
+        inputRef: !!inputRef.current,
+        autocompleteRef: !!autocompleteRef.current
+      });
+
       if (!window.google || !window.google.maps || !window.google.maps.places) {
         console.log('Waiting for Google Maps API...');
         setTimeout(initAutocomplete, 100);
@@ -67,6 +75,7 @@ export default function AddressValidator({
       }
 
       if (!inputRef.current || autocompleteRef.current) {
+        console.log('Input ref not ready or autocomplete already exists');
         return;
       }
 
@@ -85,6 +94,8 @@ export default function AddressValidator({
         // Listen for place selection
         autocomplete.addListener('place_changed', () => {
           const place = autocomplete.getPlace();
+          
+          console.log('Place changed event triggered:', place);
           
           if (!place.geometry || !place.formatted_address) {
             console.log('No details available for input');
@@ -106,10 +117,15 @@ export default function AddressValidator({
       }
     };
 
+    // Wait a bit for the input to be rendered
+    const timer = setTimeout(initAutocomplete, 500);
+    
+    // Also try immediately
     initAutocomplete();
 
     // Cleanup
     return () => {
+      clearTimeout(timer);
       if (autocompleteRef.current) {
         window.google?.maps?.event?.clearInstanceListeners(autocompleteRef.current);
       }
