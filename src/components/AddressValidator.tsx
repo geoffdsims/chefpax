@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -53,138 +53,35 @@ export default function AddressValidator({
   const [validationStatus, setValidationStatus] = useState<'idle' | 'valid' | 'invalid' | 'warning'>('idle');
   const [validationMessage, setValidationMessage] = useState('');
   const [formattedAddress, setFormattedAddress] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<any>(null);
 
-  // Initialize Google Places Autocomplete
+  // Load Google Maps API
   useEffect(() => {
-    const initAutocomplete = () => {
-      if (!window.google || !window.google.maps || !window.google.maps.places) {
-        console.log('Waiting for Google Maps API...');
-        setTimeout(initAutocomplete, 100);
+    const loadGoogleMaps = () => {
+      if (window.google && window.google.maps && window.google.maps.places) {
         return;
       }
 
-      if (!inputRef.current || autocompleteRef.current) {
+      // Check if script already exists
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (existingScript) {
         return;
       }
 
-      console.log('Initializing Google Places Autocomplete...');
-
-      try {
-        // Create autocomplete instance
-        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-          types: ['address'],
-          componentRestrictions: { country: 'us' },
-          fields: ['formatted_address', 'address_components', 'geometry']
-        });
-
-        autocompleteRef.current = autocomplete;
-
-        // Listen for place selection
-        autocomplete.addListener('place_changed', () => {
-          const place = autocomplete.getPlace();
-          
-          if (!place.geometry || !place.formatted_address) {
-            console.log('No details available for input');
-            return;
-          }
-
-          console.log('Place selected:', place);
-          
-          // Update the address field
-          onChange(place.formatted_address);
-          
-          // Validate the selected address
-          validateSelectedPlace(place);
-        });
-
-        console.log('Google Places Autocomplete initialized successfully');
-      } catch (error) {
-        console.error('Error initializing autocomplete:', error);
-      }
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        console.log('Google Maps API loaded successfully');
+      };
+      script.onerror = () => {
+        console.error('Failed to load Google Maps API');
+      };
+      document.head.appendChild(script);
     };
 
-    initAutocomplete();
-
-    // Cleanup
-    return () => {
-      if (autocompleteRef.current) {
-        window.google?.maps?.event?.clearInstanceListeners(autocompleteRef.current);
-      }
-    };
+    loadGoogleMaps();
   }, []);
-
-  const validateSelectedPlace = (place: any) => {
-    setIsValidating(true);
-    
-    try {
-      const addressComponents = place.address_components;
-      
-      // Find city and state components
-      const cityComponent = addressComponents.find((component: any) => 
-        component.types.includes('locality') || component.types.includes('administrative_area_level_2')
-      );
-      const stateComponent = addressComponents.find((component: any) => 
-        component.types.includes('administrative_area_level_1')
-      );
-      
-      const cityName = cityComponent?.long_name?.toLowerCase() || '';
-      const stateCode = stateComponent?.short_name || '';
-      
-      console.log('Validating place:', { cityName, stateCode, addressComponents });
-      
-      // Austin metro area cities (within 1 hour drive)
-      const deliveryCities = [
-        'austin',
-        'manor',           // ChefPax HQ location
-        'pflugerville',
-        'round rock',
-        'cedar park',
-        'leander',
-        'georgetown',
-        'buda',
-        'kyle',
-        'bee cave',
-        'lakeway',
-        'dripping springs',
-        'west lake hills',
-        'rollingwood',
-        'sunset valley',
-        'del valle',
-        'elgin',
-        'hutto'
-      ];
-      
-      const isInTexas = stateCode === 'TX';
-      const isInDeliveryArea = deliveryCities.some(city => cityName.includes(city));
-      
-      setIsValidating(false);
-      
-      if (isInDeliveryArea && isInTexas) {
-        setValidationStatus('valid');
-        setValidationMessage('✅ Valid delivery address');
-        setFormattedAddress(place.formatted_address);
-        onValidation(true, place.formatted_address);
-      } else if (isInTexas) {
-        setValidationStatus('warning');
-        setValidationMessage('⚠️ Address outside Austin metro delivery area');
-        setFormattedAddress(place.formatted_address);
-        onValidation(false);
-      } else {
-        setValidationStatus('warning');
-        setValidationMessage('⚠️ Address outside Texas delivery area');
-        setFormattedAddress(place.formatted_address);
-        onValidation(false);
-      }
-    } catch (error) {
-      console.error('Error validating place:', error);
-      setIsValidating(false);
-      setValidationStatus('invalid');
-      setValidationMessage('❌ Address validation failed');
-      onValidation(false);
-    }
-  };
 
   const validateAddress = async (address: string) => {
     if (!address.trim()) {
@@ -211,120 +108,70 @@ export default function AddressValidator({
       return;
     }
 
-    // Wait for Google Maps API to load
-    if (!window.google || !window.google.maps) {
-      setIsValidating(true);
-      setValidationStatus('idle');
-      setValidationMessage('⏳ Loading address validation...');
-      
-      // Wait for Google Maps to load
-      const checkGoogleMaps = () => {
-        if (window.google && window.google.maps && window.google.maps.Geocoder) {
-          validateWithGoogleMaps(address);
-        } else {
-          setTimeout(checkGoogleMaps, 100);
-        }
-      };
-      
-      checkGoogleMaps();
+    // For now, accept any reasonable-looking address
+    // TODO: Re-enable Google Maps validation once API issues are resolved
+    setValidationStatus('warning');
+    setValidationMessage('⚠️ Address accepted - please verify it\'s correct');
+    onValidation(true);
+    return;
+
+    // Google Maps validation (disabled for now)
+    /*
+    if (!window.google || !window.google.maps || !window.google.maps.Geocoder) {
+      setValidationStatus('warning');
+      setValidationMessage('⚠️ Address validation service unavailable - please verify your address');
+      onValidation(true);
       return;
     }
 
-    validateWithGoogleMaps(address);
-  };
-
-  const validateWithGoogleMaps = (address: string) => {
     setIsValidating(true);
     setValidationStatus('idle');
 
     try {
       const geocoder = new window.google.maps.Geocoder();
       
-      geocoder.geocode({ 
-        address: address,
-        region: 'US' // Bias results to US addresses
-      }, (results: GooglePlaceResult[], status: string) => {
+      geocoder.geocode({ address: address }, (results: GooglePlaceResult[], status: string) => {
         setIsValidating(false);
         
-        console.log('Google Geocoding result:', { status, results });
-        
-        if (status === 'OK' && results && results.length > 0) {
+        if (status === 'OK' && results.length > 0) {
           const result = results[0];
           const addressComponents = result.address_components;
           
-          // Find city and state components
           const cityComponent = addressComponents.find(component => 
-            component.types.includes('locality') || component.types.includes('administrative_area_level_2')
+            component.types.includes('locality')
           );
           const stateComponent = addressComponents.find(component => 
             component.types.includes('administrative_area_level_1')
           );
           
-          const cityName = cityComponent?.long_name?.toLowerCase() || '';
-          const stateCode = stateComponent?.short_name || '';
+          const isInAustin = cityComponent?.long_name.toLowerCase().includes('austin');
+          const isInTexas = stateComponent?.short_name === 'TX';
           
-          console.log('Address components:', { cityName, stateCode, addressComponents });
-          
-          // Austin metro area cities (within 1 hour drive)
-          const deliveryCities = [
-            'austin',
-            'manor',           // ChefPax HQ location
-            'pflugerville',
-            'round rock',
-            'cedar park',
-            'leander',
-            'georgetown',
-            'buda',
-            'kyle',
-            'bee cave',
-            'lakeway',
-            'dripping springs',
-            'west lake hills',
-            'rollingwood',
-            'sunset valley',
-            'del valle',
-            'elgin',
-            'hutto'
-          ];
-          
-          const isInTexas = stateCode === 'TX';
-          const isInDeliveryArea = deliveryCities.some(city => cityName.includes(city));
-          
-          if (isInDeliveryArea && isInTexas) {
+          if (isInAustin && isInTexas) {
             setValidationStatus('valid');
-            setValidationMessage('✅ Valid delivery address');
+            setValidationMessage('✅ Valid Austin address');
             setFormattedAddress(result.formatted_address);
             onValidation(true, result.formatted_address);
-          } else if (isInTexas) {
-            setValidationStatus('warning');
-            setValidationMessage('⚠️ Address outside Austin metro delivery area');
-            setFormattedAddress(result.formatted_address);
-            onValidation(false);
           } else {
             setValidationStatus('warning');
-            setValidationMessage('⚠️ Address outside Texas delivery area');
+            setValidationMessage('⚠️ Address outside Austin delivery area');
             setFormattedAddress(result.formatted_address);
             onValidation(false);
           }
-        } else if (status === 'ZERO_RESULTS') {
-          setValidationStatus('invalid');
-          setValidationMessage('❌ Address not found');
-          setFormattedAddress('');
-          onValidation(false);
         } else {
           setValidationStatus('invalid');
-          setValidationMessage(`❌ Address validation failed: ${status}`);
+          setValidationMessage('❌ Invalid address format');
           setFormattedAddress('');
           onValidation(false);
         }
       });
     } catch (error) {
-      console.error('Geocoding error:', error);
       setIsValidating(false);
       setValidationStatus('invalid');
       setValidationMessage('❌ Address validation failed');
       onValidation(false);
     }
+    */
   };
 
   const handleAddressChange = (newAddress: string) => {
@@ -365,9 +212,8 @@ export default function AddressValidator({
         onChange={(e) => handleAddressChange(e.target.value)}
         required={required}
         disabled={disabled || isValidating}
-        placeholder="Start typing your address..."
-        helperText="We deliver within the Austin metro area (within 1 hour drive)"
-        inputRef={inputRef}
+        placeholder="Enter your street address"
+        helperText="We deliver within Austin city limits"
         sx={{ mb: 1 }}
       />
       
@@ -394,7 +240,7 @@ export default function AddressValidator({
       
       {validationStatus === 'warning' && (
         <Alert severity="warning" sx={{ mb: 1 }}>
-          We currently deliver within the Austin metro area (within 1 hour drive from Manor). 
+          We currently only deliver within Austin city limits. 
           Your address appears to be outside our delivery area.
         </Alert>
       )}
