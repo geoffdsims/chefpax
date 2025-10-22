@@ -70,7 +70,10 @@ export default function CartPage() {
   useEffect(() => {
     const loadDeliveryOptions = async () => {
       try {
-        const response = await fetch('/api/delivery-options');
+        // Get product IDs from cart
+        const productIds = cart.map(item => item.productId).join(',');
+        
+        const response = await fetch(`/api/delivery-options?productIds=${productIds}`);
         if (response.ok) {
           const data = await response.json();
           // The API returns options directly, not wrapped in an options property
@@ -84,8 +87,12 @@ export default function CartPage() {
         console.error('Failed to load delivery options:', error);
       }
     };
-    loadDeliveryOptions();
-  }, []);
+    
+    // Only load delivery options if cart has items
+    if (cart.length > 0) {
+      loadDeliveryOptions();
+    }
+  }, [cart]); // Re-run when cart changes
 
   useEffect(() => {
     if (session?.user) {
