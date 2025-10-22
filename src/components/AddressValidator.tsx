@@ -380,28 +380,30 @@ export default function AddressValidator({
         </Box>
       )}
       
-      {validationMessage && (
-        <Box sx={{ mb: 1 }}>
-          <Chip
-            icon={getStatusIcon()}
-            label={validationMessage}
-            color={getStatusColor() as any}
-            size="small"
-            variant="outlined"
-          />
-        </Box>
+      {validationStatus === 'valid' && (
+        <Alert severity="success" sx={{ mb: 1 }} icon={false}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CheckCircle sx={{ fontSize: 20 }} />
+            <Typography variant="body2">Valid delivery address</Typography>
+          </Box>
+        </Alert>
       )}
       
       {validationStatus === 'warning' && (
-        <Alert severity="warning" sx={{ mb: 1 }}>
-          We currently deliver within the Austin metro area (within 1 hour drive from Manor). 
-          Your address appears to be outside our delivery area.
+        <Alert severity="warning" sx={{ mb: 1 }} icon={false}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Warning sx={{ fontSize: 20 }} />
+            <Typography variant="body2">Address outside delivery area</Typography>
+          </Box>
         </Alert>
       )}
       
       {validationStatus === 'invalid' && (
-        <Alert severity="error" sx={{ mb: 1 }}>
-          Please enter a valid street address. We need a real address for delivery.
+        <Alert severity="error" sx={{ mb: 1 }} icon={false}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Error sx={{ fontSize: 20 }} />
+            <Typography variant="body2">Please enter a valid street address for delivery.</Typography>
+          </Box>
         </Alert>
       )}
     </Box>
