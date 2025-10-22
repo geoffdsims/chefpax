@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongo";
-// import { getStandardWeeklyProduction, calculateWeeklyInventory } from "@/lib/inventory";
+import { getProductsWithInventory } from "@/lib/inventory";
 
 interface OrderItem {
   productId: string;
@@ -13,74 +13,96 @@ interface Order {
 
 export async function GET() {
   try {
-    // Get current week's production plan
-    // const production = getStandardWeeklyProduction();
-    
-    // Calculate current inventory
-    // const inventory = calculateWeeklyInventory(production);
-    
-    // Get current orders for this week's delivery to calculate remaining availability
     const db = await getDb();
-    const deliveryDate = new Date();
-    deliveryDate.setDate(deliveryDate.getDate() + (5 - deliveryDate.getDay())); // Next Friday
-    deliveryDate.setHours(0, 0, 0, 0);
+    const products = getProductsWithInventory();
     
+    // Get current week's production tasks
+    const today = new Date();
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay()); // Start of week
+    
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 7);
+    
+    // Get completed harvest tasks for this week
+    const harvestTasks = await db.collection("productionTasks")
+      .find({
+        stage: "HARVEST",
+        status: "completed",
+        scheduledDate: {
+          $gte: weekStart.toISOString(),
+          $lt: weekEnd.toISOString()
+        }
+      })
+      .toArray();
+    
+    // Get orders for this week to calculate sold quantities
     const orders = await db.collection("orders").find({
-      deliveryDate: deliveryDate.toISOString().split('T')[0],
+      deliveryDate: {
+        $gte: weekStart.toISOString().split('T')[0],
+        $lt: weekEnd.toISOString().split('T')[0]
+      },
       status: { $in: ["paid", "delivered"] }
     }).toArray();
     
-    // Calculate sold quantities
-    const soldQuantities = {
-      chefMix4oz: 0,
-      sunflower2oz: 0,
-      pea2oz: 0,
-      radish2oz: 0,
-      liveTrayPea: 0,
-      liveTrayRadish: 0
-    };
-    
-    orders.forEach((order) => {
-      (order as unknown as Order).items.forEach((item: OrderItem) => {
-        switch (item.productId) {
-          case 'CHEFPAX_4OZ':
-            soldQuantities.chefMix4oz += item.qty;
-            break;
-          case 'SUNFLOWER_2OZ':
-            soldQuantities.sunflower2oz += item.qty;
-            break;
-          case 'PEA_2OZ':
-            soldQuantities.pea2oz += item.qty;
-            break;
-          case 'RADISH_2OZ':
-            soldQuantities.radish2oz += item.qty;
-            break;
-          case 'PEA_LIVE_TRAY':
-            soldQuantities.liveTrayPea += item.qty;
-            break;
-          case 'RADISH_LIVE_TRAY':
-            soldQuantities.liveTrayRadish += item.qty;
-            break;
-        }
-      });
+    // Calculate real-time inventory for each product
+    const inventoryStatus = products.map(product => {
+      // Count harvested trays for this product
+      const harvested = harvestTasks
+        .filter(task => task.productId === product._id)
+        .reduce((sum, task) => sum + (task.quantity || 0), 0);
+      
+      // Count sold trays for this product
+      const sold = orders.reduce((sum, order) => {
+        return sum + order.items.reduce((itemSum: number, item: any) => {
+          return itemSum + (item.productId === product._id ? item.qty : 0);
+        }, 0);
+      }, 0);
+      
+      // Calculate available trays
+      const available = Math.max(0, harvested - sold);
+      const maxCapacity = product.weeklyCapacity || 0;
+      
+      // Determine status
+      let status: string;
+      let message: string;
+      
+      if (available > 0) {
+        status = "ready_now";
+        message = `${available} trays ready now!`;
+      } else if (maxCapacity > 0) {
+        status = "order_available";
+        const leadTime = product.leadTimeDays || 0;
+        const nextDelivery = new Date(today);
+        nextDelivery.setDate(today.getDate() + leadTime + 1);
+        message = `Order now for delivery ${nextDelivery.toLocaleDateString()} (${leadTime} days to grow)`;
+      } else {
+        status = "out_of_stock";
+        message = "Currently out of stock";
+      }
+      
+      return {
+        productId: product._id,
+        name: product.name,
+        status,
+        message,
+        available,
+        harvested,
+        sold,
+        maxCapacity,
+        leadTimeDays: product.leadTimeDays || 0
+      };
     });
     
-    // Calculate remaining availability
-    const available = {
-      chefMix4oz: Math.max(0, inventory.chefMix4oz - soldQuantities.chefMix4oz),
-      sunflower2oz: Math.max(0, inventory.sunflower2oz - soldQuantities.sunflower2oz),
-      pea2oz: Math.max(0, inventory.pea2oz - soldQuantities.pea2oz),
-      radish2oz: Math.max(0, inventory.radish2oz - soldQuantities.radish2oz),
-      liveTrayPea: Math.max(0, inventory.liveTrays.pea - soldQuantities.liveTrayPea),
-      liveTrayRadish: Math.max(0, inventory.liveTrays.radish - soldQuantities.liveTrayRadish)
-    };
-    
     return NextResponse.json({
-      week: production.week,
-      production: inventory,
-      sold: soldQuantities,
-      available,
-      deliveryDate: deliveryDate.toISOString().split('T')[0]
+      week: `${weekStart.getFullYear()}-W${Math.ceil((weekStart.getDate() - weekStart.getDay() + 1) / 7)}`,
+      products: inventoryStatus,
+      summary: {
+        totalHarvested: harvestTasks.reduce((sum, task) => sum + (task.quantity || 0), 0),
+        totalSold: orders.reduce((sum, order) => sum + order.items.reduce((itemSum: number, item: any) => itemSum + item.qty, 0), 0),
+        readyNow: inventoryStatus.filter(p => p.status === "ready_now").length,
+        orderAvailable: inventoryStatus.filter(p => p.status === "order_available").length
+      }
     });
     
   } catch (error) {

@@ -102,6 +102,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 export default function Shop() {
   const { data } = useSWR("/api/products", fetcher);
   const { data: deliveryOptions } = useSWR("/api/delivery-options", fetcher);
+  const { data: inventoryStatus } = useSWR("/api/inventory", fetcher);
   const [notice, setNotice] = useState<string | undefined>();
   const [cartOpen, setCartOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
@@ -282,7 +283,30 @@ export default function Shop() {
   }
 
   function getAvailabilityStatus(product: Product): { status: "sold_out" | "low_stock" | "in_stock"; message: string } | null {
-    // First try to use product's own currentWeekAvailable
+    // Use real-time inventory data if available
+    if (inventoryStatus?.products) {
+      const productStatus = inventoryStatus.products.find((p: any) => p.productId === product._id);
+      if (productStatus) {
+        if (productStatus.status === "ready_now") {
+          return { 
+            status: "in_stock", 
+            message: `✅ ${productStatus.message}` 
+          };
+        } else if (productStatus.status === "order_available") {
+          return { 
+            status: "low_stock", 
+            message: `⏰ ${productStatus.message}` 
+          };
+        } else {
+          return { 
+            status: "sold_out", 
+            message: `❌ ${productStatus.message}` 
+          };
+        }
+      }
+    }
+    
+    // Fallback to product's own currentWeekAvailable
     const available = product.currentWeekAvailable ?? product.weeklyCapacity ?? 0;
     
     if (available === 0) {
