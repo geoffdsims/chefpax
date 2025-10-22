@@ -329,7 +329,7 @@ export default function Home() {
                 fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
               }}
             >
-              Join hundreds of Austin families who trust ChefPax for their live microgreen trays and fresh, nutritious produce.
+              Experience fresh, locally-grown microgreens delivered right to your door in Austin.
             </Typography>
             <Button
               component={Link}
