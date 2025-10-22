@@ -22,11 +22,12 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { cart, customer, marketingOptIn = false, createAccount = false } = body as {
+    const { cart, customer, marketingOptIn = false, createAccount = false, deliveryDate } = body as {
       cart: { productId: string; qty: number }[];
       customer: { name: string; email: string; phone?: string; address1: string; address2?: string; city?: string; state?: string; zip?: string; deliveryInstructions?: string };
       marketingOptIn?: boolean;
       createAccount?: boolean;
+      deliveryDate?: string;
     };
 
     if (!cart?.length) return NextResponse.json({ error: "Empty cart" }, { status: 400 });
@@ -120,11 +121,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
   }
 
-  const deliveryDate = nextDeliveryDateNow();
+  const finalDeliveryDate = deliveryDate ? new Date(deliveryDate) : nextDeliveryDateNow();
   const authSession = await getServerSession(authOptions);
   
   const metadata: Record<string, string> = {
-    deliveryDate: deliveryDate.toISOString(),
+    deliveryDate: finalDeliveryDate.toISOString(),
     address1: customer.address1,
     address2: customer.address2 ?? "",
     city: customer.city ?? "",
@@ -146,7 +147,7 @@ export async function POST(req: Request) {
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items,
-    success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thanks?d=${deliveryDate.toISOString()}`,
+    success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thanks?d=${finalDeliveryDate.toISOString()}`,
     cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
     customer_email: customer.email,
     billing_address_collection: 'required',
@@ -173,7 +174,7 @@ export async function POST(req: Request) {
             customer,
             cart,
             totalAmount,
-            deliveryDate: deliveryDate.toISOString(),
+            deliveryDate: finalDeliveryDate.toISOString(),
           },
           marketingOptIn,
         }),

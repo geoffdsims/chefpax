@@ -21,7 +21,13 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText
+  ListItemText,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  RadioGroup,
+  Radio
 } from "@mui/material";
 import { ArrowBack, Delete, ShoppingCart } from "@mui/icons-material";
 import Link from "next/link";
@@ -53,9 +59,31 @@ export default function CartPage() {
   });
   const [isSubscription, setIsSubscription] = useState(false);
   const [isAddressValid, setIsAddressValid] = useState(false);
+  const [deliveryOptions, setDeliveryOptions] = useState<any[]>([]);
+  const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<string>("");
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
+  }, []);
+
+  // Load delivery options
+  useEffect(() => {
+    const loadDeliveryOptions = async () => {
+      try {
+        const response = await fetch('/api/delivery-options');
+        if (response.ok) {
+          const data = await response.json();
+          setDeliveryOptions(data.options || []);
+          // Set default to first available date
+          if (data.options && data.options.length > 0) {
+            setSelectedDeliveryDate(data.options[0].date);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load delivery options:', error);
+      }
+    };
+    loadDeliveryOptions();
   }, []);
 
   useEffect(() => {
@@ -116,7 +144,8 @@ export default function CartPage() {
       body: JSON.stringify({ 
         cart, 
         customer: customerData, 
-        isSubscription: isSubscription && !!session
+        isSubscription: isSubscription && !!session,
+        deliveryDate: selectedDeliveryDate
       })
     });
 
@@ -315,6 +344,57 @@ export default function CartPage() {
                       label="Address"
                       required={true}
                     />
+                    
+                    {/* Delivery Date Selection */}
+                    {deliveryOptions.length > 0 && (
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          Choose Delivery Date
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          We deliver fresh microgreens on Tuesdays, Thursdays, and Saturdays
+                        </Typography>
+                        <RadioGroup
+                          value={selectedDeliveryDate}
+                          onChange={(e) => setSelectedDeliveryDate(e.target.value)}
+                        >
+                          {deliveryOptions.map((option) => {
+                            const date = new Date(option.date);
+                            const isAvailable = option.available;
+                            const isPastCutoff = new Date() > new Date(option.cutoffTime);
+                            
+                            return (
+                              <FormControlLabel
+                                key={option.date}
+                                value={option.date}
+                                control={<Radio />}
+                                disabled={!isAvailable || isPastCutoff}
+                                label={
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Typography variant="body2">
+                                      {date.toLocaleDateString('en-US', { 
+                                        weekday: 'long', 
+                                        month: 'short', 
+                                        day: 'numeric' 
+                                      })}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      ({option.deliveryWindow})
+                                    </Typography>
+                                    {!isAvailable && (
+                                      <Chip label="Full" size="small" color="error" />
+                                    )}
+                                    {isPastCutoff && (
+                                      <Chip label="Past Cutoff" size="small" color="warning" />
+                                    )}
+                                  </Box>
+                                }
+                              />
+                            );
+                          })}
+                        </RadioGroup>
+                      </Box>
+                    )}
                   </Stack>
                 </CardContent>
               </Card>
