@@ -5,6 +5,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import SessionProvider from "@/components/SessionProvider";
 import AxeProvider from "@/components/AxeProvider";
 import Schema from "./_components/Schema";
+import GoogleMapsScript from "@/components/GoogleMapsScript";
 import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = { 
@@ -46,19 +47,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="manifest" href="/site.webmanifest" />
         
-        {/* Google Maps API for Address Validation */}
-        <script
-          async
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-          onLoad={() => {
-            console.log('Google Maps API loaded successfully');
-            console.log('Google object:', window.google);
-          }}
-          onError={(e) => {
-            console.error('Failed to load Google Maps API:', e);
-            console.log('API Key being used:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? 'SET' : 'NOT_SET');
-          }}
-        />
         
         {process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID && (
           <>
@@ -81,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SessionProvider>
             <ThemeProvider>
               <CssBaseline />
+              <GoogleMapsScript />
               {children}
               <Schema />
             </ThemeProvider>
