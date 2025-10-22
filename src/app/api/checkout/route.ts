@@ -39,11 +39,32 @@ export async function POST(req: Request) {
   const db = await getDb();
   const ids = cart.map(c => c.productId);
   console.log("Looking for product IDs:", ids);
-  const products = await db.collection("products").find({ 
-    _id: { $in: ids.map(id => new ObjectId(id)) } 
-  }).toArray() as unknown as Product[];
+  
+  // Try to convert IDs to ObjectId, but handle invalid IDs
+  let products: Product[] = [];
+  try {
+    const objectIds = ids.map(id => {
+      try {
+        return new ObjectId(id);
+      } catch (e) {
+        console.error(`Invalid ObjectId: ${id}`, e);
+        return null;
+      }
+    }).filter(id => id !== null) as ObjectId[];
 
-  console.log("Found products:", products.map(p => ({ id: p._id?.toString(), name: p.name })));
+    if (objectIds.length === 0) {
+      return NextResponse.json({ error: "No valid product IDs in cart" }, { status: 400 });
+    }
+
+    products = await db.collection("products").find({ 
+      _id: { $in: objectIds } 
+    }).toArray() as unknown as Product[];
+
+    console.log("Found products:", products.map(p => ({ id: p._id?.toString(), name: p.name })));
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json({ error: "Failed to fetch products from database" }, { status: 500 });
+  }
 
   // Validate that all products were found
   if (products.length !== ids.length) {
@@ -148,13 +169,21 @@ export async function POST(req: Request) {
   }
 
     return NextResponse.json({ url: session.url });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Checkout API error:", error);
+    console.error("Error stack:", error?.stack);
+    console.error("Error message:", error?.message);
+    
     captureApiError(error, { 
       endpoint: 'checkout',
       cart: cart?.length || 0,
       customerEmail: customer?.email 
     });
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    
+    return NextResponse.json({ 
+      error: "Internal server error", 
+      message: error?.message || "Unknown error",
+      details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+    }, { status: 500 });
   }
 }
