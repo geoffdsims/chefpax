@@ -39,6 +39,7 @@ export async function POST(req: Request) {
   const db = await getDb();
   const ids = cart.map(c => c.productId);
   console.log("Looking for product IDs:", ids);
+  console.log("Cart items:", cart);
   
   // Try to convert IDs to ObjectId, but handle invalid IDs
   let products: Product[] = [];

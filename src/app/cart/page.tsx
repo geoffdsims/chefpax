@@ -167,7 +167,7 @@ export default function CartPage() {
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 400px' }, gap: 4, maxWidth: '1200px', mx: 'auto' }}>
           {/* Cart Items */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Card>
@@ -285,6 +285,7 @@ export default function CartPage() {
                       onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                       size="small"
                       fullWidth
+                      required
                     />
                     <AddressValidator
                       value={customer.address1}
@@ -337,7 +338,7 @@ export default function CartPage() {
                 size="large"
                 fullWidth
                 onClick={checkout}
-                disabled={!customer.name || !customer.email || !customer.address1 || (customer.address1 && !isAddressValid)}
+                disabled={!customer.name || !customer.email || !customer.phone || !customer.address1 || (customer.address1 && !isAddressValid)}
                 sx={{ py: 1.5, fontSize: '1rem' }}
               >
                 Proceed to Payment
