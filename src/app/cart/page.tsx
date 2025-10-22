@@ -112,10 +112,9 @@ export default function CartPage() {
   async function checkout() {
     console.log('Checkout initiated:', { isSubscription, hasSession: !!session });
     
-    // Subscription requires sign-in - but this should never happen now
-    // because checkbox is only available when signed in
+    // Subscription requires sign-in
     if (isSubscription && !session) {
-      console.log('Subscription requires sign-in (should not reach here)');
+      console.log('Subscription requires sign-in');
       alert('Please sign in to subscribe');
       return;
     }
@@ -139,13 +138,15 @@ export default function CartPage() {
       item_count: cart.reduce((sum, item) => sum + item.qty, 0),
     });
 
-    const res = await fetch("/api/checkout", {
+    // Choose checkout endpoint based on subscription
+    const endpoint = isSubscription ? "/api/checkout-subscription" : "/api/checkout";
+    
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         cart, 
         customer: customerData, 
-        isSubscription: isSubscription && !!session,
         deliveryDate: selectedDeliveryDate
       })
     });
