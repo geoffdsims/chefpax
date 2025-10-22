@@ -24,7 +24,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 3,
       photoUrl: "/images/microgeens/subflower_10x20.png",
       description: "Nutty, crunchy, lightly sweet. 10×20 live tray - 6-10 harvests. Perfect for salads, avocado toast, grain bowls. 8-10 days to harvest.",
-      leadTimeDays: 10,
+      leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Broadcast 11 oz, weighted dome" },
@@ -52,7 +52,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 4,
       photoUrl: "/images/microgeens/peas_10x20.png",
       description: "Sweet snap-pea flavor, tender crunchy stems. 10×20 live tray - 6-10 harvests. Perfect for wraps, omelets, Asian salads. 8-10 days to harvest.",
-      leadTimeDays: 10,
+      leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Soak 8h! Broadcast 8.5 oz" },
@@ -80,7 +80,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 6,
       photoUrl: "/images/microgeens/radish_rambo_10x20.png",
       description: "Bold spicy horseradish kick, vibrant purple color. 10×20 live tray - 6-10 harvests. Perfect for tacos, sandwiches, poke bowls. 7-9 days to harvest.",
-      leadTimeDays: 9,
+      leadTimeDays: 8,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Broadcast 1.75 oz" },
@@ -108,7 +108,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 2,
       photoUrl: "/images/microgeens/brocolli_10x20.png",
       description: "Mild earthy brassica flavor, tender crisp. 10×20 live tray - 6-10 harvests. Perfect for smoothies, salads, health shots. 8-10 days.",
-      leadTimeDays: 10,
+      leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Broadcast 1.5 oz" },
@@ -136,7 +136,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 2,
       photoUrl: "/images/microgeens/kohlrabi_purple_vienna_10x20.png",
       description: "Mild brassica with sweet crunch, purple stems. 10×20 live tray - 6-10 harvests. Perfect for salads, slaws. 8-10 days.",
-      leadTimeDays: 10,
+      leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Broadcast 1.5 oz" },
@@ -164,7 +164,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 2,
       photoUrl: "/images/microgeens/super_mix_.png",
       description: "Balanced peppery-to-sweet brassica mix. 10×20 live tray - 6-10 harvests. Perfect salad base, juice blend. 8-10 days.",
-      leadTimeDays: 10,
+      leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Broadcast 2 oz mixed seeds" },
@@ -192,7 +192,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 1,
       photoUrl: "/images/microgeens/wasabi_mustard_10x20.png",
       description: "⚠️ EXTREME HEAT! True wasabi flavor, aromatic. 10×20 live tray - 6-10 harvests. For sushi, bold accents. 7-9 days.",
-      leadTimeDays: 9,
+      leadTimeDays: 8,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Broadcast 1.75 oz" },
@@ -220,7 +220,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 1,
       photoUrl: "/images/microgeens/wasabi_mustard_5x5.png",
       description: "⚠️ EXTREME HEAT! True wasabi flavor. 5×5 live tray - 4-6 harvests. For sushi, Asian dishes. 7-9 days.",
-      leadTimeDays: 9,
+      leadTimeDays: 8,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Small tray 5×5" },
@@ -278,7 +278,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 2,
       photoUrl: "/images/microgeens/basil_dark_opal_5x5.png",
       description: "Sweet clove scent, deep purple leaves. 5×5 live tray - 4-6 harvests. Cocktails, desserts, basil oil. 12-15 days.",
-      leadTimeDays: 15,
+      leadTimeDays: 13,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Surface sow 1.5g, LIGHT FROM DAY 0!" },
@@ -306,7 +306,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 2,
       photoUrl: "/images/microgeens/basil_lemon_5x5.png",
       description: "Bright lemon-citrus flavor. 5×5 live tray - 4-6 harvests. Perfect for seafood, fruit plates, beverages. 12-15 days.",
-      leadTimeDays: 15,
+      leadTimeDays: 13,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Surface sow 1.5g, LIGHT FROM DAY 0!" },
@@ -334,7 +334,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 2,
       photoUrl: "/images/microgeens/basil_thai_5x5.png",
       description: "Sweet-spice with anise aroma, purple stems. 5×5 live tray - 4-6 harvests. Asian curries, seafood, Thai dishes. 12-15 days.",
-      leadTimeDays: 15,
+      leadTimeDays: 13,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Sow 1.5g, LIGHT + 74°F warmth!" },
@@ -392,7 +392,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 2,
       photoUrl: "/images/bundle_core.png",
       description: "4 live trays (10×20): Sunflower, Pea Shoots, Rambo Radish, Broccoli. Harvest 8-10 days. Save $5 vs individual!",
-      leadTimeDays: 10,
+      leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Sow all 4 varieties" },
@@ -420,7 +420,7 @@ export function getProductsWithInventory(): Product[] {
       currentWeekAvailable: 1,
       photoUrl: "/images/bundle_brassica.png",
       description: "3 live trays (10×20): Broccoli, Kohlrabi, Wasabi Mustard. Bold brassica flavors. Harvest 8-10 days. Save $3!",
-      leadTimeDays: 10,
+      leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
         { type: "SEED", offsetDays: 0, notes: "Sow all 3" },
