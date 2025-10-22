@@ -103,31 +103,16 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent, db: a
         try {
           const order = await db.collection('orders').findOne({ paymentIntentId: paymentIntent.id });
           if (order) {
-            // Reserve inventory for each cart item
-            for (const item of (order.cart || [])) {
-              try {
-                // Determine tray size from product SKU or name
-                const traySize = (item.name?.includes('5×5') || item.sku?.includes('5X5')) ? '5x5' : '10x20';
-                
-                const reservation = await createReservation(
-                  order._id.toString(),
-                  item.productId,
-                  item.name,
-                  traySize as '10x20' | '5x5',
-                  item.qty,
-                  new Date(order.deliveryDate),
-                  [] // Production task IDs will be added later
-                );
-                
-                if (reservation.success) {
-                  console.log(`✅ Inventory reserved: ${item.qty}× ${item.name} (${reservation.reservation?.rackName})`);
-                } else {
-                  console.error(`⚠️ Failed to reserve inventory for ${item.name}: ${reservation.error}`);
-                  // Log but don't fail the order - manual intervention needed
-                }
-              } catch (resError) {
-                console.error(`Error reserving inventory for ${item.name}:`, resError);
+            // Reserve inventory for the order
+            try {
+              const reservation = await createReservation(order);
+              if (reservation.success) {
+                console.log(`✅ Inventory reserved for order ${order._id}`);
+              } else {
+                console.error(`⚠️ Failed to reserve inventory: ${reservation.errors.join(', ')}`);
               }
+            } catch (resError) {
+              console.error('Error reserving inventory:', resError);
             }
             
             // Send email
@@ -143,29 +128,16 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent, db: a
               });
             }
 
-            // Create production tasks for each cart item
-            if (order.cart && order.cart.length > 0) {
-              try {
-                const productionResult = await createProductionTasksFromOrder(
-                  order._id.toString(),
-                  order.cart.map(item => ({
-                    productId: item.productId,
-                    name: item.name,
-                    qty: item.qty,
-                    sku: item.sku
-                  })),
-                  order.deliveryDate,
-                  false // Not a subscription order
-                );
-
-                if (productionResult.success) {
-                  console.log(`✅ Created ${productionResult.taskIds.length} production tasks for order ${order._id}`);
-                } else {
-                  console.error(`⚠️ Failed to create production tasks: ${productionResult.error}`);
-                }
-              } catch (prodError) {
-                console.error('Error creating production tasks:', prodError);
+            // Create production tasks for the order
+            try {
+              const productionResult = await createProductionTasksFromOrder(order);
+              if (productionResult.success) {
+                console.log(`✅ Created ${productionResult.tasksCreated} production tasks for order ${order._id}`);
+              } else {
+                console.error(`⚠️ Failed to create production tasks: ${productionResult.errors.join(', ')}`);
               }
+            } catch (prodError) {
+              console.error('Error creating production tasks:', prodError);
             }
           }
         } catch (error) {
