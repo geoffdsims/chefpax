@@ -126,67 +126,68 @@ export function getValidatedDeliveryOptions(
     productsUnavailable: Array<{ productId: string; reason: string; earliestDelivery?: string }>;
   }} = {};
   
-  // Check each product against each potential delivery date
-  for (const productId of productIds) {
-    const availableDates = getAvailableDeliveryDates(productId, orderTime, maxWeeks);
+  // For bundles, we need to check if ALL components can be delivered by the same date
+  // Use the LONGEST lead time among all products in the cart
+  const products = getProductsWithInventory();
+  const cartProducts = productIds.map(id => 
+    products.find(p => p._id === id || p.sku === id)
+  ).filter(Boolean);
+  
+  if (cartProducts.length === 0) {
+    return [];
+  }
+  
+  // Find the maximum lead time among all products
+  const maxLeadTime = Math.max(...cartProducts.map(p => p.leadTimeDays || 0));
+  
+  // Check each potential delivery date
+  const startDate = new Date(orderTime);
+  startDate.setDate(startDate.getDate() + 1);
+  
+  for (let i = 0; i < maxWeeks * 7; i++) {
+    const checkDate = new Date(startDate);
+    checkDate.setDate(startDate.getDate() + i);
     
-    // Add to available dates
-    for (const date of availableDates) {
-      if (!deliveryDates[date]) {
-        deliveryDates[date] = {
-          date,
-          available: true,
-          productsAvailable: [],
-          productsUnavailable: []
-        };
-      }
-      deliveryDates[date].productsAvailable.push(productId);
+    // Only check Tuesday, Thursday, Saturday (delivery days)
+    const dayOfWeek = checkDate.getDay();
+    if (dayOfWeek !== 2 && dayOfWeek !== 4 && dayOfWeek !== 5) {
+      continue;
     }
     
-    // Check unavailable dates
-    const startDate = new Date(orderTime);
-    startDate.setDate(startDate.getDate() + 1);
+    const dateStr = checkDate.toISOString();
+    const productsAvailable: string[] = [];
+    const productsUnavailable: Array<{ productId: string; reason: string; earliestDelivery?: string }> = [];
     
-    for (let i = 0; i < maxWeeks * 7; i++) {
-      const checkDate = new Date(startDate);
-      checkDate.setDate(startDate.getDate() + i);
+    // Check each product against this delivery date
+    for (const productId of productIds) {
+      const validation = canDeliverByDate(productId, dateStr, orderTime);
       
-      const dayOfWeek = checkDate.getDay();
-      if (dayOfWeek !== 2 && dayOfWeek !== 4 && dayOfWeek !== 5) {
-        continue;
-      }
-      
-      const validation = canDeliverByDate(productId, checkDate.toISOString(), orderTime);
-      if (!validation.canDeliver) {
-        const dateStr = checkDate.toISOString();
-        if (!deliveryDates[dateStr]) {
-          deliveryDates[dateStr] = {
-            date: dateStr,
-            available: false,
-            productsAvailable: [],
-            productsUnavailable: []
-          };
-        }
-        deliveryDates[dateStr].productsUnavailable.push({
+      if (validation.canDeliver) {
+        productsAvailable.push(productId);
+      } else {
+        productsUnavailable.push({
           productId,
           reason: validation.reason || "Cannot deliver by this date",
           earliestDelivery: validation.earliestDelivery
         });
       }
     }
+    
+    // For bundles, ALL products must be available for the same date
+    const isAvailable = productsUnavailable.length === 0;
+    
+    deliveryDates[dateStr] = {
+      date: dateStr,
+      available: isAvailable,
+      productsAvailable,
+      productsUnavailable,
+      reason: isAvailable ? undefined : `Bundle requires all products ready. ${productsUnavailable.map(p => p.reason).join(', ')}`
+    };
   }
   
   // Convert to array and sort by date
   const options = Object.values(deliveryDates);
   options.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  
-  // Mark as unavailable if any products can't be delivered
-  for (const option of options) {
-    if (option.productsUnavailable.length > 0) {
-      option.available = false;
-      option.reason = `Some products need more time: ${option.productsUnavailable.map(p => p.reason).join(', ')}`;
-    }
-  }
   
   return options;
 }
