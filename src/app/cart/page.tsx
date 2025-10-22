@@ -83,13 +83,15 @@ export default function CartPage() {
   async function checkout() {
     console.log('Checkout initiated:', { isSubscription, hasSession: !!session });
     
+    // Subscription requires sign-in - but this should never happen now
+    // because checkbox is only available when signed in
     if (isSubscription && !session) {
-      console.log('Redirecting to sign-in for subscription');
-      signIn('google', { callbackUrl: '/cart' });
+      console.log('Subscription requires sign-in (should not reach here)');
+      alert('Please sign in to subscribe');
       return;
     }
     
-    console.log('Proceeding with checkout');
+    console.log('Proceeding with checkout (guest or authenticated)');
 
     // Ensure city, state, zip are populated (even if empty for now)
     const customerData = {
@@ -221,23 +223,38 @@ export default function CartPage() {
                     </Box>
                   </Stack>
 
-                  {!session && (
-                    <Alert severity="info" sx={{ mt: 2 }}>
-                      <FormControlLabel
-                        control={<Checkbox checked={isSubscription} onChange={(e) => setIsSubscription(e.target.checked)} />}
-                        label="Subscribe & Save 10%"
-                      />
-                      <Typography variant="caption" display="block">Sign in required for subscriptions</Typography>
-                    </Alert>
-                  )}
-
-                  {session && (
-                    <FormControlLabel
-                      control={<Checkbox checked={isSubscription} onChange={(e) => setIsSubscription(e.target.checked)} />}
-                      label="Subscribe weekly & save 10%"
-                      sx={{ mt: 2 }}
-                    />
-                  )}
+                  {/* Subscription Info Box */}
+                  <Alert 
+                    severity="success" 
+                    sx={{ mt: 2 }}
+                    action={
+                      !session ? (
+                        <Button 
+                          color="inherit" 
+                          size="small"
+                          onClick={() => signIn('google', { callbackUrl: '/cart' })}
+                        >
+                          Sign In
+                        </Button>
+                      ) : (
+                        <Checkbox 
+                          checked={isSubscription} 
+                          onChange={(e) => setIsSubscription(e.target.checked)}
+                          sx={{ color: 'success.main' }}
+                        />
+                      )
+                    }
+                  >
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      🌱 Subscribe & Save 10%
+                    </Typography>
+                    <Typography variant="caption" display="block">
+                      {!session 
+                        ? 'Sign in to subscribe for weekly deliveries with automatic 10% discount'
+                        : 'Check the box to subscribe for weekly deliveries (10% off every order)'
+                      }
+                    </Typography>
+                  </Alert>
                 </CardContent>
               </Card>
 
