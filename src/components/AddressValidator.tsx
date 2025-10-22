@@ -72,8 +72,14 @@ export default function AddressValidator({
       console.log('Initializing Google Places Autocomplete...');
 
       try {
-        // Create autocomplete instance
-        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+        // Create autocomplete instance with a separate input element
+        const autocompleteInput = document.createElement('input');
+        autocompleteInput.style.position = 'absolute';
+        autocompleteInput.style.left = '-9999px';
+        autocompleteInput.style.opacity = '0';
+        document.body.appendChild(autocompleteInput);
+        
+        const autocomplete = new window.google.maps.places.Autocomplete(autocompleteInput, {
           types: ['address'],
           componentRestrictions: { country: 'us' },
           fields: ['formatted_address', 'address_components', 'geometry']
@@ -92,12 +98,24 @@ export default function AddressValidator({
 
           console.log('Place selected:', place);
           
-          // Update the address field
+          // Update the visible address field
           onChange(place.formatted_address);
           
           // Validate the selected address
           validateSelectedPlace(place);
         });
+
+        // Sync the hidden input with the visible input for autocomplete
+        const syncInputs = () => {
+          if (inputRef.current && autocompleteInput) {
+            autocompleteInput.value = inputRef.current.value;
+          }
+        };
+
+        // Listen to the visible input changes
+        if (inputRef.current) {
+          inputRef.current.addEventListener('input', syncInputs);
+        }
 
         console.log('Google Places Autocomplete initialized successfully');
       } catch (error) {
