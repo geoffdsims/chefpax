@@ -206,3 +206,123 @@ export async function cleanupExpiredReservations(): Promise<number> {
     return 0;
   }
 }
+
+/**
+ * Check if a specific quantity of trays is available for a delivery date
+ * @param traySize The size of trays needed ('10x20' or '5x5')
+ * @param quantity Number of trays needed
+ * @param deliveryDate The requested delivery date
+ * @returns Availability status and details
+ */
+export async function checkAvailability(
+  traySize: '10x20' | '5x5',
+  quantity: number,
+  deliveryDate: Date
+): Promise<{
+  available: boolean;
+  availableQuantity: number;
+  totalCapacity: number;
+  reservedQuantity: number;
+  reason?: string;
+}> {
+  const db = await getDb();
+  
+  try {
+    // Get total capacity for this tray size
+    const totalCapacity = traySize === '10x20' ? 20 : 10; // Example capacity
+    
+    // Get current reservations for this delivery date and tray size
+    const reservations = await db.collection<InventoryReservation>("inventoryReservations").find({
+      deliveryDate: deliveryDate.toISOString(),
+      traySize,
+      status: { $in: ["RESERVED", "CONFIRMED"] }
+    }).toArray();
+    
+    const reservedQuantity = reservations.reduce((sum, res) => sum + res.quantity, 0);
+    const availableQuantity = Math.max(0, totalCapacity - reservedQuantity);
+    
+    return {
+      available: availableQuantity >= quantity,
+      availableQuantity,
+      totalCapacity,
+      reservedQuantity,
+      reason: availableQuantity < quantity ? `Only ${availableQuantity} trays available, need ${quantity}` : undefined
+    };
+  } catch (error) {
+    console.error("Error checking availability:", error);
+    return {
+      available: false,
+      availableQuantity: 0,
+      totalCapacity: 0,
+      reservedQuantity: 0,
+      reason: "Error checking availability"
+    };
+  }
+}
+
+/**
+ * Get rack utilization statistics
+ * @returns Rack utilization data
+ */
+export async function getRackUtilization(): Promise<{
+  totalRacks: number;
+  utilizedRacks: number;
+  availableRacks: number;
+  utilizationRate: number;
+  rackDetails: Array<{
+    rackName: string;
+    status: 'available' | 'reserved' | 'in_use';
+    capacity: number;
+    used: number;
+  }>;
+}> {
+  const db = await getDb();
+  
+  try {
+    // Get all reservations
+    const reservations = await db.collection<InventoryReservation>("inventoryReservations").find({
+      status: { $in: ["RESERVED", "CONFIRMED"] }
+    }).toArray();
+    
+    // Group by rack
+    const rackMap = new Map<string, { capacity: number; used: number }>();
+    
+    reservations.forEach(res => {
+      const rackName = res.rackName;
+      if (!rackMap.has(rackName)) {
+        rackMap.set(rackName, { capacity: 20, used: 0 }); // Default capacity
+      }
+      const rack = rackMap.get(rackName)!;
+      rack.used += res.quantity;
+    });
+    
+    const rackDetails = Array.from(rackMap.entries()).map(([rackName, data]) => ({
+      rackName,
+      status: data.used > 0 ? (data.used >= data.capacity ? 'in_use' : 'reserved') : 'available' as const,
+      capacity: data.capacity,
+      used: data.used
+    }));
+    
+    const totalRacks = rackDetails.length;
+    const utilizedRacks = rackDetails.filter(r => r.used > 0).length;
+    const availableRacks = totalRacks - utilizedRacks;
+    const utilizationRate = totalRacks > 0 ? (utilizedRacks / totalRacks) * 100 : 0;
+    
+    return {
+      totalRacks,
+      utilizedRacks,
+      availableRacks,
+      utilizationRate,
+      rackDetails
+    };
+  } catch (error) {
+    console.error("Error getting rack utilization:", error);
+    return {
+      totalRacks: 0,
+      utilizedRacks: 0,
+      availableRacks: 0,
+      utilizationRate: 0,
+      rackDetails: []
+    };
+  }
+}

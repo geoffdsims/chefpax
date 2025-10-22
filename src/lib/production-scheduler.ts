@@ -183,3 +183,141 @@ export async function getTasksByStatus(status: string): Promise<ProductionTask[]
     return [];
   }
 }
+
+/**
+ * Get daily production summary for admin dashboard
+ * @returns Production summary data
+ */
+export async function getProductionSummary(): Promise<{
+  todayTasks: number;
+  completedTasks: number;
+  pendingTasks: number;
+  overdueTasks: number;
+  upcomingHarvests: number;
+  totalOrders: number;
+  productionEfficiency: number;
+  taskBreakdown: {
+    SEED: number;
+    GERMINATE: number;
+    LIGHT: number;
+    HARVEST: number;
+    PACK: number;
+  };
+}> {
+  const db = await getDb();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  try {
+    // Get today's tasks
+    const todayTasks = await db.collection<ProductionTask>("productionTasks").countDocuments({
+      runAt: {
+        $gte: today.toISOString(),
+        $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString()
+      }
+    });
+    
+    // Get completed tasks
+    const completedTasks = await db.collection<ProductionTask>("productionTasks").countDocuments({
+      status: "COMPLETED",
+      runAt: {
+        $gte: today.toISOString(),
+        $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString()
+      }
+    });
+    
+    // Get pending tasks
+    const pendingTasks = await db.collection<ProductionTask>("productionTasks").countDocuments({
+      status: "PENDING",
+      runAt: {
+        $gte: today.toISOString(),
+        $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString()
+      }
+    });
+    
+    // Get overdue tasks
+    const overdueTasks = await db.collection<ProductionTask>("productionTasks").countDocuments({
+      status: "PENDING",
+      runAt: { $lt: today.toISOString() }
+    });
+    
+    // Get upcoming harvests (next 3 days)
+    const upcomingHarvests = await db.collection<ProductionTask>("productionTasks").countDocuments({
+      type: "HARVEST",
+      status: "PENDING",
+      runAt: {
+        $gte: today.toISOString(),
+        $lt: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    });
+    
+    // Get total orders
+    const totalOrders = await db.collection("orders").countDocuments({
+      status: { $in: ["confirmed", "processing", "shipped", "delivered"] }
+    });
+    
+    // Get task breakdown by type
+    const taskBreakdown = await db.collection<ProductionTask>("productionTasks").aggregate([
+      {
+        $match: {
+          runAt: {
+            $gte: today.toISOString(),
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString()
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$type",
+          count: { $sum: 1 }
+        }
+      }
+    ]).toArray();
+    
+    const breakdown = {
+      SEED: 0,
+      GERMINATE: 0,
+      LIGHT: 0,
+      HARVEST: 0,
+      PACK: 0
+    };
+    
+    taskBreakdown.forEach(task => {
+      if (task._id in breakdown) {
+        breakdown[task._id as keyof typeof breakdown] = task.count;
+      }
+    });
+    
+    // Calculate production efficiency
+    const productionEfficiency = todayTasks > 0 ? (completedTasks / todayTasks) * 100 : 0;
+    
+    return {
+      todayTasks,
+      completedTasks,
+      pendingTasks,
+      overdueTasks,
+      upcomingHarvests,
+      totalOrders,
+      productionEfficiency,
+      taskBreakdown: breakdown
+    };
+  } catch (error) {
+    console.error("Error getting production summary:", error);
+    return {
+      todayTasks: 0,
+      completedTasks: 0,
+      pendingTasks: 0,
+      overdueTasks: 0,
+      upcomingHarvests: 0,
+      totalOrders: 0,
+      productionEfficiency: 0,
+      taskBreakdown: {
+        SEED: 0,
+        GERMINATE: 0,
+        LIGHT: 0,
+        HARVEST: 0,
+        PACK: 0
+      }
+    };
+  }
+}
