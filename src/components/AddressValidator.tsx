@@ -165,17 +165,39 @@ export default function AddressValidator({
           
           console.log('Address components:', { cityName, stateCode, addressComponents });
           
-          const isInAustin = cityName.includes('austin');
-          const isInTexas = stateCode === 'TX';
+          // Austin metro area cities (within 1 hour drive)
+          const deliveryCities = [
+            'austin',
+            'manor',           // ChefPax HQ location
+            'pflugerville',
+            'round rock',
+            'cedar park',
+            'leander',
+            'georgetown',
+            'buda',
+            'kyle',
+            'bee cave',
+            'lakeway',
+            'dripping springs',
+            'west lake hills',
+            'rollingwood',
+            'sunset valley',
+            'del valle',
+            'elgin',
+            'hutto'
+          ];
           
-          if (isInAustin && isInTexas) {
+          const isInTexas = stateCode === 'TX';
+          const isInDeliveryArea = deliveryCities.some(city => cityName.includes(city));
+          
+          if (isInDeliveryArea && isInTexas) {
             setValidationStatus('valid');
-            setValidationMessage('✅ Valid Austin address');
+            setValidationMessage('✅ Valid delivery address');
             setFormattedAddress(result.formatted_address);
             onValidation(true, result.formatted_address);
           } else if (isInTexas) {
             setValidationStatus('warning');
-            setValidationMessage('⚠️ Address outside Austin delivery area');
+            setValidationMessage('⚠️ Address outside Austin metro delivery area');
             setFormattedAddress(result.formatted_address);
             onValidation(false);
           } else {
@@ -244,7 +266,7 @@ export default function AddressValidator({
         required={required}
         disabled={disabled || isValidating}
         placeholder="Enter your street address"
-        helperText="We deliver within Austin city limits"
+        helperText="We deliver within the Austin metro area (within 1 hour drive)"
         sx={{ mb: 1 }}
       />
       
@@ -271,7 +293,7 @@ export default function AddressValidator({
       
       {validationStatus === 'warning' && (
         <Alert severity="warning" sx={{ mb: 1 }}>
-          We currently only deliver within Austin city limits. 
+          We currently deliver within the Austin metro area (within 1 hour drive from Manor). 
           Your address appears to be outside our delivery area.
         </Alert>
       )}
