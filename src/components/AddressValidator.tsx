@@ -330,12 +330,15 @@ export default function AddressValidator({
   const handleAddressChange = (newAddress: string) => {
     onChange(newAddress);
     
-    // Debounce validation
-    const timeoutId = setTimeout(() => {
+    // Clear any existing timeout
+    if (window.addressValidationTimeout) {
+      clearTimeout(window.addressValidationTimeout);
+    }
+    
+    // Debounce validation - only validate after user stops typing
+    window.addressValidationTimeout = setTimeout(() => {
       validateAddress(newAddress);
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
+    }, 1000); // Increased to 1 second to avoid interference
   };
 
   const getStatusColor = () => {
