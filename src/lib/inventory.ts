@@ -391,7 +391,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/bundle_core.png",
-      description: "4 live trays (10×20): Sunflower, Pea Shoots, Rambo Radish, Broccoli. Harvest 8-10 days. Save $5 vs individual!",
+      description: "🌱 CORE 4-PACK: Our most popular varieties! Includes: 1) Sunflower (nutty, crunchy), 2) Pea Shoots (sweet snap-pea flavor), 3) Rambo Radish (bold spicy kick), 4) Broccoli (mild earthy). Perfect starter bundle - 4 different flavors & textures. Harvest 8-10 days. Save $5 vs buying individually!",
       leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
@@ -419,7 +419,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/bundle_brassica.png",
-      description: "3 live trays (10×20): Broccoli, Kohlrabi, Wasabi Mustard. Bold brassica flavors. Harvest 8-10 days. Save $3!",
+      description: "🥬 BRASSICA BUILDER TRIO: Bold brassica family collection! Includes: 1) Broccoli (mild earthy), 2) Purple Vienna Kohlrabi (mild sweet crunch), 3) Wasabi Mustard (⚠️ EXTREME HEAT!). Perfect for health enthusiasts who love bold, peppery flavors. Harvest 8-10 days. Save $3!",
       leadTimeDays: 9,
       isSubscriptionEligible: true,
       stages: [
@@ -447,7 +447,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 2,
       currentWeekAvailable: 2,
       photoUrl: "/images/bundle_superfood.png",
-      description: "2 live trays (10×20): Superfood Mix + Rambo Radish. Balanced flavors. 6-10 harvests each. Save $3!",
+      description: "💪 SUPERFOOD DUO: Nutrient-dense power pair! Includes: 1) Superfood Mix (balanced peppery-to-sweet brassica blend), 2) Rambo Radish (bold spicy horseradish kick with vibrant purple color). Perfect for smoothies, health shots, and nutrition-focused meals. Harvest 8-10 days. Save $3!",
       leadTimeDays: 10,
       isSubscriptionEligible: true,
       stages: [
@@ -475,7 +475,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/bundle_premium.png",
-      description: "4 live trays (5×5): Shiso, Dark Opal, Lemon, Thai Basil. Premium herb collection - 4-6 harvests each. Perfect variety pack!",
+      description: "👨‍🍳 CHEF'S PREMIUM: Gourmet herb collection! Includes: 1) Shiso Perilla (unique Asian flavor), 2) Dark Opal Basil (sweet clove scent, deep purple leaves), 3) Lemon Basil (bright lemon-citrus flavor), 4) Thai Basil (sweet-spice with anise aroma, purple stems). Perfect for cocktails, desserts, Asian dishes, and culinary experimentation. Harvest 12-15 days. Premium variety pack!",
       leadTimeDays: 15,
       isSubscriptionEligible: true,
       stages: [
@@ -503,7 +503,7 @@ export function getProductsWithInventory(): Product[] {
       weeklyCapacity: 1,
       currentWeekAvailable: 1,
       photoUrl: "/images/bundle_colorpop.png",
-      description: "4 live trays (5×5): Red Amaranth + 3 basils. Stunning colors, diverse flavors. 4-6 harvests each. Visual variety pack!",
+      description: "🌈 COLOR POP: Stunning visual variety pack! Includes: 1) Red Amaranth (deep red color, mild flavor), 2) Dark Opal Basil (deep purple leaves), 3) Lemon Basil (bright green with citrus notes), 4) Thai Basil (green leaves with purple stems). Perfect for Instagram-worthy dishes, colorful salads, and visual presentation. Harvest 12-15 days. Visual variety pack!",
       leadTimeDays: 15,
       isSubscriptionEligible: true,
       stages: [
