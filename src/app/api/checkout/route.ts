@@ -146,6 +146,12 @@ export async function POST(req: Request) {
   
   const metadata: Record<string, string> = {
     deliveryDate: finalDeliveryDate.toISOString(),
+    deliveryDateFormatted: finalDeliveryDate.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }),
     address1: customer.address1,
     address2: customer.address2 ?? "",
     city: customer.city ?? "",

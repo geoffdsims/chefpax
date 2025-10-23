@@ -145,7 +145,7 @@ export default function CartPage() {
       item_count: cart.reduce((sum, item) => sum + item.qty, 0),
     });
 
-    // Choose checkout endpoint based on subscription
+    // Choose checkout endpoint based on subscription checkbox (not just sign-in status)
     const endpoint = isSubscription ? "/api/checkout-subscription" : "/api/checkout";
     
     const res = await fetch(endpoint, {
